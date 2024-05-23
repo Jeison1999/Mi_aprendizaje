@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ejemplo de Aside</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            display: flex;
+        }
+        main {
+            flex: 1;
+        }
+        aside {
+            width: 300px;
+            margin-left: 20px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border: 1px solid #ccc;
+        }
+        h2, h3 {
+            color: #333;
+        }
+        p {
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <h2>Contenido Principal</h2>
+        <p>Este es el contenido principal de la página. Aquí puedes escribir artículos, agregar imágenes, videos, y más.</p>
+        <article>
+            <h3>Artículo Relacionado</h3>
+            <p>Este es un artículo dentro del contenido principal. El contenido adicional y no esencial se colocará en el aside.</p>
+        </article>
+    </main>
+
+    <aside>
+        <h3>Información Adicional</h3>
+        <p>Este es el contenido del aside. Puede contener anuncios, enlaces relacionados, biografía del autor, o cualquier otra información complementaria.</p>
+        <h3>Enlaces Relacionados</h3>
+        <ul>
+            <li><a href="#">Enlace 1</a></li>
+            <li><a href="#">Enlace 2</a></li>
+            <li><a href="#">Enlace 3</a></li>
+        </ul>
+    </aside>
+</body>
+</html>
