@@ -1,0 +1,114 @@
+main{
+   margin: auto;
+}
+
+.header1{
+    background-color: black;
+    border-top-right-radius: 15px;
+    border-top-left-radius: 15px;
+    width: 500px;
+    height: 50px;
+    text-align: center;
+    margin: auto;
+    color: white;
+}
+
+.section0{
+    width: 500px;
+    text-align: center;
+    margin: auto;
+    margin-top: 10px;
+}
+
+.section1{
+    display: inline-block;
+}
+
+.section1 header{
+   background-color: black;
+   color: white;
+    width: 245px;
+    text-align: center;
+    margin: left;
+}
+.section1 article{
+    background-color: white;
+    width: 243px;
+    height: 70px;
+    text-align: center;
+    margin: left;
+    border: 1px solid black;
+    border-end-end-radius: 15px;
+    border-end-start-radius: 15px;
+}
+
+.section2{
+    display: inline-block;
+}
+
+.section2 header{
+    background-color: black;
+    color: white;
+    width: 245px;
+    text-align: center;
+    margin: left;
+}
+
+.section2 article{
+    background-color: white;
+    border: 1px solid black;
+    width: 243px;
+    height: 70px;
+    text-align: center;
+    margin: left;
+    border-end-end-radius: 15px;
+    border-end-start-radius: 15px;
+}
+
+.section3{
+    display: inline-block;
+}
+
+.section3 header{
+    background-color: black;
+    color: white;
+    width: 245px;
+    text-align: center;
+    margin: right;
+    margin-top: 10px;
+    
+}
+
+.section3 article{
+    background-color: white;
+    border: 1px solid black;
+    width: 243px;
+    height: 70px;
+    text-align: center;
+    margin: right;
+    border-end-end-radius: 15px;
+    border-end-start-radius: 15px;
+}
+
+.section4{
+    display: inline-block;
+}
+
+.section4 header{
+    background-color: black;
+    color: white;
+    width: 245px;
+    text-align: center;
+    margin: right;
+}
+
+.section4 article{
+    background-color: white;
+    border: 1px solid black;
+    width: 243px;
+    height: 70px;
+    text-align: center;
+    margin: right;
+    border-end-end-radius: 15px;
+    border-end-start-radius: 15px;
+}
