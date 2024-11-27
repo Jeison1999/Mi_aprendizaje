@@ -1,0 +1,260 @@
+main{
+    height: 1500px;
+    width: 1000px;
+    margin: auto;
+}
+
+.header1{
+    background-color: grey;
+    border-top-right-radius: 15px;
+    border-top-left-radius: 15px;
+    height: 200px;
+    width: 1000px;
+    background-image: url('header.png');
+    background-size: cover;  
+    background-position: center; 
+    height: 200px; 
+
+}
+
+nav {
+    display: flex;
+    justify-content: center; 
+    align-items: center;
+    background-color: green;
+    padding: 10px;
+    border-end-start-radius: 15px;
+    border-end-end-radius: 15px;
+    margin-bottom: 10px;
+   
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+    font-size: 18px;
+    padding: 0 80px;
+    position: relative; 
+    display: inline-block;
+    margin-bottom: 10px;
+    
+}
+
+nav a::after {
+    content: '|'; 
+    color: white; 
+    position: absolute;
+    right: -10px; 
+    top: 50%; 
+    transform: translateY(-50%); 
+}
+
+nav a:last-child::after {
+    content: '';
+}
+
+
+.section1{
+    height: 550px;
+    width: 1000px;
+    margin-bottom: 10px;
+}
+
+.section2 {
+    height: 550px;
+    width: 400px;
+    float: right;
+}
+
+.section2 header{
+    background-color: black;
+    border-top-right-radius: 15px;
+    border-top-left-radius: 15px;
+    height: 50px;
+    width: 400px;
+    display: flex;
+    color: white;
+    font-size: 20px;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+
+}
+
+.section2 aside{
+    background-color: rgb(41, 149, 52);
+    border-end-start-radius: 15px;
+    border-end-end-radius: 15px;
+    height: 500px;
+    width: 400px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.section2 label {
+    display: block;
+    margin-top: 10px;
+    font-size: 14px;
+    color: white;
+    text-align: left;
+}
+
+.section2 input {
+    width: 50%;
+    padding: 8px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box; /* Evita que el padding desborde */
+}
+
+.section2 button {
+    width: 100%;
+    padding: 10px;
+    margin-top: 20px;
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.section2 button:hover {
+    background-color: #5a6268; 
+}
+
+.section3{
+    height: 550px;
+    width: 580px;
+}
+
+.section3 article{
+    background-color: sandybrown;
+    border-top-right-radius: 15px;
+    border-top-left-radius: 15px;
+    border-end-start-radius: 15px;
+    border-end-end-radius: 15px;
+    height: 230px;
+    width: 550px;
+    margin-bottom: 10px;
+
+}
+
+.article1 {
+    width: 400px; 
+    padding: 20px;
+    background-color: #fff9d7; 
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
+    font-family: Arial, sans-serif;
+}
+
+.article1 h3 {
+    font-size: 18px;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.article1 .contenido {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px; 
+}
+
+.article1 p {
+    font-size: 14px;
+    color: #555;
+    margin: 0;
+    line-height: 1.5;
+    flex: 1; 
+}
+
+.article1 img {
+    width: 100px;
+    height: auto;
+    border: 1px solid #000; 
+    border-radius: 5px;
+} 
+
+.article1 a {
+    display: inline-block;
+    margin-top: 10px;
+    font-size: 14px;
+    color: #006400; 
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.article1 a:hover {
+    text-decoration: underline; 
+}
+
+.article2 {
+    width: 400px; 
+    padding: 20px;
+    background-color: #fff9d7; 
+    border-radius: 15px; 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
+    font-family: Arial, sans-serif;
+}
+
+.article2 h3 {
+    font-size: 18px;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.article2 .contenido {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+}
+
+.article2 p {
+    font-size: 14px;
+    color: #555;
+    margin: 0;
+    line-height: 1.5;
+    flex: 1; 
+}
+
+.article2 img {
+    width: 100px;
+    height: auto;
+    border: 1px solid #000;
+    border-radius: 5px;
+}
+
+.article2 a {
+    display: inline-block;
+    margin-top: 10px;
+    font-size: 14px;
+    color: #006400; 
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.article2 a:hover {
+    text-decoration: underline; 
+}
+
+footer{
+    background-color: green;
+    border-bottom-right-radius: 15px;
+    border-bottom-left-radius: 15px;
+    height: 100px;
+    width: 1000px;
+    color: white;            
+    text-align: center;      
+    padding: 20px 0;         
+    font-family: Arial, sans-serif; 
+    font-size: 14px;  
+}
+
+.footer p {
+    margin: 5px 0;
+  }
+

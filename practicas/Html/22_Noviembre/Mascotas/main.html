@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="Style.css">
+    <style>
+        aside {
+            display: flex;
+            justify-content: center; /* Centra horizontalmente */
+            align-items: center; /* Centra verticalmente */
+            height: 500px;
+            width: 400px;
+            background-color: rgb(41, 149, 52);
+            border-end-start-radius: 15px;
+            border-end-end-radius: 15px;
+        }
+
+        aside form {
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Centra los elementos del formulario */
+            padding: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            margin-right: 10px;
+        }
+
+        .section2 input {
+            width: auto; /* Ajusta el ancho según tus necesidades */
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box; /* Evita que el padding desborde */
+        }
+
+        aside form button {
+            padding: 5px 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        aside form button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <header class="header1"></header>
+        <nav>
+            <a href="#servicios">Servicios</a>
+            <a href="#productos">Productos</a>
+            <a href="#guarderia">Guardería</a>
+            <a href="#promociones">Promociones</a>
+        </nav>
+        <section class="section1">
+            <section class="section2">
+                <header>Solicitar cita medica</header>
+                <aside>
+                    <form action="#" method="post">
+                        <label for="mascota">Mascota:</label>
+                        <input type="text" id="mascota" name="mascota" placeholder="Ingrese Nombre">
+                
+                        <label for="edad">Edad:</label>
+                        <input type="number" id="edad" name="edad">
+                
+                        <label for="raza">Raza:</label>
+                        <input type="text" id="raza" name="raza" placeholder="Ingrese Raza">
+                
+                        <label for="fecha">Fecha:</label>
+                        <input type="date" id="fecha" name="fecha">
+                
+                        <label for="hora">Hora:</label>
+                        <input type="time" id="hora" name="hora">
+                
+                        <label for="amo">Amo:</label>
+                        <input type="text" id="amo" name="amo" placeholder="Ingrese Nombre">
+                
+                        <button type="submit">VALIDAR CITA</button>
+                    </form>
+                </aside>
+            </section>
+            <section class="section3">
+                <article class="article1">
+                    <h3>Cuidados y educación para su perro</h3>
+                    <div class="contenido">
+                        <p>
+                            Equam, ium fugiandebis sit, qui occab ipienihit as moluptatur rem et liquis et 
+                            ulparci psanis mo voluptate volupta pa et, offictur? <br>
+                            Dusdae valore, que peribus sapist, sande volenis sunt.
+                        </p>
+                        <img src="pngtree-beautiful-puppy-free-elements-png-image_4255768.png" alt="Perro educativo">
+                    </div>
+                    <a href="#">Ver más...</a>
+                </article>
+                <article>
+                    <article class="article2">
+                        <h3>Cuidados y educación para su perro</h3>
+                        <div class="contenido">
+                            <p>
+                                Equam, ium fugiandebis sit, qui occab ipienihit as moluptatur rem et liquis et 
+                                ulparci psanis mo voluptate volupta pa et, offictur? <br>
+                                Dusdae valore, que peribus sapist, sande volenis sunt.
+                            </p>
+                            <img src="images.jpg" alt="Perro educativo">
+                        </div>
+                        <a href="#">Ver más...</a>
+                </article>
+            </section>
+        </section>
+        <footer>
+            <p>Contáctenos</p>
+            <p>Línea gratuita 018000-00001</p>
+            <p>Correo: preguntas@caninosyfelinos.com</p>
+        </footer>
+    </main>
+    
+</body>
+</html>
