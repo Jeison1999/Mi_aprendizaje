@@ -6,11 +6,16 @@ main{
     background-color: black;
     border-top-right-radius: 15px;
     border-top-left-radius: 15px;
+    border-bottom-right-radius: 15px;
+    border-bottom-left-radius: 15px;
     width: 500px;
     height: 50px;
     text-align: center;
     margin: auto;
     color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .section0{
@@ -30,6 +35,10 @@ main{
     width: 245px;
     text-align: center;
     margin: left;
+    border-top-right-radius: 15px;
+    border-top-left-radius: 15px;
+    
+
 }
 .section1 article{
     background-color: white;
@@ -52,6 +61,8 @@ main{
     width: 245px;
     text-align: center;
     margin: left;
+    border-top-right-radius: 15px;
+    border-top-left-radius: 15px;
 }
 
 .section2 article{
@@ -76,6 +87,8 @@ main{
     text-align: center;
     margin: right;
     margin-top: 10px;
+    border-top-right-radius: 15px;
+    border-top-left-radius: 15px;
     
 }
 
@@ -100,6 +113,8 @@ main{
     width: 245px;
     text-align: center;
     margin: right;
+    border-top-right-radius: 15px;
+    border-top-left-radius: 15px;
 }
 
 .section4 article{
@@ -111,4 +126,21 @@ main{
     margin: right;
     border-end-end-radius: 15px;
     border-end-start-radius: 15px;
+}
+
+footer{
+    background-color: black;
+    border-bottom-right-radius: 15px;
+    border-bottom-left-radius: 15px;
+    border-top-right-radius: 15px;
+    border-top-left-radius: 15px;
+    width: 500px;
+    height: 50px;
+    text-align: center;
+    margin: auto;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px;
 }
