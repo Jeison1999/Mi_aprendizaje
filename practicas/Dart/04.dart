@@ -1,24 +1,24 @@
-class Usuario {
-  String? nombre;
+class User {
+  String? name;
   String? apellido;
   int? edad;
 
-  Usuario({this.nombre, this.apellido, this.edad});
+  User({this.name, this.apellido, this.edad});
 
-  String? getnombre() => nombre;
-  String? getapellido() => apellido;
-  int? getedad() => edad;
+  String? getNombre() => name;
+  String? getApellido() => apellido;
+  int? getEdad() => edad;
 
   @override
   String toString() =>
-      'mi nombre es ${getnombre()} ${getapellido()} tengo ${getedad()}';
+      'Mi nombre es ${getNombre()} ${getApellido()} y tengo ${getEdad()} años';
 
-  void setnombre(String nombre) => this.nombre = nombre;
+  void setNombre(String name) => this.name = name;
 }
 
 void main() {
-  Usuario p = Usuario(nombre: 'jeison', edad: 10, apellido: 'ortiz');
+  User user = User(name: 'Carlos', edad: 23, apellido: 'Ortiz');
+  user.setNombre('Jeison');
 
-  p.setnombre('carlos');
-  print(p.toString());
+  print(user.toString());
 }

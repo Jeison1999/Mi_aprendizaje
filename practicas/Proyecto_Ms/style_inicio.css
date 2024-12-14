@@ -1,0 +1,84 @@
+body{
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f1f1f1;
+    overflow: hidden;
+}
+
+.contenedor{
+    position: relative;
+    width: 100vh;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+}
+
+.bola{
+    position: absolute;
+    top: -50px;
+    width: -100px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50px;
+    height: 50px;
+    background-color: blue;
+    border-radius: 50%;
+    opacity: 0;
+    animation: appearAndDrop 6s ease-in-out forwards;
+    
+}
+
+.logo{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    animation: fadeIn 1s ease-in 6s forwards;
+}
+
+.screen{
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 0;
+    background-color: #000;
+    z-index: 2;
+    animation: slideUp 1.5s ease-in forwards;
+    animation-delay: 7s;
+    display: none;
+}
+
+@keyframes appearAndDrop{
+    0%{
+        top: -50px;
+        opacity: 0;
+    }
+    10%{
+        opacity: 1;
+    }
+    100%{
+        top: 50%;
+    }
+}
+
+@keyframes fadeIn{
+    to{
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp{
+    0%{
+        height: 0;
+    }
+    100%{
+        height: 100vh;
+    }
+}

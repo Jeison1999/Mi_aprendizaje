@@ -1,55 +1,29 @@
-void main() {
-  Logistica logistica = logisticaTerrestre();
-  Transporte transporte = logistica.crearTransporte();
-  transporte.entrega();
-}
+void main() {}
 
 abstract class Transporte {
   void entrega();
 }
 
-class Carro implements Transporte {
+class carro implements Transporte {
   @override
-  void entrega() {
-    print('Entrega realizada por carro');
-  }
+  void entrega() => print('entrega un carro');
 }
 
 class Barco implements Transporte {
   @override
-  void entrega() {
-    print('Entrega realizada por barco');
-  }
+  void entrega() => print('entrega un Barco');
 }
 
 class Avion implements Transporte {
   @override
-  void entrega() {
-    print('Entrega realizada por avion');
-  }
+  void entrega() => print('entrega un Avion');
 }
 
 abstract class Logistica {
   Transporte crearTransporte();
 }
 
-class logisticaTerrestre implements Logistica {
+class LogisticaTerrestre implements Logistica {
   @override
-  Transporte crearTransporte() {
-    return Carro();
-  }
-}
-
-class logisticaMaritima implements Logistica {
-  @override
-  Transporte crearTransporte() {
-    return Barco();
-  }
-}
-
-class logisticaAerea implements Logistica {
-  @override
-  Transporte crearTransporte() {
-    return Avion();
-  }
+  Transporte crearTransporte() => carro();
 }
