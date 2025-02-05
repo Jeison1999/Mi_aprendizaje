@@ -1,4 +1,5 @@
 let animales = ['chanchito','caballo'];
-console.log(animales[3]);
 animales[2] = 'dragon';
+animales[3] = (animales.length);
 console.log(animales);
+console.log(animales[0]);
