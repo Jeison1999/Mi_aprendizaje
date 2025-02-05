@@ -1,0 +1,58 @@
+header {
+    background-color: #85bdd7e0;
+    text-align: center;
+    width: 100%; /* 100% del ancho disponible */
+    height: 15vh; /* 15% del alto de la ventana de visualización */
+    margin: 0; /* Eliminar cualquier margen predeterminado */
+    padding: 0 20px; /* Añadir relleno a los lados */
+    position: fixed; /* Fijar el header en su lugar */
+    top: 0; /* Posicionar en la parte superior */
+    left: 0; /* Asegurar que llegue al borde izquierdo */
+    right: 0; /* Asegurar que llegue al borde derecho */
+    z-index: 1000; /* Asegurar que el header esté por encima de otros elementos */
+    display: flex; /* Usar flexbox para centrar el contenido */
+    justify-content: space-between; /* Espacio entre el logo y el contenido */
+    align-items: center; /* Centrar verticalmente */
+    box-sizing: border-box; /* Incluir el padding y el borde en el tamaño total del elemento */
+    overflow: hidden; /* Ocultar cualquier contenido que se salga del header */
+}
+
+.logo {
+    width: 150px; 
+    height: auto; 
+}
+
+nav ul {
+    list-style-type: none;
+    padding: 10pc;
+    margin: 10cap;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
+nav ul li {
+    margin: 0 60px;
+}
+
+nav ul li a {
+    text-decoration: none;
+    color: #fff;
+    font-weight: bold;
+}
+
+nav ul li a:hover {
+    color: #BD831D;
+}
+
+main {
+    padding: 20px;
+    margin-top: 15vh; /* Asegurar que el contenido principal esté debajo del header */
+}
+
+section {
+    padding: 20px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+}

@@ -1,29 +1,30 @@
-void main() {}
+import 'dart:io';
 
-abstract class Transporte {
-  void entrega();
+class Tema {
+  String? name;
+  int? edad;
 }
 
-class carro implements Transporte {
-  @override
-  void entrega() => print('entrega un carro');
-}
+class Nino extends Tema {}
 
-class Barco implements Transporte {
-  @override
-  void entrega() => print('entrega un Barco');
-}
+class adulto extends Tema {}
 
-class Avion implements Transporte {
-  @override
-  void entrega() => print('entrega un Avion');
-}
+class viejo extends Tema {}
 
-abstract class Logistica {
-  Transporte crearTransporte();
-}
+void main() {
+  print('ingrese su nombre');
+  String? name = stdin.readLineSync();
 
-class LogisticaTerrestre implements Logistica {
-  @override
-  Transporte crearTransporte() => carro();
+  print('ingrese su edad');
+  int? edad = int.parse(stdin.readLineSync()!);
+
+  if (edad < 12 && edad > 0) {
+    print("eres un niño $name");
+  } else if (edad > 12 && edad < 17) {
+    print("eres un adolescente $name");
+  } else if (edad > 18 && edad < 64) {
+    print("eres un adulto $name");
+  } else if (edad > 65) {
+    print("eres un viejo $name");
+  }
 }

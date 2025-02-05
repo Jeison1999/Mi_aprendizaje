@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navegación con Pestañas</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+        .menu {
+            display: flex;
+            justify-content: center;
+            background-color: #333;
+        }
+        .menu a {
+            padding: 15px 20px;
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+        }
+        .menu a:hover {
+            background-color: #575757;
+        }
+        .content {
+            padding: 50px;
+            display: none;
+            font-size: 24px;
+        }
+        .active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="menu">
+        <a href="#" onclick="showContent('inicio')">Inicio</a>
+        <a href="#" onclick="showContent('servicios')">Servicios</a>
+        <a href="#" onclick="showContent('productos')">Productos</a>
+        <a href="#" onclick="showContent('nosotros')">Nosotros</a>
+        <a href="#" onclick="showContent('contacto')">Contacto</a>
+    </div>
+
+    <div id="inicio" class="content active">Bienvenido a nuestra página de inicio</div>
+    <div id="servicios" class="content">Nuestros servicios están diseñados para ti</div>
+    <div id="productos" class="content">Descubre nuestros productos innovadores</div>
+    <div id="nosotros" class="content">Conócenos mejor y nuestra historia</div>
+    <div id="contacto" class="content">Contáctanos para más información</div>
+
+    <script>
+        function showContent(sectionId) {
+            // Ocultar todas las secciones
+            let sections = document.querySelectorAll('.content');
+            sections.forEach(section => section.classList.remove('active'));
+            
+            // Mostrar la sección seleccionada
+            document.getElementById(sectionId).classList.add('active');
+        }
+    </script>
+</body>
+</html>
