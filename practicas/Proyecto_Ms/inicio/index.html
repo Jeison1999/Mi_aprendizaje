@@ -8,14 +8,21 @@
 </head>
 <body>
     <div class="contenedor">
-        <div class="bola"></div>
-        <img src="logoms.png" alt="logo" class="logo">
+        <img src="imagenes/gota.png" alt="bola" class="bola">
+        <img src="imagenes/logoms.png" alt="logo" class="logo">
         <div class="card">
             <div class="heading">Sign In</div>
-            <form action="" class="form">
-                <input required="" class="input" type="email" name="email" id="email" placeholder="E-mail">
-                <input required="" class="input" type="password" name="password" id="password" placeholder="Password">                <span class="forgot-password"><a href="#">Forgot Password ?</a></span>
+            <form id="login-form" action="login.php" method="POST" class="form">
+                <input required class="input" type="email" name="email" id="email" placeholder="E-mail">
+                <input required class="input" type="password" name="password" id="password" placeholder="Password">
                 <input class="login-button" type="submit" value="Sign In">
+                <p class="toggle-form">Don't have an account? <a href="#" id="show-register">Register</a></p>
+            </form>
+            <form id="register-form" action="register.php" method="POST" class="form" style="display: none;">
+                <input required class="input" type="email" name="email" id="email" placeholder="E-mail">
+                <input required class="input" type="password" name="password" id="register-password" placeholder="Password">
+                <input class="login-button" type="submit" value="Register">
+                <p class="toggle-form">Already have an account? <a href="#" id="show-login">Sign In</a></p>
             </form>
             <div class="social-account-container">
                 <span class="title">Or Sign in with</span>
@@ -25,7 +32,6 @@
                     </button>
                     <button class="social-button apple">
                         <svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill="#FFFFFF" fill-rule="evenodd" clip-rule="evenodd"><path d="M22.288 21h-20.576c-.945 0-1.712-.767-1.712-1.712v-13.576c0-.945.767-1.712 1.712-1.712h20.576c.945 0 1.712.767 1.712 1.712v13.576c0 .945-.767 1.712-1.712 1.712zm-10.288-6.086l-9.342-6.483-.02 11.569h18.684v-11.569l-9.322 6.483zm8.869-9.914h-17.789l8.92 6.229s6.252-4.406 8.869-6.229z"/></svg>
-
                     </button>
                     <button class="social-button twitter">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#FFFFFF" viewBox="0 0 24 24"><path d="M12 2c5.514 0 10 4.486 10 10s-4.486 10-10 10-10-4.486-10-10 4.486-10 10-10zm0-2c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm-2 10h-2v2h2v6h3v-6h1.82l.18-2h-2v-.833c0-.478.096-.667.558-.667h1.442v-2.5h-2.404c-1.798 0-2.596.792-2.596 2.308v1.692z"/></svg>
