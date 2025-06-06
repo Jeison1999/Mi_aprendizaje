@@ -121,6 +121,38 @@ class _EditarUsuarioDialogState extends State<EditarUsuarioDialog> {
                   }
                   _laborController.text = seleccionada;
                 },
+                optionsViewBuilder: (context, onSelected, options) {
+                  return Material(
+                    elevation: 4,
+                    child: ListView.builder(
+                      padding: EdgeInsets.zero,
+                      itemCount: options.length,
+                      itemBuilder: (context, index) {
+                        final option = options.elementAt(index);
+                        final labor = labores.firstWhere(
+                          (l) => l['nombre'] == option,
+                          orElse: () => <String, dynamic>{},
+                        );
+                        return _LaborOptionTile(
+                          option: option,
+                          laborId: labor.isNotEmpty ? labor['id'] : null,
+                          onSelected: onSelected,
+                          onDeleted: labor.isNotEmpty
+                              ? () async {
+                                  await FirebaseFirestore.instance
+                                      .collection('labores')
+                                      .doc(labor['id'])
+                                      .delete();
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text('Labor borrada')),
+                                  );
+                                }
+                              : null,
+                        );
+                      },
+                    ),
+                  );
+                },
                 fieldViewBuilder:
                     (context, controller, focusNode, onEditingComplete) {
                       // Solo asigna el texto si está vacío para evitar loops
@@ -186,6 +218,57 @@ class _EditarUsuarioDialogState extends State<EditarUsuarioDialog> {
           child: Text('Guardar'),
         ),
       ],
+    );
+  }
+}
+
+class _LaborOptionTile extends StatefulWidget {
+  final String option;
+  final String? laborId;
+  final void Function(String) onSelected;
+  final Future<void> Function()? onDeleted;
+
+  const _LaborOptionTile({
+    required this.option,
+    required this.laborId,
+    required this.onSelected,
+    this.onDeleted,
+  });
+
+  @override
+  State<_LaborOptionTile> createState() => _LaborOptionTileState();
+}
+
+class _LaborOptionTileState extends State<_LaborOptionTile> {
+  bool showDelete = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onLongPress: widget.laborId != null
+          ? () {
+              setState(() {
+                showDelete = true;
+              });
+            }
+          : null,
+      onTap: () {
+        widget.onSelected(widget.option);
+      },
+      child: ListTile(
+        title: Text(widget.option),
+        trailing: showDelete && widget.onDeleted != null
+            ? IconButton(
+                icon: Icon(Icons.delete, color: Colors.red),
+                onPressed: () async {
+                  await widget.onDeleted!();
+                  setState(() {
+                    showDelete = false;
+                  });
+                },
+              )
+            : null,
+      ),
     );
   }
 }
