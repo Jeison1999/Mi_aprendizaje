@@ -56,8 +56,8 @@ class _EditarUsuarioDialogState extends State<EditarUsuarioDialog> {
   Widget build(BuildContext context) {
     return AlertDialog(
       title: Text('Editar usuario'),
-      content: FutureBuilder<List<Map<String, dynamic>>>(
-        future: obtenerLabores(),
+      content: StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance.collection('labores').snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return SizedBox(
@@ -70,7 +70,14 @@ class _EditarUsuarioDialogState extends State<EditarUsuarioDialog> {
             return Text('No se pudieron cargar las labores.');
           }
 
-          final labores = snapshot.data!;
+          final labores = snapshot.data!.docs
+              .map(
+                (doc) => {
+                  'id': doc.id,
+                  'nombre': doc['nombre'] ?? 'Sin nombre',
+                },
+              )
+              .toList();
 
           return Column(
             mainAxisSize: MainAxisSize.min,
@@ -85,20 +92,33 @@ class _EditarUsuarioDialogState extends State<EditarUsuarioDialog> {
               ),
               Autocomplete<String>(
                 optionsBuilder: (TextEditingValue textEditingValue) {
-                  return labores
+                  final input = textEditingValue.text.trim();
+                  final nombres = labores
                       .map((l) => l['nombre'] as String)
+                      .toList();
+                  final opciones = nombres
                       .where(
-                        (option) => option.toLowerCase().contains(
-                          textEditingValue.text.toLowerCase(),
-                        ),
+                        (option) =>
+                            option.toLowerCase().contains(input.toLowerCase()),
                       )
                       .toList();
+
+                  if (input.isNotEmpty && !nombres.contains(input)) {
+                    opciones.insert(0, input);
+                  }
+                  return opciones;
                 },
                 onSelected: (String seleccionada) {
                   final labor = labores.firstWhere(
                     (l) => l['nombre'] == seleccionada,
+                    orElse: () => <String, dynamic>{},
                   );
-                  laborIdSeleccionada = labor['id'];
+                  if (labor.isNotEmpty) {
+                    laborIdSeleccionada = labor['id'];
+                  } else {
+                    laborIdSeleccionada =
+                        null; // Es una nueva labor, se creará al guardar
+                  }
                   _laborController.text = seleccionada;
                 },
                 fieldViewBuilder:
