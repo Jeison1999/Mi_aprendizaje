@@ -109,7 +109,10 @@ class Miembros extends StatelessWidget {
                       height: 150,
                       width: 350,
                       decoration: BoxDecoration(
-                        border: Border.all(color: Colors.red, width: 2),
+                        border: Border.all(
+                          color: const Color(0xFFD8001D),
+                          width: 2,
+                        ),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Stack(
@@ -131,8 +134,13 @@ class Miembros extends StatelessWidget {
                                     return Text(
                                       'Sin labor asignada',
                                       style: TextStyle(
-                                        fontSize: 15,
-                                        color: const Color.fromARGB(255, 6, 6, 6),
+                                        fontSize: 18,
+                                        color: const Color.fromARGB(
+                                          255,
+                                          6,
+                                          6,
+                                          6,
+                                        ),
                                       ),
                                     );
                                   }
@@ -146,14 +154,28 @@ class Miembros extends StatelessWidget {
                                           ConnectionState.waiting) {
                                         return Text(
                                           'Cargando labor...',
-                                          style: TextStyle(color: const Color.fromARGB(255, 10, 10, 10)),
+                                          style: TextStyle(
+                                            color: const Color.fromARGB(
+                                              255,
+                                              10,
+                                              10,
+                                              10,
+                                            ),
+                                          ),
                                         );
                                       }
                                       if (!snapshot.hasData ||
                                           !snapshot.data!.exists) {
                                         return Text(
                                           'Labor no encontrada',
-                                          style: TextStyle(color: const Color.fromARGB(255, 11, 11, 11)),
+                                          style: TextStyle(
+                                            color: const Color.fromARGB(
+                                              255,
+                                              11,
+                                              11,
+                                              11,
+                                            ),
+                                          ),
                                         );
                                       }
                                       final laborData =
@@ -163,7 +185,12 @@ class Miembros extends StatelessWidget {
                                         'Labor: ${laborData['nombre'] ?? 'Sin nombre'}',
                                         style: TextStyle(
                                           fontSize: 18,
-                                          color: const Color.fromARGB(255, 12, 12, 12),
+                                          color: const Color.fromARGB(
+                                            255,
+                                            12,
+                                            12,
+                                            12,
+                                          ),
                                         ),
                                       );
                                     },
@@ -183,14 +210,21 @@ class Miembros extends StatelessWidget {
                                   backgroundColor: Color(0xFFD8001D),
                                   child: Text(
                                     usuario['inicial'],
-                                    style: TextStyle(color: const Color.fromARGB(179, 7, 7, 7)),
+                                    style: TextStyle(
+                                      color: const Color.fromARGB(179, 7, 7, 7),
+                                    ),
                                   ),
                                 ),
                                 SizedBox(height: 6),
                                 Text(
                                   usuario['nombre'],
                                   style: TextStyle(
-                                    color: const Color.fromARGB(255, 10, 10, 10),
+                                    color: const Color.fromARGB(
+                                      255,
+                                      10,
+                                      10,
+                                      10,
+                                    ),
                                     fontSize: 14,
                                     fontWeight: FontWeight.bold,
                                   ),
