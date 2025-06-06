@@ -124,32 +124,58 @@ class _EditarUsuarioDialogState extends State<EditarUsuarioDialog> {
                 optionsViewBuilder: (context, onSelected, options) {
                   return Material(
                     elevation: 4,
-                    child: ListView.builder(
-                      padding: EdgeInsets.zero,
-                      itemCount: options.length,
-                      itemBuilder: (context, index) {
-                        final option = options.elementAt(index);
-                        final labor = labores.firstWhere(
-                          (l) => l['nombre'] == option,
-                          orElse: () => <String, dynamic>{},
-                        );
-                        return _LaborOptionTile(
-                          option: option,
-                          laborId: labor.isNotEmpty ? labor['id'] : null,
-                          onSelected: onSelected,
-                          onDeleted: labor.isNotEmpty
-                              ? () async {
-                                  await FirebaseFirestore.instance
-                                      .collection('labores')
-                                      .doc(labor['id'])
-                                      .delete();
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(content: Text('Labor borrada')),
-                                  );
-                                }
-                              : null,
-                        );
-                      },
+                    child: SizedBox(
+                      height: 200, // Puedes ajustar este valor a tu gusto
+                      child: ListView.builder(
+                        padding: EdgeInsets.zero,
+                        itemCount: options.length,
+                        itemBuilder: (context, index) {
+                          final option = options.elementAt(index);
+                          final labor = labores.firstWhere(
+                            (l) => l['nombre'] == option,
+                            orElse: () => <String, dynamic>{},
+                          );
+                          return _LaborOptionTile(
+                            option: option,
+                            laborId: labor.isNotEmpty ? labor['id'] : null,
+                            onSelected: onSelected,
+                            onDeleted: labor.isNotEmpty
+                                ? () async {
+                                    // Busca los usuarios con esa labor
+                                    final usuariosConLabor =
+                                        await FirebaseFirestore.instance
+                                            .collection('usuarios')
+                                            .where(
+                                              'laborId',
+                                              isEqualTo: labor['id'],
+                                            )
+                                            .get();
+
+                                    // Limpia el campo laborId en esos usuarios
+                                    for (var doc in usuariosConLabor.docs) {
+                                      await doc.reference.update({
+                                        'laborId': FieldValue.delete(),
+                                      });
+                                    }
+
+                                    // Borra la labor
+                                    await FirebaseFirestore.instance
+                                        .collection('labores')
+                                        .doc(labor['id'])
+                                        .delete();
+
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                          'Labor borrada y desasignada de los usuarios',
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                : null,
+                          );
+                        },
+                      ),
                     ),
                   );
                 },
