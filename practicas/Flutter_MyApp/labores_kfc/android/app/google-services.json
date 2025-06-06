@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "509138965362",
+    "project_id": "labores-kfc",
+    "storage_bucket": "labores-kfc.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:509138965362:android:f03b558a00c946aa90c3eb",
+        "android_client_info": {
+          "package_name": "com.labores.kfc"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBe9dyvHUjV1540gDXqiWYJylFIBf6k4mU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
