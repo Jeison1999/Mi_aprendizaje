@@ -30,26 +30,65 @@ class _AgregarUsuarioDialogState extends State<AgregarUsuarioDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text('Agregar usuario'),
+      backgroundColor: Colors.white,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      title: Text(
+        'Agregar usuario',
+        style: TextStyle(
+          color: Color(0xFFD8001D),
+          fontWeight: FontWeight.bold,
+          fontSize: 20,
+          letterSpacing: 1.1,
+        ),
+      ),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           TextField(
             controller: _nombreController,
-            decoration: InputDecoration(labelText: 'Nombre'),
+            decoration: InputDecoration(
+              labelText: 'Nombre',
+              labelStyle: TextStyle(color: Color(0xFFD8001D)),
+              focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: Color(0xFFD8001D)),
+              ),
+              enabledBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: Color(0xFFD8001D)),
+              ),
+            ),
+            cursorColor: Color(0xFFD8001D),
           ),
+          SizedBox(height: 12),
           TextField(
             controller: _inicialController,
-            decoration: InputDecoration(labelText: 'Inicial'),
+            decoration: InputDecoration(
+              labelText: 'Inicial',
+              labelStyle: TextStyle(color: Color(0xFFD8001D)),
+              focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: Color(0xFFD8001D)),
+              ),
+              enabledBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: Color(0xFFD8001D)),
+              ),
+            ),
+            cursorColor: Color(0xFFD8001D),
           ),
         ],
       ),
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: Text('Cancelar'),
+          child: Text('Cancelar', style: TextStyle(color: Color(0xFFD8001D))),
         ),
         ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Color(0xFFD8001D),
+            foregroundColor: Colors.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            textStyle: TextStyle(fontWeight: FontWeight.bold),
+          ),
           onPressed: () async {
             final nombre = _nombreController.text.trim();
             final inicial = _inicialController.text.trim();

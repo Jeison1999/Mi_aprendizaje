@@ -55,7 +55,16 @@ class _EditarUsuarioDialogState extends State<EditarUsuarioDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text('Editar usuario'),
+      backgroundColor: Colors.white,
+      title: Text(
+        'Editar usuario',
+        style: TextStyle(
+          color: Color(0xFFD8001D),
+          fontWeight: FontWeight.bold,
+          fontSize: 20,
+          letterSpacing: 1.1,
+        ),
+      ),
       content: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance.collection('labores').snapshots(),
         builder: (context, snapshot) {
@@ -84,11 +93,25 @@ class _EditarUsuarioDialogState extends State<EditarUsuarioDialog> {
             children: [
               TextField(
                 controller: _nombreController,
-                decoration: InputDecoration(labelText: 'Nombre'),
+                decoration: InputDecoration(
+                  labelText: 'Nombre',
+                  labelStyle: TextStyle(color: Color(0xFFD8001D)),
+                  focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Color(0xFFD8001D)),
+                  ),
+                ),
+                cursorColor: Color(0xFFD8001D),
               ),
               TextField(
                 controller: _inicialController,
-                decoration: InputDecoration(labelText: 'Inicial'),
+                decoration: InputDecoration(
+                  labelText: 'Inicial',
+                  labelStyle: TextStyle(color: Color(0xFFD8001D)),
+                  focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Color(0xFFD8001D)),
+                  ),
+                ),
+                cursorColor: Color(0xFFD8001D),
               ),
               Autocomplete<String>(
                 optionsBuilder: (TextEditingValue textEditingValue) {
@@ -202,10 +225,18 @@ class _EditarUsuarioDialogState extends State<EditarUsuarioDialog> {
       ),
       actions: [
         TextButton(
+          child: Text('Cancelar', style: TextStyle(color: Color(0xFFD8001D))),
           onPressed: () => Navigator.pop(context),
-          child: Text('Cancelar'),
         ),
         ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Color(0xFFD8001D),
+            foregroundColor: Colors.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+          child: Text('Guardar'),
           onPressed: () async {
             final nombre = _nombreController.text.trim();
             final inicial = _inicialController.text.trim();
@@ -241,7 +272,6 @@ class _EditarUsuarioDialogState extends State<EditarUsuarioDialog> {
               );
             }
           },
-          child: Text('Guardar'),
         ),
       ],
     );
