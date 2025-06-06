@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:labores_kfc/widgets/form_agregar.dart';
 import 'package:labores_kfc/widgets/form_editar.dart';
+import 'package:labores_kfc/func/crear_pdf.dart'; // Importa tu función
 
 class Miembros extends StatelessWidget {
   const Miembros({super.key});
@@ -10,6 +11,18 @@ class Miembros extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text('Miembros'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.picture_as_pdf),
+            tooltip: 'Generar PDF',
+            onPressed: () async {
+              await crearPDFUsuariosYLabor(context);
+            },
+          ),
+        ],
+      ),
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance.collection('usuarios').snapshots(),
         builder: (context, snapshot) {
