@@ -10,7 +10,9 @@ class SerialEquipo {
       throw ArgumentError('El serial no puede estar vacío');
     }
     if (!regex.hasMatch(serialLimpio)) {
-      throw ArgumentError('El serial solo puede contener letras, números y guiones');
+      throw ArgumentError(
+        'El serial solo puede contener letras, números y guiones',
+      );
     }
     return SerialEquipo._(serialLimpio);
   }
