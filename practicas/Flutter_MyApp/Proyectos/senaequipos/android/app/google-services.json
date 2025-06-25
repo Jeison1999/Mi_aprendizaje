@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "816470915723",
+    "project_id": "senaequipos",
+    "storage_bucket": "senaequipos.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:816470915723:android:4b82e3ecae22f05bebf28e",
+        "android_client_info": {
+          "package_name": "com.example.senaequipos"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA_MJTpaZVoJr85Gi6d6GOk4brkHQhxixU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
