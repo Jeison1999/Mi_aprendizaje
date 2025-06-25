@@ -10,6 +10,18 @@ class BuscarRegistroEquipo {
     required String cedula,
     required String serial,
   }) async {
-    return await repository.buscarRegistro(cedula: cedula, serial: serial);
+    if (serial.isEmpty) {
+      // Buscar el primer registro con esa cédula
+      final todos = await repository.listarRegistros();
+      try {
+        return todos.firstWhere(
+          (r) => r.cedula.value == cedula,
+        );
+      } catch (e) {
+        return null;
+      }
+    } else {
+      return await repository.buscarRegistro(cedula: cedula, serial: serial);
+    }
   }
 }

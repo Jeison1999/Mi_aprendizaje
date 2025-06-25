@@ -62,11 +62,6 @@ class HomePage extends StatelessWidget {
               style: TextStyle(fontSize: 16, color: Colors.grey),
             ),
             const SizedBox(height: 40),
-            const Text(
-              '🔧 Configuración de Firebase completada',
-              style: TextStyle(fontSize: 16, color: Colors.green),
-            ),
-            const SizedBox(height: 40),
             ElevatedButton.icon(
               icon: const Icon(Icons.add),
               label: const Text('Registrar nuevo equipo'),

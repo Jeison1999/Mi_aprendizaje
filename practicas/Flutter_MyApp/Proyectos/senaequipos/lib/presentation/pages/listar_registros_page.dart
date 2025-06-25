@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import '../../domain/entities/registro_equipo.dart';
-import '../../application/use_cases/buscar_registro_equipo.dart';
 import '../../application/use_cases/eliminar_registro_equipo.dart';
 import '../../domain/repositories/registro_equipo_repository.dart';
 import 'editar_registro_page.dart';
@@ -16,7 +15,6 @@ class ListarRegistrosPage extends StatefulWidget {
 class _ListarRegistrosPageState extends State<ListarRegistrosPage> {
   final _cedulaController = TextEditingController();
   Future<List<RegistroEquipo>>? _registrosFuture;
-  String? _cedulaBuscada;
 
   @override
   void dispose() {
@@ -29,7 +27,6 @@ class _ListarRegistrosPageState extends State<ListarRegistrosPage> {
     if (cedula.isEmpty) return;
     final repo = GetIt.I<RegistroEquipoRepository>();
     setState(() {
-      _cedulaBuscada = cedula;
       _registrosFuture = repo.listarRegistros().then(
         (registros) =>
             registros.where((r) => r.cedula.value == cedula).toList(),
