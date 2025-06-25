@@ -84,12 +84,25 @@ class _RegistroEquipoPageState extends State<RegistroEquipoPage> {
         horaEntrada: HoraRegistro(),
       );
       await GetIt.I<CrearRegistroEquipo>().call(registro);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Registro guardado correctamente'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
       setState(() {
         _mensaje = 'Registro guardado correctamente';
       });
       _formKey.currentState?.reset();
       _nombreEncontrado = null;
     } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(e.toString()), backgroundColor: Colors.red),
+        );
+      }
       setState(() {
         _mensaje = e.toString();
       });
@@ -102,111 +115,260 @@ class _RegistroEquipoPageState extends State<RegistroEquipoPage> {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
     return Scaffold(
-      appBar: AppBar(title: const Text('Registrar Equipo')),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: ListView(
-            children: [
-              TextFormField(
-                controller: _cedulaController,
-                decoration: const InputDecoration(
-                  labelText: 'Cédula del aprendiz',
-                ),
-                keyboardType: TextInputType.number,
-                onChanged: (_) {
-                  _nombreEncontrado = null;
-                },
+      body: Stack(
+        children: [
+          // Fondo degradado y burbujas decorativas
+          Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Color(0xFF39A900), Color(0xFFB6FFB0)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
               ),
-              const SizedBox(height: 8),
-              ElevatedButton(
-                onPressed: _buscando ? null : _buscarAprendizPorCedula,
-                child: _buscando
-                    ? const SizedBox(
-                        width: 16,
-                        height: 16,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : const Text('Buscar aprendiz'),
-              ),
-              const SizedBox(height: 16),
-              if (_nombreEncontrado != null)
-                Text(
-                  'Aprendiz encontrado: $_nombreEncontrado',
-                  style: const TextStyle(color: Colors.green),
-                ),
-              if (_nombreEncontrado == null)
-                TextFormField(
-                  controller: _nombreController,
-                  decoration: const InputDecoration(
-                    labelText: 'Nombre completo',
-                  ),
-                  validator: (value) {
-                    try {
-                      NombreCompleto(value ?? '');
-                    } catch (e) {
-                      return e.toString();
-                    }
-                    return null;
-                  },
-                ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _serialController,
-                decoration: const InputDecoration(
-                  labelText: 'Serial del equipo',
-                ),
-                validator: (value) {
-                  try {
-                    SerialEquipo(value ?? '');
-                  } catch (e) {
-                    return e.toString();
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: _caracteristicaController,
-                decoration: const InputDecoration(
-                  labelText: 'Característica (marca o color)',
-                ),
-                validator: (value) {
-                  try {
-                    Caracteristica(value ?? '');
-                  } catch (e) {
-                    return e.toString();
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 24),
-              if (_mensaje != null)
-                Text(
-                  _mensaje!,
-                  style: TextStyle(
-                    color: _mensaje!.contains('correctamente')
-                        ? Colors.green
-                        : Colors.red,
-                  ),
-                ),
-              ElevatedButton(
-                onPressed: _guardando
-                    ? null
-                    : () {
-                        if (_formKey.currentState?.validate() ?? false) {
-                          _guardarRegistro();
-                        }
-                      },
-                child: _guardando
-                    ? const CircularProgressIndicator(color: Colors.white)
-                    : const Text('Guardar'),
-              ),
-            ],
+            ),
           ),
-        ),
+          Positioned(
+            top: -60,
+            left: -40,
+            child: _Bubble(color: Colors.white.withOpacity(0.08), size: 180),
+          ),
+          Positioned(
+            bottom: -40,
+            right: -30,
+            child: _Bubble(color: Colors.white.withOpacity(0.10), size: 120),
+          ),
+          Center(
+            child: SingleChildScrollView(
+              child: Card(
+                margin: EdgeInsets.symmetric(
+                  horizontal: size.width > 400 ? 80 : 24,
+                  vertical: 24,
+                ),
+                elevation: 12,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(28),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 28,
+                    vertical: 32,
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(
+                            Icons.add_circle_outline_rounded,
+                            size: 38,
+                            color: Color(0xFF39A900),
+                          ),
+                          const SizedBox(width: 10),
+                          Text(
+                            'Registrar Equipo',
+                            style:
+                                Theme.of(
+                                  context,
+                                ).textTheme.titleLarge?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: const Color(0xFF222222),
+                                ) ??
+                                const TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 18),
+                      Form(
+                        key: _formKey,
+                        child: Column(
+                          children: [
+                            TextFormField(
+                              controller: _cedulaController,
+                              decoration: const InputDecoration(
+                                labelText: 'Cédula del aprendiz',
+                                prefixIcon: Icon(Icons.badge_rounded),
+                                border: OutlineInputBorder(),
+                              ),
+                              keyboardType: TextInputType.number,
+                              onChanged: (_) {
+                                _nombreEncontrado = null;
+                              },
+                            ),
+                            const SizedBox(height: 8),
+                            SizedBox(
+                              width: double.infinity,
+                              child: ElevatedButton.icon(
+                                icon: _buscando
+                                    ? const SizedBox(
+                                        width: 16,
+                                        height: 16,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          color: Colors.white,
+                                        ),
+                                      )
+                                    : const Icon(Icons.search_rounded),
+                                label: Text(
+                                  _buscando ? 'Buscando...' : 'Buscar aprendiz',
+                                ),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.blueGrey[700],
+                                  foregroundColor: Colors.white,
+                                  textStyle: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 14,
+                                  ),
+                                ),
+                                onPressed: _buscando
+                                    ? null
+                                    : _buscarAprendizPorCedula,
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            if (_nombreEncontrado != null)
+                              Text(
+                                'Aprendiz encontrado: $_nombreEncontrado',
+                                style: const TextStyle(
+                                  color: Colors.green,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            if (_nombreEncontrado == null)
+                              TextFormField(
+                                controller: _nombreController,
+                                decoration: const InputDecoration(
+                                  labelText: 'Nombre completo',
+                                  prefixIcon: Icon(Icons.person_rounded),
+                                  border: OutlineInputBorder(),
+                                ),
+                                validator: (value) {
+                                  try {
+                                    NombreCompleto(value ?? '');
+                                  } catch (e) {
+                                    return e.toString();
+                                  }
+                                  return null;
+                                },
+                              ),
+                            const SizedBox(height: 16),
+                            TextFormField(
+                              controller: _serialController,
+                              decoration: const InputDecoration(
+                                labelText: 'Serial del equipo',
+                                prefixIcon: Icon(
+                                  Icons.confirmation_number_rounded,
+                                ),
+                                border: OutlineInputBorder(),
+                              ),
+                              validator: (value) {
+                                try {
+                                  SerialEquipo(value ?? '');
+                                } catch (e) {
+                                  return e.toString();
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: 12),
+                            TextFormField(
+                              controller: _caracteristicaController,
+                              decoration: const InputDecoration(
+                                labelText: 'Característica (marca o color)',
+                                prefixIcon: Icon(Icons.info_outline_rounded),
+                                border: OutlineInputBorder(),
+                              ),
+                              validator: (value) {
+                                try {
+                                  Caracteristica(value ?? '');
+                                } catch (e) {
+                                  return e.toString();
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: 24),
+                            if (_mensaje != null)
+                              Text(
+                                _mensaje!,
+                                style: TextStyle(
+                                  color: _mensaje!.contains('correctamente')
+                                      ? Colors.green
+                                      : Colors.red,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            SizedBox(
+                              width: double.infinity,
+                              child: ElevatedButton.icon(
+                                icon: _guardando
+                                    ? const SizedBox(
+                                        width: 18,
+                                        height: 18,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          color: Colors.white,
+                                        ),
+                                      )
+                                    : const Icon(Icons.save_rounded),
+                                label: Text(
+                                  _guardando ? 'Guardando...' : 'Guardar',
+                                ),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(0xFF39A900),
+                                  foregroundColor: Colors.white,
+                                  textStyle: const TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 16,
+                                  ),
+                                ),
+                                onPressed: _guardando
+                                    ? null
+                                    : () {
+                                        if (_formKey.currentState?.validate() ??
+                                            false) {
+                                          _guardarRegistro();
+                                        }
+                                      },
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
+    );
+  }
+}
+
+class _Bubble extends StatelessWidget {
+  final Color color;
+  final double size;
+  const _Bubble({required this.color, required this.size});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(color: color, shape: BoxShape.circle),
     );
   }
 }
