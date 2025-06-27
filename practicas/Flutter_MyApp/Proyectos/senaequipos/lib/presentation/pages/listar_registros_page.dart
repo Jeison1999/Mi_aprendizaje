@@ -68,15 +68,20 @@ class _ListarRegistrosPageState extends State<ListarRegistrosPage> {
     final size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white.withOpacity(0.0),
+        backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Color(0xFF39A900)),
+          icon: Icon(
+            Icons.arrow_back,
+            color: Theme.of(context).brightness == Brightness.dark
+                ? Colors.white
+                : Colors.black,
+          ),
           tooltip: 'Volver',
           onPressed: () => Navigator.of(context).maybePop(),
         ),
         title: SizedBox(
-          height: 44,
+          height: 35,
           child: Image.asset(
             'assets/pripro.png',
             fit: BoxFit.contain,
@@ -143,7 +148,11 @@ class _ListarRegistrosPageState extends State<ListarRegistrosPage> {
                                   context,
                                 ).textTheme.titleLarge?.copyWith(
                                   fontWeight: FontWeight.bold,
-                                  color: const Color(0xFF222222),
+                                  color:
+                                      Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? Colors.white
+                                      : const Color(0xFF222222),
                                 ) ??
                                 const TextStyle(
                                   fontSize: 22,
