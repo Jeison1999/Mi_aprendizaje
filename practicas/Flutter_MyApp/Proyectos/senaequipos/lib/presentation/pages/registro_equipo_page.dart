@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:mobile_scanner/mobile_scanner.dart';
 import '../../domain/value_objects/nombre_completo.dart';
 import '../../domain/value_objects/cedula.dart';
 import '../../domain/value_objects/serial_equipo.dart';
@@ -113,10 +114,41 @@ class _RegistroEquipoPageState extends State<RegistroEquipoPage> {
     }
   }
 
+  Future<void> _escanearSerialMobileScanner() async {
+    final serial = await showDialog<String>(
+      context: context,
+      builder: (context) => _BarcodeScannerDialog(),
+    );
+    if (serial != null && serial.isNotEmpty) {
+      setState(() {
+        _serialController.text = serial;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.white.withOpacity(0.0),
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Color(0xFF39A900)),
+          tooltip: 'Volver',
+          onPressed: () => Navigator.of(context).maybePop(),
+        ),
+        title: const Text(
+          'Registrar Equipo',
+          style: TextStyle(
+            color: Color(0xFF39A900),
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        centerTitle: true,
+        shadowColor: Colors.black12,
+        surfaceTintColor: Colors.transparent,
+      ),
       body: Stack(
         children: [
           // Fondo degradado y burbujas decorativas
@@ -262,12 +294,37 @@ class _RegistroEquipoPageState extends State<RegistroEquipoPage> {
                             const SizedBox(height: 16),
                             TextFormField(
                               controller: _serialController,
-                              decoration: const InputDecoration(
+                              decoration: InputDecoration(
                                 labelText: 'Serial del equipo',
-                                prefixIcon: Icon(
+                                prefixIcon: const Icon(
                                   Icons.confirmation_number_rounded,
                                 ),
-                                border: OutlineInputBorder(),
+                                border: const OutlineInputBorder(),
+                                suffixIcon: IconButton(
+                                  icon: const Icon(
+                                    Icons.qr_code_scanner_rounded,
+                                  ),
+                                  tooltip: 'Escanear codigo',
+                                  onPressed: () async {
+                                    if (Theme.of(context).platform ==
+                                            TargetPlatform.android ||
+                                        Theme.of(context).platform ==
+                                            TargetPlatform.iOS) {
+                                      await _escanearSerialMobileScanner();
+                                    } else {
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        const SnackBar(
+                                          content: Text(
+                                            'Conecte un lector de código de barras USB o escriba el serial.',
+                                          ),
+                                          backgroundColor: Colors.blueGrey,
+                                        ),
+                                      );
+                                    }
+                                  },
+                                ),
                               ),
                               validator: (value) {
                                 try {
@@ -369,6 +426,57 @@ class _Bubble extends StatelessWidget {
       width: size,
       height: size,
       decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+    );
+  }
+}
+
+class _BarcodeScannerDialog extends StatefulWidget {
+  @override
+  State<_BarcodeScannerDialog> createState() => _BarcodeScannerDialogState();
+}
+
+class _BarcodeScannerDialogState extends State<_BarcodeScannerDialog> {
+  bool _found = false;
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      backgroundColor: Colors.black,
+      child: SizedBox(
+        width: 320,
+        height: 420,
+        child: Stack(
+          children: [
+            MobileScanner(
+              onDetect: (capture) {
+                if (_found) return;
+                final barcode = capture.barcodes.firstOrNull;
+                if (barcode != null && barcode.rawValue != null) {
+                  _found = true;
+                  Navigator.of(context).pop(barcode.rawValue);
+                }
+              },
+            ),
+            Positioned(
+              top: 8,
+              right: 8,
+              child: IconButton(
+                icon: const Icon(Icons.close, color: Colors.white),
+                onPressed: () => Navigator.of(context).pop(),
+              ),
+            ),
+            const Align(
+              alignment: Alignment.bottomCenter,
+              child: Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Text(
+                  'Escanea el codigo',
+                  style: TextStyle(color: Colors.white, fontSize: 16),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

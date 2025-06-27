@@ -61,6 +61,7 @@ dependencies:
   # UI
   flutter_svg: ^2.0.12
   google_fonts: ^6.2.1
+  mobile_scanner: ^7.0.1
 
 dev_dependencies:
   flutter_test:

@@ -66,6 +66,25 @@ class _ListarRegistrosPageState extends State<ListarRegistrosPage> {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.white.withOpacity(0.0),
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Color(0xFF39A900)),
+          tooltip: 'Volver',
+          onPressed: () => Navigator.of(context).maybePop(),
+        ),
+        title: const Text(
+          'Buscar equipos',
+          style: TextStyle(
+            color: Color(0xFF39A900),
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        centerTitle: true,
+        shadowColor: Colors.black12,
+        surfaceTintColor: Colors.transparent,
+      ),
       body: Stack(
         children: [
           Container(
