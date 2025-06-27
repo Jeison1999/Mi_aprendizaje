@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:mobile_scanner/mobile_scanner.dart';
 import '../../domain/value_objects/nombre_completo.dart';
 import '../../domain/value_objects/cedula.dart';
 import '../../domain/value_objects/serial_equipo.dart';
@@ -9,6 +8,11 @@ import '../../domain/entities/registro_equipo.dart';
 import '../../domain/value_objects/hora_registro.dart';
 import '../../application/use_cases/crear_registro_equipo.dart';
 import '../../application/use_cases/buscar_registro_equipo.dart';
+import '../widgets/barcode_scanner_dialog.dart';
+import '../widgets/bubble.dart';
+import '../widgets/custom_text_form_field.dart';
+import '../widgets/serial_text_form_field.dart';
+import '../widgets/primary_button.dart';
 
 class RegistroEquipoPage extends StatefulWidget {
   const RegistroEquipoPage({super.key});
@@ -117,7 +121,7 @@ class _RegistroEquipoPageState extends State<RegistroEquipoPage> {
   Future<void> _escanearSerialMobileScanner() async {
     final serial = await showDialog<String>(
       context: context,
-      builder: (context) => _BarcodeScannerDialog(),
+      builder: (context) => const BarcodeScannerDialog(),
     );
     if (serial != null && serial.isNotEmpty) {
       setState(() {
@@ -138,11 +142,12 @@ class _RegistroEquipoPageState extends State<RegistroEquipoPage> {
           tooltip: 'Volver',
           onPressed: () => Navigator.of(context).maybePop(),
         ),
-        title: const Text(
-          'Registrar Equipo',
-          style: TextStyle(
-            color: Color(0xFF39A900),
-            fontWeight: FontWeight.bold,
+        title: SizedBox(
+          height: 44,
+          child: Image.asset(
+            'assets/pripro.png',
+            fit: BoxFit.contain,
+            semanticLabel: 'Logo institucional',
           ),
         ),
         centerTitle: true,
@@ -164,12 +169,12 @@ class _RegistroEquipoPageState extends State<RegistroEquipoPage> {
           Positioned(
             top: -60,
             left: -40,
-            child: _Bubble(color: Colors.white.withOpacity(0.08), size: 180),
+            child: Bubble(color: Colors.white.withOpacity(0.08), size: 180),
           ),
           Positioned(
             bottom: -40,
             right: -30,
-            child: _Bubble(color: Colors.white.withOpacity(0.10), size: 120),
+            child: Bubble(color: Colors.white.withOpacity(0.10), size: 120),
           ),
           Center(
             child: SingleChildScrollView(
@@ -220,13 +225,10 @@ class _RegistroEquipoPageState extends State<RegistroEquipoPage> {
                         key: _formKey,
                         child: Column(
                           children: [
-                            TextFormField(
+                            CustomTextFormField(
                               controller: _cedulaController,
-                              decoration: const InputDecoration(
-                                labelText: 'Cédula del aprendiz',
-                                prefixIcon: Icon(Icons.badge_rounded),
-                                border: OutlineInputBorder(),
-                              ),
+                              label: 'Cédula del aprendiz',
+                              icon: Icons.badge_rounded,
                               keyboardType: TextInputType.number,
                               onChanged: (_) {
                                 _nombreEncontrado = null;
@@ -275,13 +277,10 @@ class _RegistroEquipoPageState extends State<RegistroEquipoPage> {
                                 ),
                               ),
                             if (_nombreEncontrado == null)
-                              TextFormField(
+                              CustomTextFormField(
                                 controller: _nombreController,
-                                decoration: const InputDecoration(
-                                  labelText: 'Nombre completo',
-                                  prefixIcon: Icon(Icons.person_rounded),
-                                  border: OutlineInputBorder(),
-                                ),
+                                label: 'Nombre completo',
+                                icon: Icons.person_rounded,
                                 validator: (value) {
                                   try {
                                     NombreCompleto(value ?? '');
@@ -292,40 +291,9 @@ class _RegistroEquipoPageState extends State<RegistroEquipoPage> {
                                 },
                               ),
                             const SizedBox(height: 16),
-                            TextFormField(
+                            SerialTextFormField(
                               controller: _serialController,
-                              decoration: InputDecoration(
-                                labelText: 'Serial del equipo',
-                                prefixIcon: const Icon(
-                                  Icons.confirmation_number_rounded,
-                                ),
-                                border: const OutlineInputBorder(),
-                                suffixIcon: IconButton(
-                                  icon: const Icon(
-                                    Icons.qr_code_scanner_rounded,
-                                  ),
-                                  tooltip: 'Escanear codigo',
-                                  onPressed: () async {
-                                    if (Theme.of(context).platform ==
-                                            TargetPlatform.android ||
-                                        Theme.of(context).platform ==
-                                            TargetPlatform.iOS) {
-                                      await _escanearSerialMobileScanner();
-                                    } else {
-                                      ScaffoldMessenger.of(
-                                        context,
-                                      ).showSnackBar(
-                                        const SnackBar(
-                                          content: Text(
-                                            'Conecte un lector de código de barras USB o escriba el serial.',
-                                          ),
-                                          backgroundColor: Colors.blueGrey,
-                                        ),
-                                      );
-                                    }
-                                  },
-                                ),
-                              ),
+                              label: 'Serial del equipo',
                               validator: (value) {
                                 try {
                                   SerialEquipo(value ?? '');
@@ -334,15 +302,31 @@ class _RegistroEquipoPageState extends State<RegistroEquipoPage> {
                                 }
                                 return null;
                               },
+                              onScan: () async {
+                                if (Theme.of(context).platform ==
+                                        TargetPlatform.android ||
+                                    Theme.of(context).platform ==
+                                        TargetPlatform.iOS) {
+                                  await _escanearSerialMobileScanner();
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text(
+                                        'Conecte un lector de código de barras USB o escriba el serial.',
+                                      ),
+                                      backgroundColor: Colors.blueGrey,
+                                    ),
+                                  );
+                                }
+                                return null;
+                              },
+                              context: context,
                             ),
                             const SizedBox(height: 12),
-                            TextFormField(
+                            CustomTextFormField(
                               controller: _caracteristicaController,
-                              decoration: const InputDecoration(
-                                labelText: 'Característica (marca o color)',
-                                prefixIcon: Icon(Icons.info_outline_rounded),
-                                border: OutlineInputBorder(),
-                              ),
+                              label: 'Característica (marca o color)',
+                              icon: Icons.info_outline_rounded,
                               validator: (value) {
                                 try {
                                   Caracteristica(value ?? '');
@@ -363,42 +347,18 @@ class _RegistroEquipoPageState extends State<RegistroEquipoPage> {
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
-                            SizedBox(
-                              width: double.infinity,
-                              child: ElevatedButton.icon(
-                                icon: _guardando
-                                    ? const SizedBox(
-                                        width: 18,
-                                        height: 18,
-                                        child: CircularProgressIndicator(
-                                          strokeWidth: 2,
-                                          color: Colors.white,
-                                        ),
-                                      )
-                                    : const Icon(Icons.save_rounded),
-                                label: Text(
-                                  _guardando ? 'Guardando...' : 'Guardar',
-                                ),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: const Color(0xFF39A900),
-                                  foregroundColor: Colors.white,
-                                  textStyle: const TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 16,
-                                  ),
-                                ),
-                                onPressed: _guardando
-                                    ? null
-                                    : () {
-                                        if (_formKey.currentState?.validate() ??
-                                            false) {
-                                          _guardarRegistro();
-                                        }
-                                      },
-                              ),
+                            PrimaryButton(
+                              label: _guardando ? 'Guardando...' : 'Guardar',
+                              icon: Icons.save_rounded,
+                              loading: _guardando,
+                              onPressed: _guardando
+                                  ? null
+                                  : () {
+                                      if (_formKey.currentState?.validate() ??
+                                          false) {
+                                        _guardarRegistro();
+                                      }
+                                    },
                             ),
                           ],
                         ),
@@ -410,72 +370,6 @@ class _RegistroEquipoPageState extends State<RegistroEquipoPage> {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _Bubble extends StatelessWidget {
-  final Color color;
-  final double size;
-  const _Bubble({required this.color, required this.size});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-    );
-  }
-}
-
-class _BarcodeScannerDialog extends StatefulWidget {
-  @override
-  State<_BarcodeScannerDialog> createState() => _BarcodeScannerDialogState();
-}
-
-class _BarcodeScannerDialogState extends State<_BarcodeScannerDialog> {
-  bool _found = false;
-  @override
-  Widget build(BuildContext context) {
-    return Dialog(
-      backgroundColor: Colors.black,
-      child: SizedBox(
-        width: 320,
-        height: 420,
-        child: Stack(
-          children: [
-            MobileScanner(
-              onDetect: (capture) {
-                if (_found) return;
-                final barcode = capture.barcodes.firstOrNull;
-                if (barcode != null && barcode.rawValue != null) {
-                  _found = true;
-                  Navigator.of(context).pop(barcode.rawValue);
-                }
-              },
-            ),
-            Positioned(
-              top: 8,
-              right: 8,
-              child: IconButton(
-                icon: const Icon(Icons.close, color: Colors.white),
-                onPressed: () => Navigator.of(context).pop(),
-              ),
-            ),
-            const Align(
-              alignment: Alignment.bottomCenter,
-              child: Padding(
-                padding: EdgeInsets.all(16.0),
-                child: Text(
-                  'Escanea el codigo',
-                  style: TextStyle(color: Colors.white, fontSize: 16),
-                ),
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }

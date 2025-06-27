@@ -4,6 +4,7 @@ import '../../domain/entities/registro_equipo.dart';
 import '../../application/use_cases/eliminar_registro_equipo.dart';
 import '../../domain/repositories/registro_equipo_repository.dart';
 import 'editar_registro_page.dart';
+import '../widgets/bubble.dart';
 
 class ListarRegistrosPage extends StatefulWidget {
   const ListarRegistrosPage({super.key});
@@ -74,11 +75,12 @@ class _ListarRegistrosPageState extends State<ListarRegistrosPage> {
           tooltip: 'Volver',
           onPressed: () => Navigator.of(context).maybePop(),
         ),
-        title: const Text(
-          'Buscar equipos',
-          style: TextStyle(
-            color: Color(0xFF39A900),
-            fontWeight: FontWeight.bold,
+        title: SizedBox(
+          height: 44,
+          child: Image.asset(
+            'assets/pripro.png',
+            fit: BoxFit.contain,
+            semanticLabel: 'Logo institucional',
           ),
         ),
         centerTitle: true,
@@ -99,12 +101,12 @@ class _ListarRegistrosPageState extends State<ListarRegistrosPage> {
           Positioned(
             top: -60,
             left: -40,
-            child: _Bubble(color: Colors.white.withOpacity(0.08), size: 180),
+            child: Bubble(color: Colors.white.withOpacity(0.08), size: 180),
           ),
           Positioned(
             bottom: -40,
             right: -30,
-            child: _Bubble(color: Colors.white.withOpacity(0.10), size: 120),
+            child: Bubble(color: Colors.white.withOpacity(0.10), size: 120),
           ),
           Center(
             child: SingleChildScrollView(
@@ -303,22 +305,6 @@ class _ListarRegistrosPageState extends State<ListarRegistrosPage> {
           ),
         ],
       ),
-    );
-  }
-}
-
-class _Bubble extends StatelessWidget {
-  final Color color;
-  final double size;
-
-  const _Bubble({required this.color, required this.size});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(color: color, shape: BoxShape.circle),
     );
   }
 }

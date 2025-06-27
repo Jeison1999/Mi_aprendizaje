@@ -5,6 +5,7 @@ import 'core/di/injector.dart';
 import 'presentation/pages/registro_equipo_page.dart';
 import 'presentation/pages/listar_registros_page.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'presentation/widgets/bubble.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -35,7 +36,7 @@ class SenaEquiposApp extends StatelessWidget {
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(18),
+              borderRadius: BorderRadius.circular(14),
             ),
             elevation: 6,
             shadowColor: Colors.black26,
@@ -72,11 +73,12 @@ class HomePage extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.white.withOpacity(0.0),
         elevation: 0,
-        title: const Text(
-          'SENA Equipos',
-          style: TextStyle(
-            color: Color.fromARGB(255, 4, 9, 1),
-            fontWeight: FontWeight.bold,
+        title: SizedBox(
+          height: 35,
+          child: Image.asset(
+            'assets/pripro.png',
+            fit: BoxFit.contain,
+            semanticLabel: 'Logo institucional',
           ),
         ),
         centerTitle: true,
@@ -98,12 +100,12 @@ class HomePage extends StatelessWidget {
           Positioned(
             top: -60,
             left: -40,
-            child: _Bubble(color: Colors.white.withOpacity(0.08), size: 180),
+            child: Bubble(color: Colors.white.withOpacity(0.08), size: 180),
           ),
           Positioned(
             bottom: -40,
             right: -30,
-            child: _Bubble(color: Colors.white.withOpacity(0.10), size: 120),
+            child: Bubble(color: Colors.white.withOpacity(0.10), size: 120),
           ),
           Center(
             child: SingleChildScrollView(
@@ -240,21 +242,6 @@ class HomePage extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
-class _Bubble extends StatelessWidget {
-  final Color color;
-  final double size;
-  const _Bubble({required this.color, required this.size});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(color: color, shape: BoxShape.circle),
     );
   }
 }

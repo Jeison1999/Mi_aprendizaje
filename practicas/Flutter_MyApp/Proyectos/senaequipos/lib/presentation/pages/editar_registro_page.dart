@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:mobile_scanner/mobile_scanner.dart';
 import '../../domain/entities/registro_equipo.dart';
 import '../../domain/value_objects/caracteristica.dart';
 import '../../domain/value_objects/hora_registro.dart';
 import '../../domain/value_objects/nombre_completo.dart';
 import '../../application/use_cases/actualizar_registro_equipo.dart';
+import '../widgets/barcode_scanner_dialog.dart';
+import '../widgets/bubble.dart';
 
 class EditarRegistroPage extends StatefulWidget {
   final RegistroEquipo registro;
@@ -78,7 +79,7 @@ class _EditarRegistroPageState extends State<EditarRegistroPage> {
   Future<void> _escanearSerialMobileScanner() async {
     final serial = await showDialog<String>(
       context: context,
-      builder: (context) => _BarcodeScannerDialog(),
+      builder: (context) => const BarcodeScannerDialog(),
     );
     if (serial != null && serial.isNotEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -102,11 +103,12 @@ class _EditarRegistroPageState extends State<EditarRegistroPage> {
           tooltip: 'Volver',
           onPressed: () => Navigator.of(context).maybePop(),
         ),
-        title: const Text(
-          'Editar Registro',
-          style: TextStyle(
-            color: Color(0xFF39A900),
-            fontWeight: FontWeight.bold,
+        title: SizedBox(
+          height: 44,
+          child: Image.asset(
+            'assets/pripro.png',
+            fit: BoxFit.contain,
+            semanticLabel: 'Logo institucional',
           ),
         ),
         centerTitle: true,
@@ -127,12 +129,12 @@ class _EditarRegistroPageState extends State<EditarRegistroPage> {
           Positioned(
             top: -60,
             left: -40,
-            child: _Bubble(color: Colors.white.withOpacity(0.08), size: 180),
+            child: Bubble(color: Colors.white.withOpacity(0.08), size: 180),
           ),
           Positioned(
             bottom: -40,
             right: -30,
-            child: _Bubble(color: Colors.white.withOpacity(0.10), size: 120),
+            child: Bubble(color: Colors.white.withOpacity(0.10), size: 120),
           ),
           Center(
             child: SingleChildScrollView(
@@ -375,73 +377,6 @@ class _EditarRegistroPageState extends State<EditarRegistroPage> {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _Bubble extends StatelessWidget {
-  final Color color;
-  final double size;
-
-  const _Bubble({required this.color, required this.size});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-    );
-  }
-}
-
-class _BarcodeScannerDialog extends StatefulWidget {
-  @override
-  State<_BarcodeScannerDialog> createState() => _BarcodeScannerDialogState();
-}
-
-class _BarcodeScannerDialogState extends State<_BarcodeScannerDialog> {
-  bool _found = false;
-  @override
-  Widget build(BuildContext context) {
-    return Dialog(
-      backgroundColor: Colors.black,
-      child: SizedBox(
-        width: 320,
-        height: 420,
-        child: Stack(
-          children: [
-            MobileScanner(
-              onDetect: (capture) {
-                if (_found) return;
-                final barcode = capture.barcodes.firstOrNull;
-                if (barcode != null && barcode.rawValue != null) {
-                  _found = true;
-                  Navigator.of(context).pop(barcode.rawValue);
-                }
-              },
-            ),
-            Positioned(
-              top: 8,
-              right: 8,
-              child: IconButton(
-                icon: const Icon(Icons.close, color: Colors.white),
-                onPressed: () => Navigator.of(context).pop(),
-              ),
-            ),
-            const Align(
-              alignment: Alignment.bottomCenter,
-              child: Padding(
-                padding: EdgeInsets.all(16.0),
-                child: Text(
-                  'Escanee el código',
-                  style: TextStyle(color: Colors.white, fontSize: 16),
-                ),
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }
