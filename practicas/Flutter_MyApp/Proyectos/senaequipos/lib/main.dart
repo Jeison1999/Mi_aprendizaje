@@ -35,7 +35,6 @@ class SenaEquiposApp extends StatelessWidget {
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, child) {
           return MaterialApp(
-            title: 'SENA Equipos',
             theme: ThemeData(
               colorScheme: ColorScheme.fromSeed(
                 seedColor: AppColors.senaGreen, // Color verde SENA
@@ -117,21 +116,26 @@ class HomePage extends StatelessWidget {
         leading: Padding(
           padding: const EdgeInsets.only(left: 12.0),
           child: Image.asset(
-            'assets/pripro.png',
+            Theme.of(context).brightness == Brightness.dark
+                ? 'assets/pripro.png'
+                : 'assets/logo_blanco.png',
             fit: BoxFit.contain,
-            height: 32,
+            width: 120,
+            height: 35,
             semanticLabel: 'Logo institucional',
           ),
         ),
-        title: const Text('SENA Equipos'),
         centerTitle: true,
         actions: [
           // Botón de cambio de tema
           IconButton(
             icon: Icon(
-              themeProvider.themeMode == ThemeMode.dark
-                  ? Icons.light_mode
-                  : Icons.dark_mode,
+              Theme.of(context).brightness == Brightness.dark
+                  ? Icons.dark_mode
+                  : Icons.light_mode,
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? Colors.white
+                  : Colors.black87,
             ),
             onPressed: () {
               themeProvider.toggleTheme();
@@ -201,11 +205,6 @@ class HomePage extends StatelessWidget {
                         builder: (_) => const ListarRegistrosPage(),
                       ),
                     );
-                  },
-                  onShowSnackBar: (msg) {
-                    ScaffoldMessenger.of(
-                      context,
-                    ).showSnackBar(SnackBar(content: Text(msg)));
                   },
                 ),
               ),

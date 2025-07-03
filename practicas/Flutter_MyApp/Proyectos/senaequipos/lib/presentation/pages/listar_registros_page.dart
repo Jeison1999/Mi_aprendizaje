@@ -66,6 +66,7 @@ class _ListarRegistrosPageState extends State<ListarRegistrosPage> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+    final isDesktop = size.width > 800;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -81,9 +82,12 @@ class _ListarRegistrosPageState extends State<ListarRegistrosPage> {
           onPressed: () => Navigator.of(context).maybePop(),
         ),
         title: SizedBox(
+          width: 120,
           height: 35,
           child: Image.asset(
-            'assets/pripro.png',
+            Theme.of(context).brightness == Brightness.dark
+                ? 'assets/logo_blanco.png'
+                : 'assets/pripro.png',
             fit: BoxFit.contain,
             semanticLabel: 'Logo institucional',
           ),
@@ -117,7 +121,7 @@ class _ListarRegistrosPageState extends State<ListarRegistrosPage> {
             child: SingleChildScrollView(
               child: Card(
                 margin: EdgeInsets.symmetric(
-                  horizontal: size.width > 400 ? 80 : 16,
+                  horizontal: isDesktop ? 120 : (size.width > 400 ? 80 : 16),
                   vertical: 24,
                 ),
                 elevation: 12,
@@ -125,9 +129,9 @@ class _ListarRegistrosPageState extends State<ListarRegistrosPage> {
                   borderRadius: BorderRadius.circular(28),
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 24,
-                    vertical: 28,
+                  padding: EdgeInsets.symmetric(
+                    horizontal: isDesktop ? 40 : 24,
+                    vertical: isDesktop ? 40 : 28,
                   ),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,

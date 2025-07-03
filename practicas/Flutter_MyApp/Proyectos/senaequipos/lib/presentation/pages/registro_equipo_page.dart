@@ -12,7 +12,7 @@ import '../widgets/barcode_scanner_dialog.dart';
 import '../widgets/bubble.dart';
 import '../widgets/custom_text_form_field.dart';
 import '../widgets/serial_text_form_field.dart';
-import '../widgets/primary_button.dart';
+import '../../core/utils/app_colors.dart';
 
 class RegistroEquipoPage extends StatefulWidget {
   const RegistroEquipoPage({super.key});
@@ -89,23 +89,28 @@ class _RegistroEquipoPageState extends State<RegistroEquipoPage> {
         horaEntrada: HoraRegistro(),
       );
       await GetIt.I<CrearRegistroEquipo>().call(registro);
+
+      // Mostrar solo un mensaje de éxito
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Registro guardado correctamente'),
             backgroundColor: Colors.green,
+            duration: Duration(seconds: 2),
           ),
         );
       }
-      setState(() {
-        _mensaje = 'Registro guardado correctamente';
-      });
-      _formKey.currentState?.reset();
-      _nombreEncontrado = null;
+
+      // Limpiar completamente el formulario
+      _limpiarFormulario();
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.toString()), backgroundColor: Colors.red),
+          SnackBar(
+            content: Text('Error: ${e.toString()}'),
+            backgroundColor: Colors.red,
+            duration: Duration(seconds: 3),
+          ),
         );
       }
       setState(() {
@@ -116,6 +121,22 @@ class _RegistroEquipoPageState extends State<RegistroEquipoPage> {
         _guardando = false;
       });
     }
+  }
+
+  void _limpiarFormulario() {
+    // Limpiar todos los controladores excepto la cédula
+    _nombreController.clear();
+    _serialController.clear();
+    _caracteristicaController.clear();
+
+    // Resetear el formulario
+    _formKey.currentState?.reset();
+
+    // Limpiar variables de estado
+    setState(() {
+      _nombreEncontrado = null;
+      _mensaje = null;
+    });
   }
 
   Future<void> _escanearSerialMobileScanner() async {
@@ -133,6 +154,7 @@ class _RegistroEquipoPageState extends State<RegistroEquipoPage> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+    final isDesktop = size.width > 800;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -148,9 +170,12 @@ class _RegistroEquipoPageState extends State<RegistroEquipoPage> {
           onPressed: () => Navigator.of(context).maybePop(),
         ),
         title: SizedBox(
+          width: 120,
           height: 35,
           child: Image.asset(
-            'assets/pripro.png',
+            Theme.of(context).brightness == Brightness.dark
+                ? 'assets/logo_blanco.png'
+                : 'assets/pripro.png',
             fit: BoxFit.contain,
             semanticLabel: 'Logo institucional',
           ),
@@ -185,7 +210,7 @@ class _RegistroEquipoPageState extends State<RegistroEquipoPage> {
             child: SingleChildScrollView(
               child: Card(
                 margin: EdgeInsets.symmetric(
-                  horizontal: size.width > 400 ? 80 : 24,
+                  horizontal: isDesktop ? 120 : (size.width > 400 ? 80 : 24),
                   vertical: 24,
                 ),
                 elevation: 12,
@@ -193,9 +218,9 @@ class _RegistroEquipoPageState extends State<RegistroEquipoPage> {
                   borderRadius: BorderRadius.circular(28),
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 28,
-                    vertical: 32,
+                  padding: EdgeInsets.symmetric(
+                    horizontal: isDesktop ? 40 : 28,
+                    vertical: isDesktop ? 40 : 32,
                   ),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
@@ -346,28 +371,42 @@ class _RegistroEquipoPageState extends State<RegistroEquipoPage> {
                               },
                             ),
                             const SizedBox(height: 24),
-                            if (_mensaje != null)
-                              Text(
-                                _mensaje!,
-                                style: TextStyle(
-                                  color: _mensaje!.contains('correctamente')
-                                      ? Colors.green
-                                      : Colors.red,
-                                  fontWeight: FontWeight.w600,
+                            SizedBox(
+                              width: double.infinity,
+                              child: ElevatedButton.icon(
+                                icon: _guardando
+                                    ? const SizedBox(
+                                        width: 18,
+                                        height: 18,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          color: Colors.white,
+                                        ),
+                                      )
+                                    : const Icon(Icons.save_rounded),
+                                label: Text(
+                                  _guardando ? 'Guardando...' : 'Guardar',
                                 ),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppColors.senaGreen,
+                                  foregroundColor: Colors.white,
+                                  textStyle: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 16,
+                                  ),
+                                ),
+                                onPressed: _guardando
+                                    ? null
+                                    : () {
+                                        if (_formKey.currentState?.validate() ??
+                                            false) {
+                                          _guardarRegistro();
+                                        }
+                                      },
                               ),
-                            PrimaryButton(
-                              label: _guardando ? 'Guardando...' : 'Guardar',
-                              icon: Icons.save_rounded,
-                              loading: _guardando,
-                              onPressed: _guardando
-                                  ? null
-                                  : () {
-                                      if (_formKey.currentState?.validate() ??
-                                          false) {
-                                        _guardarRegistro();
-                                      }
-                                    },
                             ),
                           ],
                         ),
