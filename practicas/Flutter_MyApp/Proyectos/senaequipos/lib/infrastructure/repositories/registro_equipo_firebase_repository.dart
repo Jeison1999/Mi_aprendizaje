@@ -47,7 +47,13 @@ class RegistroEquipoFirebaseRepository implements RegistroEquipoRepository {
   @override
   Future<List<RegistroEquipo>> listarRegistros() async {
     final query = await _collection.get();
-    return query.docs.map((doc) => _fromMap(doc.data())).toList();
+    // Filtrar registros con nombre vacío o nulo para evitar errores
+    final docs = query.docs.where((doc) {
+      final data = doc.data();
+      return data['nombre'] != null &&
+          (data['nombre'] as String).trim().isNotEmpty;
+    });
+    return docs.map((doc) => _fromMap(doc.data())).toList();
   }
 
   // Utilidades
