@@ -6,6 +6,7 @@ import 'register_pertenencia_page.dart';
 import 'edit_user_page.dart';
 import 'edit_pertenencia_page.dart';
 import 'registrar_movimiento_page.dart';
+import '_pertenencia_filter_section.dart';
 
 class UserDetailPage extends StatelessWidget {
   final AppUser user;
@@ -141,144 +142,7 @@ class UserDetailPage extends StatelessWidget {
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
               ),
-              Expanded(
-                child: StreamBuilder<QuerySnapshot>(
-                  stream: FirebaseFirestore.instance
-                      .collection('pertenencias')
-                      .where('usuarioId', isEqualTo: updatedUser.id)
-                      .snapshots(),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
-                    if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                      return const Center(
-                        child: Text('Sin pertenencias registradas.'),
-                      );
-                    }
-                    final pertenencias = snapshot.data!.docs
-                        .map(
-                          (doc) => Pertenencia.fromMap(
-                            doc.data() as Map<String, dynamic>,
-                            doc.id,
-                          ),
-                        )
-                        .toList();
-                    return ListView.builder(
-                      itemCount: pertenencias.length,
-                      itemBuilder: (context, index) {
-                        final p = pertenencias[index];
-                        return ListTile(
-                          title: Text(
-                            '${p.tipo.name.toUpperCase()}: ${p.marca ?? ''}',
-                          ),
-                          subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              if (p.descripcion.isNotEmpty)
-                                Text('Descripción: ${p.descripcion}'),
-                              // Solo mostrar marca en el título, no repetir abajo
-                              if (p.tipo == PertenenciaTipo.equipo &&
-                                  p.serial != null &&
-                                  p.serial!.isNotEmpty)
-                                Text('Serial: ${p.serial}'),
-                              if (p.tipo == PertenenciaTipo.vehiculo &&
-                                  p.placa != null &&
-                                  p.placa!.isNotEmpty)
-                                Text('Placa: ${p.placa}'),
-                            ],
-                          ),
-                          trailing: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              IconButton(
-                                icon: const Icon(
-                                  Icons.qr_code,
-                                  color: Colors.green,
-                                ),
-                                tooltip: 'Registrar entrada/salida',
-                                onPressed: () async {
-                                  final result = await Navigator.of(context)
-                                      .push(
-                                        MaterialPageRoute(
-                                          builder: (_) =>
-                                              RegistrarMovimientoPage(
-                                                pertenencia: p,
-                                                usuarioId: updatedUser.id,
-                                              ),
-                                        ),
-                                      );
-                                  if (result == true && context.mounted) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text('Movimiento registrado.'),
-                                      ),
-                                    );
-                                  }
-                                },
-                              ),
-                              IconButton(
-                                icon: const Icon(
-                                  Icons.edit,
-                                  color: Colors.blue,
-                                ),
-                                tooltip: 'Editar pertenencia',
-                                onPressed: () {
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (_) =>
-                                          EditPertenenciaPage(pertenencia: p),
-                                    ),
-                                  );
-                                },
-                              ),
-                              IconButton(
-                                icon: const Icon(
-                                  Icons.delete,
-                                  color: Colors.red,
-                                ),
-                                tooltip: 'Eliminar pertenencia',
-                                onPressed: () async {
-                                  final confirm = await showDialog<bool>(
-                                    context: context,
-                                    builder: (ctx) => AlertDialog(
-                                      title: const Text('Eliminar pertenencia'),
-                                      content: const Text(
-                                        '¿Estás seguro de eliminar esta pertenencia?',
-                                      ),
-                                      actions: [
-                                        TextButton(
-                                          onPressed: () =>
-                                              Navigator.pop(ctx, false),
-                                          child: const Text('Cancelar'),
-                                        ),
-                                        TextButton(
-                                          onPressed: () =>
-                                              Navigator.pop(ctx, true),
-                                          child: const Text(
-                                            'Eliminar',
-                                            style: TextStyle(color: Colors.red),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                  if (confirm == true) {
-                                    await FirebaseFirestore.instance
-                                        .collection('pertenencias')
-                                        .doc(p.id)
-                                        .delete();
-                                  }
-                                },
-                              ),
-                            ],
-                          ),
-                        );
-                      },
-                    );
-                  },
-                ),
-              ),
+              Expanded(child: PertenenciaFilterSection(userId: updatedUser.id)),
             ],
           ),
         );
