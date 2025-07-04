@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1026918662171",
+    "project_id": "controltrack-ef3ff",
+    "storage_bucket": "controltrack-ef3ff.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1026918662171:android:4ec76f513827102e74b8be",
+        "android_client_info": {
+          "package_name": "com.example.control_track"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC7UB3xKAreE3DGmUeD_Rodo14BfeIF__Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
