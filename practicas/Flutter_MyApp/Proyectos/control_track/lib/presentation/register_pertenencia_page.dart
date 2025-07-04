@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../data/models/pertenencia_model.dart';
+import 'scan_serial_page.dart';
 
 class RegisterPertenenciaPage extends StatefulWidget {
   final String usuarioId;
@@ -109,13 +110,39 @@ class _RegisterPertenenciaPageState extends State<RegisterPertenenciaPage> {
                 validator: (v) =>
                     v == null || v.isEmpty ? 'Campo requerido' : null,
               ),
-              if (_tipo == PertenenciaTipo.equipo)
-                TextFormField(
-                  controller: _serialController,
-                  decoration: const InputDecoration(labelText: 'Serial'),
-                  validator: (v) =>
-                      v == null || v.isEmpty ? 'Campo requerido' : null,
+              if (_tipo == PertenenciaTipo.equipo) ...[
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextFormField(
+                        controller: _serialController,
+                        decoration: const InputDecoration(labelText: 'Serial'),
+                        validator: (v) =>
+                            v == null || v.isEmpty ? 'Campo requerido' : null,
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.qr_code_scanner),
+                      tooltip: 'Escanear serial',
+                      onPressed: () async {
+                        final code = await Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => const ScanSerialPage(),
+                          ),
+                        );
+                        if (code != null && code is String) {
+                          setState(() {
+                            _serialController.text = code;
+                          });
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Serial escaneado: $code')),
+                          );
+                        }
+                      },
+                    ),
+                  ],
                 ),
+              ],
               if (_tipo == PertenenciaTipo.equipo ||
                   _tipo == PertenenciaTipo.herramienta ||
                   _tipo == PertenenciaTipo.vehiculo ||

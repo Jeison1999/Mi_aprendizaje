@@ -5,6 +5,7 @@ import '../data/models/pertenencia_model.dart';
 import 'register_pertenencia_page.dart';
 import 'edit_user_page.dart';
 import 'edit_pertenencia_page.dart';
+import 'registrar_movimiento_page.dart';
 
 class UserDetailPage extends StatelessWidget {
   final AppUser user;
@@ -169,12 +170,45 @@ class UserDetailPage extends StatelessWidget {
                         final p = pertenencias[index];
                         return ListTile(
                           title: Text(
-                            '${p.tipo.name.toUpperCase()}: ${p.descripcion}',
+                            '${p.tipo.name.toUpperCase()}: ${p.marca ?? ''}',
                           ),
-                          subtitle: _buildPertenenciaSubtitle(p),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              if (p.descripcion.isNotEmpty)
+                                Text('Descripción: ${p.descripcion}'),
+                              _buildPertenenciaSubtitle(p),
+                            ],
+                          ),
                           trailing: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
+                              IconButton(
+                                icon: const Icon(
+                                  Icons.qr_code,
+                                  color: Colors.green,
+                                ),
+                                tooltip: 'Registrar entrada/salida',
+                                onPressed: () async {
+                                  final result = await Navigator.of(context)
+                                      .push(
+                                        MaterialPageRoute(
+                                          builder: (_) =>
+                                              RegistrarMovimientoPage(
+                                                pertenencia: p,
+                                                usuarioId: updatedUser.id,
+                                              ),
+                                        ),
+                                      );
+                                  if (result == true && context.mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text('Movimiento registrado.'),
+                                      ),
+                                    );
+                                  }
+                                },
+                              ),
                               IconButton(
                                 icon: const Icon(
                                   Icons.edit,
