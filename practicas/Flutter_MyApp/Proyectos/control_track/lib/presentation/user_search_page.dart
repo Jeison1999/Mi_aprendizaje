@@ -45,55 +45,85 @@ class _UserSearchPageState extends State<UserSearchPage> {
             ),
             const SizedBox(height: 16),
             Expanded(
-              child: StreamBuilder<QuerySnapshot>(
-                stream: _searchController.text.isEmpty
-                    ? FirebaseFirestore.instance
-                          .collection('usuarios')
-                          .snapshots()
-                    : FirebaseFirestore.instance
-                          .collection('usuarios')
-                          .where(
-                            _searchBy,
-                            isGreaterThanOrEqualTo: _searchController.text
-                                .trim(),
-                          )
-                          .where(
-                            _searchBy,
-                            isLessThanOrEqualTo:
-                                _searchController.text.trim() + '\uf8ff',
-                          )
-                          .snapshots(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-                  if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                    return const Center(
-                      child: Text('No se encontraron usuarios.'),
-                    );
-                  }
-                  final users = snapshot.data!.docs
-                      .map(
-                        (doc) => AppUser.fromMap(
-                          doc.data() as Map<String, dynamic>,
-                          doc.id,
-                        ),
-                      )
-                      .toList();
-                  return ListView.builder(
-                    itemCount: users.length,
-                    itemBuilder: (context, index) {
-                      final user = users[index];
-                      return ListTile(
-                        title: Text(user.nombre),
-                        subtitle: Text(
-                          'Cédula: ${user.cedula} | Tipo: ${user.rol.name}',
-                        ),
-                        onTap: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (_) => UserDetailPage(user: user),
-                            ),
+              child: StatefulBuilder(
+                builder: (context, setStateSB) {
+                  return ValueListenableBuilder<TextEditingValue>(
+                    valueListenable: _searchController,
+                    builder: (context, value, _) {
+                      if (value.text.isEmpty) {
+                        return const Center(
+                          child: Text(
+                            'Ingrese un criterio de búsqueda para ver resultados.',
+                          ),
+                        );
+                      }
+                      return StreamBuilder<QuerySnapshot>(
+                        stream: FirebaseFirestore.instance
+                            .collection('usuarios')
+                            .where(
+                              _searchBy,
+                              isGreaterThanOrEqualTo: value.text.trim(),
+                            )
+                            .where(
+                              _searchBy,
+                              isLessThanOrEqualTo: value.text.trim() + '\uf8ff',
+                            )
+                            .snapshots(),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          }
+                          if (!snapshot.hasData ||
+                              snapshot.data!.docs.isEmpty) {
+                            return const Center(
+                              child: Text('No se encontraron usuarios.'),
+                            );
+                          }
+                          final users = snapshot.data!.docs
+                              .map(
+                                (doc) => AppUser.fromMap(
+                                  doc.data() as Map<String, dynamic>,
+                                  doc.id,
+                                ),
+                              )
+                              .toList();
+                          return ListView.builder(
+                            itemCount: users.length,
+                            itemBuilder: (context, index) {
+                              final user = users[index];
+                              return ListTile(
+                                title: Text(user.nombre),
+                                subtitle: Text(
+                                  'Cédula: ${user.cedula} | Tipo: '
+                                  '${user.rol == UserRole.instructorPlanta
+                                      ? 'Instructor de planta'
+                                      : user.rol == UserRole.instructorContratista
+                                      ? 'Instructor contratista'
+                                      : user.rol == UserRole.aprendiz
+                                      ? 'Aprendiz'
+                                      : user.rol == UserRole.administrativo
+                                      ? 'Administrativo'
+                                      : user.rol == UserRole.teo
+                                      ? 'TEO'
+                                      : user.rol == UserRole.visitante
+                                      ? 'Visitante'
+                                      : user.rol == UserRole.otro && user.otroTipo != null
+                                      ? 'Otro (${user.otroTipo})'
+                                      : 'Otro'}',
+                                ),
+                                onTap: () {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (_) =>
+                                          UserDetailPage(user: user),
+                                    ),
+                                  );
+                                },
+                              );
+                            },
                           );
                         },
                       );

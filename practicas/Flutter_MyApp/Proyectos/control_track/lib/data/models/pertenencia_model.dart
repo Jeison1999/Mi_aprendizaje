@@ -8,7 +8,6 @@ class Pertenencia {
   final String? serial;
   final String? marca;
   final String? modelo;
-  final String? caracteristica;
   final String? placa;
   final String? tipoVehiculo;
   final DateTime fechaRegistro;
@@ -21,7 +20,6 @@ class Pertenencia {
     this.serial,
     this.marca,
     this.modelo,
-    this.caracteristica,
     this.placa,
     this.tipoVehiculo,
     required this.fechaRegistro,
@@ -36,7 +34,6 @@ class Pertenencia {
       'serial': serial,
       'marca': marca,
       'modelo': modelo,
-      'caracteristica': caracteristica,
       'placa': placa,
       'tipoVehiculo': tipoVehiculo,
       'fechaRegistro': fechaRegistro.toIso8601String(),
@@ -55,7 +52,6 @@ class Pertenencia {
       serial: map['serial'],
       marca: map['marca'],
       modelo: map['modelo'],
-      caracteristica: map['caracteristica'],
       placa: map['placa'],
       tipoVehiculo: map['tipoVehiculo'],
       fechaRegistro:

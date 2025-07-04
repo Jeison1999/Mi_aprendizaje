@@ -18,8 +18,6 @@ class _RegisterPertenenciaPageState extends State<RegisterPertenenciaPage> {
   final TextEditingController _serialController = TextEditingController();
   final TextEditingController _marcaController = TextEditingController();
   final TextEditingController _modeloController = TextEditingController();
-  final TextEditingController _caracteristicaController =
-      TextEditingController();
   final TextEditingController _placaController = TextEditingController();
   final TextEditingController _tipoVehiculoController = TextEditingController();
   String _error = '';
@@ -43,7 +41,8 @@ class _RegisterPertenenciaPageState extends State<RegisterPertenenciaPage> {
         marca:
             (_tipo == PertenenciaTipo.equipo ||
                 _tipo == PertenenciaTipo.herramienta ||
-                _tipo == PertenenciaTipo.vehiculo)
+                _tipo == PertenenciaTipo.vehiculo ||
+                _tipo == PertenenciaTipo.otro)
             ? _marcaController.text.trim()
             : null,
         modelo:
@@ -52,7 +51,6 @@ class _RegisterPertenenciaPageState extends State<RegisterPertenenciaPage> {
                 _tipo == PertenenciaTipo.vehiculo)
             ? _modeloController.text.trim()
             : null,
-        caracteristica: _caracteristicaController.text.trim(),
         placa: _tipo == PertenenciaTipo.vehiculo
             ? _placaController.text.trim()
             : null,
@@ -120,7 +118,8 @@ class _RegisterPertenenciaPageState extends State<RegisterPertenenciaPage> {
                 ),
               if (_tipo == PertenenciaTipo.equipo ||
                   _tipo == PertenenciaTipo.herramienta ||
-                  _tipo == PertenenciaTipo.vehiculo)
+                  _tipo == PertenenciaTipo.vehiculo ||
+                  _tipo == PertenenciaTipo.otro)
                 TextFormField(
                   controller: _marcaController,
                   decoration: const InputDecoration(labelText: 'Marca'),
@@ -136,12 +135,6 @@ class _RegisterPertenenciaPageState extends State<RegisterPertenenciaPage> {
                     labelText: 'Modelo (opcional)',
                   ),
                 ),
-              TextFormField(
-                controller: _caracteristicaController,
-                decoration: const InputDecoration(labelText: 'Características'),
-                validator: (v) =>
-                    v == null || v.isEmpty ? 'Campo requerido' : null,
-              ),
               if (_tipo == PertenenciaTipo.vehiculo)
                 TextFormField(
                   controller: _placaController,

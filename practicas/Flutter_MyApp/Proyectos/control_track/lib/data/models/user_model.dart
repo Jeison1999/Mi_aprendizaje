@@ -1,11 +1,9 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-
 enum UserRole {
   aprendiz,
-  instructor,
+  instructorPlanta,
+  instructorContratista,
   administrativo,
   teo,
-  contratista,
   visitante,
   otro,
 }

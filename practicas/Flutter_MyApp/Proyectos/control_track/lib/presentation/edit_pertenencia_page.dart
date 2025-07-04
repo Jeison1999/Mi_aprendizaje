@@ -17,7 +17,6 @@ class _EditPertenenciaPageState extends State<EditPertenenciaPage> {
   late TextEditingController _serialController;
   late TextEditingController _marcaController;
   late TextEditingController _modeloController;
-  late TextEditingController _caracteristicaController;
   late TextEditingController _placaController;
   late TextEditingController _tipoVehiculoController;
   String _error = '';
@@ -38,9 +37,6 @@ class _EditPertenenciaPageState extends State<EditPertenenciaPage> {
     );
     _modeloController = TextEditingController(
       text: widget.pertenencia.modelo ?? '',
-    );
-    _caracteristicaController = TextEditingController(
-      text: widget.pertenencia.caracteristica ?? '',
     );
     _placaController = TextEditingController(
       text: widget.pertenencia.placa ?? '',
@@ -69,7 +65,8 @@ class _EditPertenenciaPageState extends State<EditPertenenciaPage> {
             'marca':
                 (_tipo == PertenenciaTipo.equipo ||
                     _tipo == PertenenciaTipo.herramienta ||
-                    _tipo == PertenenciaTipo.vehiculo)
+                    _tipo == PertenenciaTipo.vehiculo ||
+                    _tipo == PertenenciaTipo.otro)
                 ? _marcaController.text.trim()
                 : null,
             'modelo':
@@ -78,7 +75,6 @@ class _EditPertenenciaPageState extends State<EditPertenenciaPage> {
                     _tipo == PertenenciaTipo.vehiculo)
                 ? _modeloController.text.trim()
                 : null,
-            'caracteristica': _caracteristicaController.text.trim(),
             'placa': _tipo == PertenenciaTipo.vehiculo
                 ? _placaController.text.trim()
                 : null,
@@ -140,7 +136,8 @@ class _EditPertenenciaPageState extends State<EditPertenenciaPage> {
                 ),
               if (_tipo == PertenenciaTipo.equipo ||
                   _tipo == PertenenciaTipo.herramienta ||
-                  _tipo == PertenenciaTipo.vehiculo)
+                  _tipo == PertenenciaTipo.vehiculo ||
+                  _tipo == PertenenciaTipo.otro)
                 TextFormField(
                   controller: _marcaController,
                   decoration: const InputDecoration(labelText: 'Marca'),
@@ -156,12 +153,6 @@ class _EditPertenenciaPageState extends State<EditPertenenciaPage> {
                     labelText: 'Modelo (opcional)',
                   ),
                 ),
-              TextFormField(
-                controller: _caracteristicaController,
-                decoration: const InputDecoration(labelText: 'Características'),
-                validator: (v) =>
-                    v == null || v.isEmpty ? 'Campo requerido' : null,
-              ),
               if (_tipo == PertenenciaTipo.vehiculo)
                 TextFormField(
                   controller: _placaController,

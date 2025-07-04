@@ -108,9 +108,30 @@ class _EditUserPageState extends State<EditUserPage> {
               const SizedBox(height: 16),
               DropdownButtonFormField<UserRole>(
                 value: _rol,
-                items: UserRole.values.map((rol) {
-                  return DropdownMenuItem(value: rol, child: Text(rol.name));
-                }).toList(),
+                items: const [
+                  DropdownMenuItem(
+                    value: UserRole.aprendiz,
+                    child: Text('Aprendiz'),
+                  ),
+                  DropdownMenuItem(
+                    value: UserRole.instructorPlanta,
+                    child: Text('Instructor de planta'),
+                  ),
+                  DropdownMenuItem(
+                    value: UserRole.instructorContratista,
+                    child: Text('Instructor contratista'),
+                  ),
+                  DropdownMenuItem(
+                    value: UserRole.administrativo,
+                    child: Text('Administrativo'),
+                  ),
+                  DropdownMenuItem(value: UserRole.teo, child: Text('TEO')),
+                  DropdownMenuItem(
+                    value: UserRole.visitante,
+                    child: Text('Visitante'),
+                  ),
+                  DropdownMenuItem(value: UserRole.otro, child: Text('Otro')),
+                ],
                 onChanged: (rol) => setState(() => _rol = rol),
                 decoration: const InputDecoration(labelText: 'Tipo de usuario'),
                 validator: (v) => v == null ? 'Seleccione un tipo' : null,
