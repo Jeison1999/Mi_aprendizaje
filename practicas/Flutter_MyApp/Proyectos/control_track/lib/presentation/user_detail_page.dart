@@ -177,7 +177,15 @@ class UserDetailPage extends StatelessWidget {
                             children: [
                               if (p.descripcion.isNotEmpty)
                                 Text('Descripción: ${p.descripcion}'),
-                              _buildPertenenciaSubtitle(p),
+                              // Solo mostrar marca en el título, no repetir abajo
+                              if (p.tipo == PertenenciaTipo.equipo &&
+                                  p.serial != null &&
+                                  p.serial!.isNotEmpty)
+                                Text('Serial: ${p.serial}'),
+                              if (p.tipo == PertenenciaTipo.vehiculo &&
+                                  p.placa != null &&
+                                  p.placa!.isNotEmpty)
+                                Text('Placa: ${p.placa}'),
                             ],
                           ),
                           trailing: Row(

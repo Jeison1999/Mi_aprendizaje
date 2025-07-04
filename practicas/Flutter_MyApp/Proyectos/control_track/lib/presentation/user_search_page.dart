@@ -60,14 +60,6 @@ class _UserSearchPageState extends State<UserSearchPage> {
                       return StreamBuilder<QuerySnapshot>(
                         stream: FirebaseFirestore.instance
                             .collection('usuarios')
-                            .where(
-                              _searchBy,
-                              isGreaterThanOrEqualTo: value.text.trim(),
-                            )
-                            .where(
-                              _searchBy,
-                              isLessThanOrEqualTo: value.text.trim() + '\uf8ff',
-                            )
                             .snapshots(),
                         builder: (context, snapshot) {
                           if (snapshot.connectionState ==
@@ -82,7 +74,7 @@ class _UserSearchPageState extends State<UserSearchPage> {
                               child: Text('No se encontraron usuarios.'),
                             );
                           }
-                          final users = snapshot.data!.docs
+                          var users = snapshot.data!.docs
                               .map(
                                 (doc) => AppUser.fromMap(
                                   doc.data() as Map<String, dynamic>,
@@ -90,6 +82,25 @@ class _UserSearchPageState extends State<UserSearchPage> {
                                 ),
                               )
                               .toList();
+                          final query = value.text.trim().toLowerCase();
+                          if (_searchBy == 'nombre') {
+                            users = users
+                                .where(
+                                  (u) => u.nombre.toLowerCase().contains(query),
+                                )
+                                .toList();
+                          } else if (_searchBy == 'cedula') {
+                            users = users
+                                .where(
+                                  (u) => u.cedula.toLowerCase().contains(query),
+                                )
+                                .toList();
+                          }
+                          if (users.isEmpty) {
+                            return const Center(
+                              child: Text('No se encontraron usuarios.'),
+                            );
+                          }
                           return ListView.builder(
                             itemCount: users.length,
                             itemBuilder: (context, index) {

@@ -26,6 +26,12 @@ class _RegistrarMovimientoPageState extends State<RegistrarMovimientoPage> {
   TipoMovimiento? _ultimoTipo;
   bool _movLoaded = false;
 
+  // Filtros para historial
+  TipoMovimiento? _filtroTipo;
+  DateTime? _fechaInicio;
+  DateTime? _fechaFin;
+  final TextEditingController _busquedaObsController = TextEditingController();
+
   @override
   void initState() {
     super.initState();
@@ -184,6 +190,98 @@ class _RegistrarMovimientoPageState extends State<RegistrarMovimientoPage> {
                     'Historial de movimientos',
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
+                  // Filtros
+                  Row(
+                    children: [
+                      Expanded(
+                        child: DropdownButton<TipoMovimiento?>(
+                          value: _filtroTipo,
+                          isExpanded: true,
+                          hint: const Text('Tipo'),
+                          items: const [
+                            DropdownMenuItem(value: null, child: Text('Todos')),
+                            DropdownMenuItem(
+                              value: TipoMovimiento.entrada,
+                              child: Text('Entrada'),
+                            ),
+                            DropdownMenuItem(
+                              value: TipoMovimiento.salida,
+                              child: Text('Salida'),
+                            ),
+                          ],
+                          onChanged: (v) => setState(() => _filtroTipo = v),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: InkWell(
+                          onTap: () async {
+                            final picked = await showDatePicker(
+                              context: context,
+                              initialDate: _fechaInicio ?? DateTime.now(),
+                              firstDate: DateTime(2020),
+                              lastDate: DateTime(2100),
+                            );
+                            if (picked != null) {
+                              setState(() => _fechaInicio = picked);
+                            }
+                          },
+                          child: InputDecorator(
+                            decoration: const InputDecoration(
+                              labelText: 'Desde',
+                              border: OutlineInputBorder(),
+                              isDense: true,
+                            ),
+                            child: Text(
+                              _fechaInicio == null
+                                  ? ''
+                                  : '${_fechaInicio!.day}/${_fechaInicio!.month}/${_fechaInicio!.year}',
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: InkWell(
+                          onTap: () async {
+                            final picked = await showDatePicker(
+                              context: context,
+                              initialDate: _fechaFin ?? DateTime.now(),
+                              firstDate: DateTime(2020),
+                              lastDate: DateTime(2100),
+                            );
+                            if (picked != null) {
+                              setState(() => _fechaFin = picked);
+                            }
+                          },
+                          child: InputDecorator(
+                            decoration: const InputDecoration(
+                              labelText: 'Hasta',
+                              border: OutlineInputBorder(),
+                              isDense: true,
+                            ),
+                            child: Text(
+                              _fechaFin == null
+                                  ? ''
+                                  : '${_fechaFin!.day}/${_fechaFin!.month}/${_fechaFin!.year}',
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  TextField(
+                    controller: _busquedaObsController,
+                    decoration: const InputDecoration(
+                      labelText: 'Buscar por observación',
+                      border: OutlineInputBorder(),
+                      isDense: true,
+                      prefixIcon: Icon(Icons.search),
+                    ),
+                    onChanged: (_) => setState(() {}),
+                  ),
+                  const SizedBox(height: 8),
                   Expanded(
                     child: StreamBuilder<QuerySnapshot>(
                       stream: FirebaseFirestore.instance
@@ -206,7 +304,8 @@ class _RegistrarMovimientoPageState extends State<RegistrarMovimientoPage> {
                             child: Text('Sin movimientos registrados.'),
                           );
                         }
-                        final movimientos = snapshot.data!.docs
+                        // Aplicar filtros en memoria
+                        var movimientos = snapshot.data!.docs
                             .map(
                               (doc) => Movimiento.fromMap(
                                 doc.data() as Map<String, dynamic>,
@@ -214,6 +313,49 @@ class _RegistrarMovimientoPageState extends State<RegistrarMovimientoPage> {
                               ),
                             )
                             .toList();
+                        if (_filtroTipo != null) {
+                          movimientos = movimientos
+                              .where((m) => m.tipo == _filtroTipo)
+                              .toList();
+                        }
+                        if (_fechaInicio != null) {
+                          movimientos = movimientos
+                              .where(
+                                (m) => m.fecha.isAfter(
+                                  _fechaInicio!.subtract(
+                                    const Duration(days: 1),
+                                  ),
+                                ),
+                              )
+                              .toList();
+                        }
+                        if (_fechaFin != null) {
+                          movimientos = movimientos
+                              .where(
+                                (m) => m.fecha.isBefore(
+                                  _fechaFin!.add(const Duration(days: 1)),
+                                ),
+                              )
+                              .toList();
+                        }
+                        if (_busquedaObsController.text.isNotEmpty) {
+                          final query = _busquedaObsController.text
+                              .toLowerCase();
+                          movimientos = movimientos
+                              .where(
+                                (m) => (m.observacion ?? '')
+                                    .toLowerCase()
+                                    .contains(query),
+                              )
+                              .toList();
+                        }
+                        if (movimientos.isEmpty) {
+                          return const Center(
+                            child: Text(
+                              'Sin movimientos con los filtros seleccionados.',
+                            ),
+                          );
+                        }
                         return ListView.builder(
                           itemCount: movimientos.length,
                           itemBuilder: (context, index) {
@@ -233,7 +375,7 @@ class _RegistrarMovimientoPageState extends State<RegistrarMovimientoPage> {
                                     : 'Salida',
                               ),
                               subtitle: Text(
-                                'Fecha: ${m.fecha.toLocal()}\nObs: ${m.observacion ?? '-'}',
+                                'Fecha: ${_formatearFecha(m.fecha)}\nObs: ${m.observacion ?? '-'}',
                               ),
                             );
                           },
@@ -257,5 +399,10 @@ class _RegistrarMovimientoPageState extends State<RegistrarMovimientoPage> {
         ),
       ),
     );
+  }
+
+  String _formatearFecha(DateTime fecha) {
+    // Ejemplo: 04/07/2025 14:30
+    return '${fecha.day.toString().padLeft(2, '0')}/${fecha.month.toString().padLeft(2, '0')}/${fecha.year} ${fecha.hour.toString().padLeft(2, '0')}:${fecha.minute.toString().padLeft(2, '0')}';
   }
 }
