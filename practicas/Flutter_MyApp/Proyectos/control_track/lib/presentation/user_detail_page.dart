@@ -8,7 +8,7 @@ import '_pertenencia_filter_section.dart';
 
 // Animaciones reutilizables (copiadas de register_user_page.dart para independencia visual)
 class AnimatedGradientBackground extends StatefulWidget {
-  const AnimatedGradientBackground({Key? key}) : super(key: key);
+  const AnimatedGradientBackground({super.key});
   @override
   State<AnimatedGradientBackground> createState() =>
       _AnimatedGradientBackgroundState();
@@ -68,8 +68,7 @@ class _AnimatedGradientBackgroundState extends State<AnimatedGradientBackground>
 class AnimatedEntrance extends StatelessWidget {
   final Widget child;
   final int delay;
-  const AnimatedEntrance({required this.child, this.delay = 0, Key? key})
-    : super(key: key);
+  const AnimatedEntrance({required this.child, this.delay = 0, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -213,7 +212,7 @@ class UserDetailPage extends StatelessWidget {
                                   borderRadius: BorderRadius.circular(10),
                                 ),
                                 child: Text(
-                                  '${updatedUser.rol == UserRole.instructorPlanta
+                                  updatedUser.rol == UserRole.instructorPlanta
                                       ? 'Instructor de planta'
                                       : updatedUser.rol == UserRole.instructorContratista
                                       ? 'Instructor contratista'
@@ -227,7 +226,7 @@ class UserDetailPage extends StatelessWidget {
                                       ? 'Visitante'
                                       : updatedUser.rol == UserRole.otro && updatedUser.otroTipo != null
                                       ? 'Otro (${updatedUser.otroTipo})'
-                                      : 'Otro'}',
+                                      : 'Otro',
                                   style: const TextStyle(
                                     fontFamily: 'Montserrat',
                                     color: Color(0xFF0A8754),
@@ -477,19 +476,6 @@ class UserDetailPage extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 24.0),
-                              child: Text(
-                                'Pertenencias registradas',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontFamily: 'Montserrat',
-                                  fontSize: 18,
-                                  color: Color(0xFF0A8754),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 10),
                             SizedBox(
                               height: size.height * 0.38,
                               child: PertenenciaFilterSection(
