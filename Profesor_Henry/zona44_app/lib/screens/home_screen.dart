@@ -27,11 +27,15 @@ class _HomeScreenState extends State<HomeScreen> {
       body: Column(
         children: [
           ElevatedButton(
-            onPressed: () {
-              Navigator.push(
+            onPressed: () async {
+              await Navigator.push(
                 context,
                 MaterialPageRoute(builder: (_) => const GroupsAdminScreen()),
               );
+              // Al volver, recarga la lista de grupos
+              setState(() {
+                _groupsFuture = ApiService().fetchGroups();
+              });
             },
             child: Text('Administrar Grupos'),
           ),
@@ -42,7 +46,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
                 } else if (snapshot.hasError) {
-                  return Center(child: Text('Error: ${snapshot.error}'));
+                  return Center(child: Text('Error: [${snapshot.error}'));
                 } else {
                   final groups = snapshot.data!;
                   return ListView.builder(
@@ -53,7 +57,6 @@ class _HomeScreenState extends State<HomeScreen> {
                         leading: const Icon(Icons.fastfood),
                         title: Text(group.name),
                         onTap: () {
-                          // Aquí luego irás a ver productos por grupo
                           Navigator.push(
                             context,
                             MaterialPageRoute(

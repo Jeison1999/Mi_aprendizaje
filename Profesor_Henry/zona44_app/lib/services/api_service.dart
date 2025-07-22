@@ -66,4 +66,33 @@ class ApiService {
 
     return response.statusCode == 201;
   }
+
+  Future<bool> updateGroup(int id, String name) async {
+    final token = await storage.read(key: 'token');
+
+    final response = await http.put(
+      Uri.parse('${ApiConfig.baseUrl}/admin/groups/$id'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({'name': name}),
+    );
+
+    return response.statusCode == 200;
+  }
+
+  Future<bool> deleteGroup(int id) async {
+    final token = await storage.read(key: 'token');
+
+    final response = await http.delete(
+      Uri.parse('${ApiConfig.baseUrl}/admin/groups/$id'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+    );
+
+    return response.statusCode == 200;
+  }
 }
