@@ -49,13 +49,19 @@ class _HomeScreenState extends State<HomeScreen> {
                   return Center(child: Text('Error: [${snapshot.error}'));
                 } else {
                   final groups = snapshot.data!;
-                  return ListView.builder(
+                  return GridView.builder(
+                    padding: const EdgeInsets.all(10),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          mainAxisSpacing: 10,
+                          crossAxisSpacing: 10,
+                          childAspectRatio: 3 / 2,
+                        ),
                     itemCount: groups.length,
                     itemBuilder: (context, index) {
                       final group = groups[index];
-                      return ListTile(
-                        leading: const Icon(Icons.fastfood),
-                        title: Text(group.name),
+                      return GestureDetector(
                         onTap: () {
                           Navigator.push(
                             context,
@@ -67,6 +73,28 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           );
                         },
+                        child: Card(
+                          elevation: 4,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              if (group.imageUrl != null)
+                                Image.network(group.imageUrl!, height: 60)
+                              else
+                                Icon(Icons.fastfood, size: 60),
+                              const SizedBox(height: 10),
+                              Text(
+                                group.name,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       );
                     },
                   );

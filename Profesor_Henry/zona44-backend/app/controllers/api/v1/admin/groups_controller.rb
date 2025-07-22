@@ -19,7 +19,9 @@ module Api
 
         # POST /api/v1/admin/groups
         def create
-          group = Group.new(group_params)
+          group = Group.new(name: params[:name])
+          group.image.attach(params[:image]) if params[:image].present?
+          
           if group.save
             render json: group, status: :created
           else
