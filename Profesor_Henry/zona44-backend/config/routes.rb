@@ -7,11 +7,11 @@ Rails.application.routes.draw do
       get "profile", to: "users#profile"
 
       # Recursos públicos
-      resources :groups, only: [:index, :show]
-      resources :products, only: [:index, :show]
+      resources :groups, only: [ :index, :show ]
+      resources :products, only: [ :index, :show ]
 
       # Pedidos del cliente
-      resources :orders, only: [:create, :show, :index] do
+      resources :orders, only: [ :create, :show, :index ] do
         member do
           put :cancel
         end
@@ -22,7 +22,8 @@ Rails.application.routes.draw do
 
       # 👇 Rutas del panel de administrador
       namespace :admin do
-        resources :orders, only: [:index, :show, :update, :destroy] do
+        resources :groups, only: [ :index, :show, :create, :update, :destroy ]
+        resources :orders, only: [ :index, :show, :update, :destroy ] do
           member do
             put :update_status
           end
