@@ -45,8 +45,24 @@ module Api
         ), status: :ok
       end
 
+      def cancel
+        order = current_user.orders.find_by(id: params[:id])
+
+        if order.nil?
+          return render json: { error: "Pedido no encontrado" }, status: :not_found
+        end
+
+        if order.status != "pendiente"
+          return render json: { error: "Solo se pueden cancelar pedidos pendientes" }, status: :unprocessable_entity
+        end
+
+        order.update(status: "cancelado")
+        render json: { message: "Pedido cancelado exitosamente", order_id: order.id }, status: :ok
+      end
+
+
       def show
-        order = @current_user.orders.includes(order_items: :product).find_by(id: params[:id])
+        order = current_user.orders.includes(order_items: :product).find_by(id: params[:id])
 
         if order
           render json: order.as_json(

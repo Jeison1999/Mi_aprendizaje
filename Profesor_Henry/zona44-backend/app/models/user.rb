@@ -5,4 +5,9 @@ class User < ApplicationRecord
   enum :role, { cliente: 0, admin: 1 }
 
   has_many :orders
+
+  def admin?
+    self.role == 'admin'
+  end
+
 end

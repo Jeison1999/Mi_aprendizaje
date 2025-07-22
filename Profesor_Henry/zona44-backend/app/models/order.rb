@@ -5,7 +5,8 @@ class Order < ApplicationRecord
 
 
   enum :order_type, { para_llevar: 0, en_el_lugar: 1 }
-  enum :status, { pendiente: 0, en_preparacion: 1, entregado: 2, cancelado: 3 }
+  enum :status, { pendiente: 0, confirmado: 1, preparando: 2, enviado: 3, entregado: 4, cancelado: 5 }
+
 
   validates :total, :order_type, :status, presence: true
 end
