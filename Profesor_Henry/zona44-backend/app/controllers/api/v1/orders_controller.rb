@@ -18,6 +18,22 @@ module Api
                 subtotal: item[:subtotal]
               )
             end
+            # Transmitir pedido al canal de ActionCable
+            ActionCable.server.broadcast("orders_channel", {
+              id: order.id,
+              status: order.status,
+              total: order.total,
+              user_id: order.user_id,
+              created_at: order.created_at,
+              items: order.order_items.as_json(
+                include: {
+                  product: {
+                    only: [:id, :name, :description, :price, :image_url]
+                  }
+                },
+                only: [:product_id, :quantity, :subtotal]
+              )
+            })
           end
           render json: { message: "Pedido creado exitosamente", order_id: order.id }, status: :created
         else
