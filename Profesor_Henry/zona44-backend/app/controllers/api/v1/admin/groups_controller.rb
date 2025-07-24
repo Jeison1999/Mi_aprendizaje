@@ -7,7 +7,7 @@ module Api
 
         # GET /api/v1/admin/groups
         def index
-          groups = Group.all
+          groups = Group.all.with_attached_image
           render json: groups
         end
 
@@ -21,7 +21,7 @@ module Api
         def create
           group = Group.new(name: params[:name])
           group.image.attach(params[:image]) if params[:image].present?
-          
+
           if group.save
             render json: group, status: :created
           else
