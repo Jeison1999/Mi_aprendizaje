@@ -46,7 +46,9 @@ class _ProductsScreenState extends State<ProductsScreen> {
             itemBuilder: (context, index) {
               final product = products[index];
               return ListTile(
-                leading: const Icon(Icons.fastfood),
+                leading: product.imageUrl != null
+                    ? Image.network(product.imageUrl!, width: 50)
+                    : const Icon(Icons.fastfood),
                 title: Text(product.name),
                 subtitle: Text(product.description),
                 trailing: Text('\$${product.price}'),

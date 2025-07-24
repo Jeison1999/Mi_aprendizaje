@@ -23,6 +23,7 @@ Rails.application.routes.draw do
       # 👇 Rutas del panel de administrador
       namespace :admin do
         resources :groups, only: [ :index, :show, :create, :update, :destroy ]
+        resources :products, only: [:index, :create, :update, :destroy, :show]
         resources :orders, only: [ :index, :show, :update, :destroy ] do
           member do
             put :update_status

@@ -1,6 +1,13 @@
 class ProductSerializer < ActiveModel::Serializer
-  attributes :id, :name, :description, :price, :image_url, :customizable
+  include Rails.application.routes.url_helpers
 
-  belongs_to :group
-  has_many :customizations
+  attributes :id, :name, :description, :price, :group_id, :image_url
+
+  def image_url
+    if object.image.attached?
+      url_for(object.image)
+    else
+      nil
+    end
+  end
 end

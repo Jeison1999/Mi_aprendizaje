@@ -16,6 +16,10 @@ class Product {
   });
 
   factory Product.fromJson(Map<String, dynamic> json) {
+    String? imageUrl = json['image_url'];
+    if (imageUrl != null && !imageUrl.startsWith('http')) {
+      imageUrl = 'http://localhost:3000' + imageUrl; // Cambia por tu dominio real en producción
+    }
     return Product(
       id: json['id'] is int
           ? json['id']
@@ -25,7 +29,7 @@ class Product {
       price: json['price'] is int
           ? json['price']
           : int.tryParse(json['price']?.toString() ?? '') ?? 0,
-      imageUrl: json['image_url'],
+      imageUrl: imageUrl,
       grupoId: json['grupo_id'] is int
           ? json['grupo_id']
           : int.tryParse(json['grupo_id']?.toString() ?? '') ?? 0,

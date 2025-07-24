@@ -6,7 +6,7 @@
 #
 #   ["Action", "Comedy", "Drama", "Horror"].each do |genre_name|
 #     MovieGenre.find_or_create_by!(name: genre_name)
-#   end
+#   endjeison@zona44.com
 
 puts "Creando usuario de prueba..."
 unless User.exists?(email: "jeison@zona44.com")
