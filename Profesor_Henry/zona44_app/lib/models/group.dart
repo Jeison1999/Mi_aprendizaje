@@ -8,12 +8,9 @@ class Group {
   factory Group.fromJson(Map<String, dynamic> json) {
     String? imageUrl = json['image_url'];
     if (imageUrl != null && !imageUrl.startsWith('http')) {
-      imageUrl = 'http://localhost:3000$imageUrl'; // Cambia por tu dominio real en producción
+      imageUrl =
+          'http://localhost:3000$imageUrl'; // Cambia por tu dominio real en producción
     }
-    return Group(
-      id: json['id'],
-      name: json['name'] ?? '',
-      imageUrl: imageUrl,
-    );
+    return Group(id: json['id'], name: json['name'] ?? '', imageUrl: imageUrl);
   }
 }
