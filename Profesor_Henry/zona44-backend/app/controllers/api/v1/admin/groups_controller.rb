@@ -3,7 +3,7 @@ module Api
     module Admin
       class GroupsController < ApplicationController
         before_action :authorize_request
-        before_action :set_group, only: [:update, :destroy]
+        before_action :set_group, only: [ :update, :destroy ]
 
         # GET /api/v1/admin/groups
         def index
@@ -32,7 +32,8 @@ module Api
         # PUT /api/v1/admin/groups/:id
         def update
           if @group.update(group_params)
-            render json: { message: 'Grupo actualizado exitosamente', group: @group }
+            @group.image.attach(params[:image]) if params[:image].present?
+            render json: { message: "Grupo actualizado exitosamente", group: @group }
           else
             render json: { errors: @group.errors.full_messages }, status: :unprocessable_entity
           end
@@ -41,7 +42,7 @@ module Api
         # DELETE /api/v1/admin/groups/:id
         def destroy
           @group.destroy
-          render json: { message: 'Grupo eliminado exitosamente' }
+          render json: { message: "Grupo eliminado exitosamente" }
         end
 
         private
@@ -49,11 +50,15 @@ module Api
         def set_group
           @group = Group.find(params[:id])
         rescue ActiveRecord::RecordNotFound
-          render json: { error: 'Grupo no encontrado' }, status: :not_found
+          render json: { error: "Grupo no encontrado" }, status: :not_found
         end
 
         def group_params
-          params.require(:group).permit(:name, :description)
+          if params[:group]
+            params.require(:group).permit(:name, :description)
+          else
+            params.permit(:name, :description)
+          end
         end
       end
     end

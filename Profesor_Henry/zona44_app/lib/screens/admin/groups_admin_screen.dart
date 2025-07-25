@@ -130,44 +130,113 @@ class _GroupsAdminScreenState extends State<GroupsAdminScreen> {
 
   void _mostrarEditarDialog(Group group) {
     final editController = TextEditingController(text: group.name);
+    File? editImage;
+    Uint8List? editWebImageBytes;
+    String? editWebImageName;
 
     showDialog(
       context: context,
-      builder: (_) => AlertDialog(
-        title: Text('Editar grupo'),
-        content: TextField(
-          controller: editController,
-          decoration: InputDecoration(labelText: 'Nombre del grupo'),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text('Cancelar'),
+      builder: (_) => StatefulBuilder(
+        builder: (context, setStateDialog) => AlertDialog(
+          title: Text('Editar grupo'),
+          content: SingleChildScrollView(
+            child: Column(
+              children: [
+                TextField(
+                  controller: editController,
+                  decoration: InputDecoration(labelText: 'Nombre del grupo'),
+                ),
+                SizedBox(height: 10),
+                kIsWeb
+                    ? (editWebImageBytes != null
+                          ? Image.memory(editWebImageBytes!, height: 80)
+                          : (group.imageUrl != null
+                                ? Image.network(group.imageUrl!, height: 80)
+                                : Text('Sin imagen')))
+                    : (editImage != null
+                          ? Image.file(editImage!, height: 80)
+                          : (group.imageUrl != null
+                                ? Image.network(group.imageUrl!, height: 80)
+                                : Text('Sin imagen'))),
+                TextButton.icon(
+                  icon: Icon(Icons.image),
+                  label: Text('Cambiar imagen'),
+                  onPressed: () async {
+                    if (kIsWeb) {
+                      final result = await FilePicker.platform.pickFiles(
+                        type: FileType.image,
+                      );
+                      if (result != null && result.files.single.bytes != null) {
+                        setStateDialog(() {
+                          editWebImageBytes = result.files.single.bytes;
+                          editWebImageName = result.files.single.name;
+                        });
+                      }
+                    } else {
+                      final picked = await ImagePicker().pickImage(
+                        source: ImageSource.gallery,
+                      );
+                      if (picked != null) {
+                        setStateDialog(() {
+                          editImage = File(picked.path);
+                        });
+                      }
+                    }
+                  },
+                ),
+              ],
+            ),
           ),
-          TextButton(
-            onPressed: () async {
-              final nuevoNombre = editController.text;
-              if (nuevoNombre.isNotEmpty) {
-                final success = await _apiService.updateGroup(
-                  group.id,
-                  nuevoNombre,
-                );
-                if (success) {
-                  _loadGroups();
-                  Navigator.pop(context);
-                  ScaffoldMessenger.of(
-                    context,
-                  ).showSnackBar(SnackBar(content: Text('Grupo actualizado')));
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Error al actualizar')),
-                  );
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('Cancelar'),
+            ),
+            TextButton(
+              onPressed: () async {
+                final nuevoNombre = editController.text;
+                bool success = false;
+                if (nuevoNombre.isNotEmpty) {
+                  if (kIsWeb &&
+                      editWebImageBytes != null &&
+                      editWebImageName != null) {
+                    // Debes crear este método en ApiService
+                    success = await _apiService.updateGroupWithImageWeb(
+                      group.id,
+                      nuevoNombre,
+                      editWebImageBytes!,
+                      editWebImageName!,
+                    );
+                  } else if (!kIsWeb && editImage != null) {
+                    // Debes crear este método en ApiService
+                    success = await _apiService.updateGroupWithImage(
+                      group.id,
+                      nuevoNombre,
+                      editImage!,
+                    );
+                  } else {
+                    success = await _apiService.updateGroup(
+                      group.id,
+                      nuevoNombre,
+                    );
+                  }
+                  if (success) {
+                    _loadGroups();
+                    Navigator.pop(context);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Grupo actualizado')),
+                    );
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Error al actualizar')),
+                    );
+                  }
                 }
-              }
-            },
-            child: Text('Guardar'),
-          ),
-        ],
+              },
+              child: Text('Guardar'),
+            ),
+          ],
+        ),
       ),
     );
   }

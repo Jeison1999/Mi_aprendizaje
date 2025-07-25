@@ -7,8 +7,46 @@ import 'package:http/http.dart' as http;
 import 'package:zona44_app/config/api_config.dart';
 import 'package:zona44_app/models/group.dart';
 import 'package:zona44_app/models/product.dart';
+import 'package:zona44_app/models/pizza_base.dart';
 
 class ApiService {
+  final String baseUrl = 'https://tu-api.com'; // Cambia esto por tu URL real
+
+  Future<bool> updateGroupWithImageWeb(
+    int id,
+    String name,
+    Uint8List imageBytes,
+    String imageName,
+  ) async {
+    final token = await storage.read(key: 'token');
+    if (token == null) throw Exception('No hay token');
+
+    final uri = Uri.parse('$apiBaseUrl/admin/groups/$id');
+    final request = http.MultipartRequest('PUT', uri)
+      ..headers['Authorization'] = 'Bearer $token'
+      ..fields['name'] = name
+      ..files.add(
+        http.MultipartFile.fromBytes('image', imageBytes, filename: imageName),
+      );
+
+    final response = await http.Response.fromStream(await request.send());
+    return response.statusCode == 200;
+  }
+
+  Future<bool> updateGroupWithImage(int id, String name, File imageFile) async {
+    final token = await storage.read(key: 'token');
+    if (token == null) throw Exception('No hay token');
+
+    final uri = Uri.parse('$apiBaseUrl/admin/groups/$id');
+    final request = http.MultipartRequest('PUT', uri)
+      ..headers['Authorization'] = 'Bearer $token'
+      ..fields['name'] = name
+      ..files.add(await http.MultipartFile.fromPath('image', imageFile.path));
+
+    final response = await http.Response.fromStream(await request.send());
+    return response.statusCode == 200;
+  }
+
   final storage = FlutterSecureStorage();
   String get apiBaseUrl => ApiConfig.baseUrl;
 
@@ -34,7 +72,11 @@ class ApiService {
     }
   }
 
-  Future<bool> createGroupWithImageWeb(String name, Uint8List imageBytes, String imageName) async {
+  Future<bool> createGroupWithImageWeb(
+    String name,
+    Uint8List imageBytes,
+    String imageName,
+  ) async {
     final token = await storage.read(key: 'token');
     if (token == null) throw Exception('No hay token');
 
@@ -42,7 +84,9 @@ class ApiService {
     final request = http.MultipartRequest('POST', uri)
       ..headers['Authorization'] = 'Bearer $token'
       ..fields['name'] = name
-      ..files.add(http.MultipartFile.fromBytes('image', imageBytes, filename: imageName));
+      ..files.add(
+        http.MultipartFile.fromBytes('image', imageBytes, filename: imageName),
+      );
 
     final response = await http.Response.fromStream(await request.send());
     return response.statusCode == 201;
@@ -115,7 +159,14 @@ class ApiService {
     }
   }
 
-  Future<bool> createProductWeb(String name, String description, int price, int groupId, Uint8List imageBytes, String imageName) async {
+  Future<bool> createProductWeb(
+    String name,
+    String description,
+    int price,
+    int groupId,
+    Uint8List imageBytes,
+    String imageName,
+  ) async {
     final token = await storage.read(key: 'token');
     if (token == null) throw Exception('No hay token');
 
@@ -126,13 +177,21 @@ class ApiService {
       ..fields['description'] = description
       ..fields['price'] = price.toString()
       ..fields['group_id'] = groupId.toString()
-      ..files.add(http.MultipartFile.fromBytes('image', imageBytes, filename: imageName));
+      ..files.add(
+        http.MultipartFile.fromBytes('image', imageBytes, filename: imageName),
+      );
 
     final response = await http.Response.fromStream(await request.send());
     return response.statusCode == 201;
   }
 
-  Future<bool> createProductMobile(String name, String description, int price, int groupId, File imageFile) async {
+  Future<bool> createProductMobile(
+    String name,
+    String description,
+    int price,
+    int groupId,
+    File imageFile,
+  ) async {
     final token = await storage.read(key: 'token');
     if (token == null) throw Exception('No hay token');
 
@@ -167,7 +226,9 @@ class ApiService {
       ..fields['price'] = price.toString();
 
     if (imageFile != null) {
-      request.files.add(await http.MultipartFile.fromPath('image', imageFile.path));
+      request.files.add(
+        await http.MultipartFile.fromPath('image', imageFile.path),
+      );
     }
 
     final response = await http.Response.fromStream(await request.send());
@@ -193,7 +254,9 @@ class ApiService {
       ..fields['price'] = price.toString();
 
     if (imageBytes != null && imageName != null) {
-      request.files.add(http.MultipartFile.fromBytes('image', imageBytes, filename: imageName));
+      request.files.add(
+        http.MultipartFile.fromBytes('image', imageBytes, filename: imageName),
+      );
     }
 
     final response = await http.Response.fromStream(await request.send());
@@ -213,5 +276,126 @@ class ApiService {
     );
 
     return response.statusCode == 200;
+  }
+
+  Future<List<PizzaBase>> fetchPizzaBases() async {
+    final response = await http.get(
+      Uri.parse('$apiBaseUrl/api/v1/admin/pizza_bases'),
+      headers: await _authHeaders(),
+    );
+
+    if (response.statusCode == 200) {
+      final List data = jsonDecode(response.body);
+      return data.map((json) => PizzaBase.fromJson(json)).toList();
+    } else {
+      throw Exception('Error al obtener pizzas');
+    }
+  }
+
+  Future<bool> updatePizza({
+    required int id,
+    required String name,
+    required String description,
+    required String category,
+    File? imageFile,
+  }) async {
+    final token = await storage.read(key: 'token');
+    if (token == null) throw Exception('No hay token');
+
+    final uri = Uri.parse('$apiBaseUrl/pizzas/$id');
+    final request = http.MultipartRequest('PUT', uri)
+      ..headers['Authorization'] = 'Bearer $token'
+      ..fields['name'] = name
+      ..fields['description'] = description
+      ..fields['category'] = category;
+
+    if (imageFile != null) {
+      request.files.add(
+        await http.MultipartFile.fromPath('image', imageFile.path),
+      );
+    }
+
+    final response = await http.Response.fromStream(await request.send());
+    return response.statusCode == 200;
+  }
+
+  Future<bool> updatePizzaWeb({
+    required int id,
+    required String name,
+    required String description,
+    required String category,
+    List<int>? imageBytes,
+    String? imageName,
+  }) async {
+    final url = Uri.parse('$baseUrl/pizzas/$id');
+    final Map<String, dynamic> data = {
+      'name': name,
+      'description': description,
+      'category': category,
+    };
+
+    if (imageBytes != null && imageName != null) {
+      data['image'] = base64Encode(imageBytes);
+      data['imageName'] = imageName;
+    }
+
+    final response = await http.put(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(data),
+    );
+
+    return response.statusCode == 200;
+  }
+
+  Future<bool> createPizzaWeb({
+    required String name,
+    required String description,
+    required String category,
+    required List<int> imageBytes,
+    required String imageName,
+  }) async {
+    final url = Uri.parse('$baseUrl/pizzas');
+    final Map<String, dynamic> data = {
+      'name': name,
+      'description': description,
+      'category': category,
+      'image': base64Encode(imageBytes),
+      'imageName': imageName,
+    };
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(data),
+    );
+
+    return response.statusCode == 201 || response.statusCode == 200;
+  }
+
+  Future<bool> createPizzaMobile({
+    required String name,
+    required String description,
+    required String category,
+    required File imageFile,
+  }) async {
+    final url = Uri.parse('$baseUrl/pizzas');
+    final request = http.MultipartRequest('POST', url)
+      ..fields['name'] = name
+      ..fields['description'] = description
+      ..fields['category'] = category
+      ..files.add(await http.MultipartFile.fromPath('image', imageFile.path));
+
+    final response = await request.send();
+    return response.statusCode == 201 || response.statusCode == 200;
+  }
+
+  Future<Map<String, String>> _authHeaders() async {
+    final token = await storage.read(key: 'token');
+    if (token == null) throw Exception('No hay token');
+    return {
+      'Authorization': 'Bearer $token',
+      'Content-Type': 'application/json',
+    };
   }
 }

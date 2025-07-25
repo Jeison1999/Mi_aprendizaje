@@ -141,7 +141,9 @@ class _ProductsAdminScreenState extends State<ProductsAdminScreen> {
                   label: Text('Cambiar imagen'),
                   onPressed: () async {
                     if (kIsWeb) {
-                      final result = await FilePicker.platform.pickFiles(type: FileType.image);
+                      final result = await FilePicker.platform.pickFiles(
+                        type: FileType.image,
+                      );
                       if (result != null && result.files.single.bytes != null) {
                         setStateDialog(() {
                           _webImageBytes = result.files.single.bytes;
@@ -149,7 +151,9 @@ class _ProductsAdminScreenState extends State<ProductsAdminScreen> {
                         });
                       }
                     } else {
-                      final picked = await ImagePicker().pickImage(source: ImageSource.gallery);
+                      final picked = await ImagePicker().pickImage(
+                        source: ImageSource.gallery,
+                      );
                       if (picked != null) {
                         setStateDialog(() {
                           _image = File(picked.path);
@@ -195,13 +199,13 @@ class _ProductsAdminScreenState extends State<ProductsAdminScreen> {
                   Navigator.pop(context);
                   _clearForm();
                   _loadProducts();
-                  ScaffoldMessenger.of(
-                    context,
-                  ).showSnackBar(SnackBar(content: Text('Producto actualizado')));
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Producto actualizado')),
+                  );
                 } else {
-                  ScaffoldMessenger.of(
-                    context,
-                  ).showSnackBar(SnackBar(content: Text('Error al actualizar')));
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Error al actualizar')),
+                  );
                 }
               },
               child: Text('Guardar'),

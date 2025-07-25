@@ -6,7 +6,11 @@ class ProductsScreen extends StatefulWidget {
   final int groupId;
   final String groupName;
 
-  const ProductsScreen({super.key, required this.groupId, required this.groupName});
+  const ProductsScreen({
+    super.key,
+    required this.groupId,
+    required this.groupName,
+  });
 
   @override
   State<ProductsScreen> createState() => _ProductsScreenState();

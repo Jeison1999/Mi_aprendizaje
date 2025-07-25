@@ -22,11 +22,15 @@ Rails.application.routes.draw do
 
       # 👇 Rutas del panel de administrador
       namespace :admin do
+        resources :pizza_bases
+        resources :pizza_variants, only: [ :create, :update, :destroy ]
+        resources :toppings, only: [ :index, :create, :destroy ]
+        resources :crust_options, only: [ :index, :create, :destroy ]
+        resources :pizza_combinations, only: [ :index, :create, :destroy ]
         resources :groups, only: [ :index, :show, :create, :update, :destroy ]
-        resources :products, only: [:index, :create, :update, :destroy, :show]
+        resources :products, only: [ :index, :create, :update, :destroy, :show ]
         resources :orders, only: [ :index, :show, :update, :destroy ] do
           member do
-            put :update_status
           end
         end
       end

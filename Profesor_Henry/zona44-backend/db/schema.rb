@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_22_190844) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_25_050301) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -40,6 +40,13 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_22_190844) do
     t.bigint "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
+  create_table "crust_options", force: :cascade do |t|
+    t.integer "size"
+    t.integer "price"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "customizations", force: :cascade do |t|
@@ -83,6 +90,32 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_22_190844) do
     t.index ["user_id"], name: "index_orders_on_user_id"
   end
 
+  create_table "pizza_bases", force: :cascade do |t|
+    t.string "name"
+    t.text "description"
+    t.integer "category"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "pizza_combinations", force: :cascade do |t|
+    t.integer "pizza_base1_id"
+    t.integer "pizza_base2_id"
+    t.integer "size"
+    t.integer "price"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "pizza_variants", force: :cascade do |t|
+    t.bigint "pizza_base_id", null: false
+    t.integer "size"
+    t.integer "price"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["pizza_base_id"], name: "index_pizza_variants_on_pizza_base_id"
+  end
+
   create_table "products", force: :cascade do |t|
     t.string "name"
     t.text "description"
@@ -93,6 +126,13 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_22_190844) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["group_id"], name: "index_products_on_group_id"
+  end
+
+  create_table "toppings", force: :cascade do |t|
+    t.string "name"
+    t.integer "price"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "users", force: :cascade do |t|
@@ -111,5 +151,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_22_190844) do
   add_foreign_key "order_items", "orders"
   add_foreign_key "order_items", "products"
   add_foreign_key "orders", "users"
+  add_foreign_key "pizza_variants", "pizza_bases", column: "pizza_base_id"
   add_foreign_key "products", "groups"
 end

@@ -18,7 +18,9 @@ class Product {
   factory Product.fromJson(Map<String, dynamic> json) {
     String? imageUrl = json['image_url'];
     if (imageUrl != null && !imageUrl.startsWith('http')) {
-      imageUrl = 'http://localhost:3000' + imageUrl; // Cambia por tu dominio real en producción
+      imageUrl =
+          'http://localhost:3000' +
+          imageUrl; // Cambia por tu dominio real en producción
     }
     return Product(
       id: json['id'] is int
