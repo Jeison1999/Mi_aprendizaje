@@ -4,7 +4,7 @@ class Product {
   final String description;
   final int price;
   final String? imageUrl;
-  final int grupoId;
+  final int groupId;
 
   Product({
     required this.id,
@@ -12,29 +12,27 @@ class Product {
     required this.description,
     required this.price,
     this.imageUrl,
-    required this.grupoId,
+    required this.groupId,
   });
 
   factory Product.fromJson(Map<String, dynamic> json) {
     String? imageUrl = json['image_url'];
     if (imageUrl != null && !imageUrl.startsWith('http')) {
-      imageUrl =
-          'http://localhost:3000' +
-          imageUrl; // Cambia por tu dominio real en producción
+      imageUrl = 'http://localhost:3000$imageUrl';
     }
+    int parseInt(dynamic value) {
+      if (value is int) return value;
+      if (value is String) return int.tryParse(value) ?? 0;
+      return 0;
+    }
+
     return Product(
-      id: json['id'] is int
-          ? json['id']
-          : int.tryParse(json['id']?.toString() ?? '') ?? 0,
+      id: parseInt(json['id']),
       name: json['name'] ?? '',
       description: json['description'] ?? '',
-      price: json['price'] is int
-          ? json['price']
-          : int.tryParse(json['price']?.toString() ?? '') ?? 0,
+      price: parseInt(json['price']),
       imageUrl: imageUrl,
-      grupoId: json['grupo_id'] is int
-          ? json['grupo_id']
-          : int.tryParse(json['grupo_id']?.toString() ?? '') ?? 0,
+      groupId: parseInt(json['group_id']),
     );
   }
 }

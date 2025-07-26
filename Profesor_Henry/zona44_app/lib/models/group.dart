@@ -11,6 +11,12 @@ class Group {
       imageUrl =
           'http://localhost:3000$imageUrl'; // Cambia por tu dominio real en producción
     }
-    return Group(id: json['id'], name: json['name'] ?? '', imageUrl: imageUrl);
+    return Group(
+      id: json['id'] is int
+          ? json['id']
+          : int.tryParse(json['id']?.toString() ?? '') ?? 0,
+      name: json['name'] ?? '',
+      imageUrl: imageUrl,
+    );
   }
 }

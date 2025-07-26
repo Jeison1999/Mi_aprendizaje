@@ -23,7 +23,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
   @override
   void initState() {
     super.initState();
-    _futureProducts = _apiService.getProductsByGroup(widget.groupId.toString());
+    _futureProducts = _apiService.getProductsByGroup(widget.groupId);
   }
 
   @override
