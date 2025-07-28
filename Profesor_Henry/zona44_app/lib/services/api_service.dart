@@ -177,7 +177,7 @@ class ApiService {
 
   Future<List<PizzaBase>> fetchPizzaBasesByGroup(int groupId) async {
     final response = await http.get(
-      Uri.parse('$apiBaseUrl/admin/pizza_bases?group_id=$groupId'), 
+      Uri.parse('$apiBaseUrl/admin/pizza_bases?group_id=$groupId'),
       headers: await _authHeaders(),
     );
     if (response.statusCode == 200) {
@@ -362,6 +362,19 @@ class ApiService {
     }
 
     final response = await http.Response.fromStream(await request.send());
+    return response.statusCode == 200;
+  }
+
+  Future<bool> deletePizza(int id) async {
+    final token = await storage.read(key: 'token');
+    if (token == null) throw Exception('No hay token');
+    final response = await http.delete(
+      Uri.parse('$apiBaseUrl/admin/pizza_bases/$id'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+    );
     return response.statusCode == 200;
   }
 

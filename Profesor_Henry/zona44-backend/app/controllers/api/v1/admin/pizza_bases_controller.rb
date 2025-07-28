@@ -6,7 +6,7 @@ module Api
         before_action :authorize_request
 
         def index
-          pizzas = PizzaBase.includes(:pizza_variants, :toppings, image_attachment: :blob).all
+          pizzas = PizzaBase.includes(:pizza_variants, :ingredients, :toppings, image_attachment: :blob).all
           render json: pizzas, status: :ok
         end
 
@@ -44,10 +44,16 @@ module Api
             :name,
             :description,
             :category,
+            :is_combinada,
             :has_cheese_border,
             :cheese_border_price,
+            prices_by_size: {},
+            included_ingredients: [],
+            cheese_border_prices: {},
             topping_ids: [],
-            pizza_variants_attributes: [:size, :price]
+            ingredient_ids: [],
+            pizza_variants_attributes: [:size, :price],
+            pizza_ingredients_attributes: [:ingredient_id, :_destroy]
           )
         end
       end

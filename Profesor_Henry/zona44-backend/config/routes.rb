@@ -23,6 +23,8 @@ Rails.application.routes.draw do
       # 👇 Rutas del panel de administrador
       namespace :admin do
         resources :pizza_bases
+        resources :pizza_sizes
+        resources :ingredients
         resources :pizza_variants, only: [ :create, :update, :destroy ]
         resources :toppings, only: [ :index, :create, :destroy ]
         resources :crust_options, only: [ :index, :create, :destroy ]
