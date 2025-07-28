@@ -175,6 +175,19 @@ class ApiService {
     }
   }
 
+  Future<List<PizzaBase>> fetchPizzaBasesByGroup(int groupId) async {
+    final response = await http.get(
+      Uri.parse('$apiBaseUrl/admin/pizza_bases?group_id=$groupId'), 
+      headers: await _authHeaders(),
+    );
+    if (response.statusCode == 200) {
+      final List data = jsonDecode(response.body);
+      return data.map((json) => PizzaBase.fromJson(json)).toList();
+    } else {
+      throw Exception('Error al obtener pizzas por grupo');
+    }
+  }
+
   Future<bool> createPizzaWeb({
     required String name,
     required String description,
@@ -183,26 +196,73 @@ class ApiService {
     required String imageName,
     required int cheeseBorderPrice,
     required bool hasCheeseBorder,
-    required List<Map<String, Object>> sizes,
+    required List<Map<String, Object>> pizza_variants_attributes,
   }) async {
-    final url = Uri.parse('$baseUrl/pizzas');
+    final token = await storage.read(key: 'token');
+    if (token == null) throw Exception('No hay token');
+
+    final url = Uri.parse('$apiBaseUrl/admin/pizza_bases');
     final Map<String, dynamic> data = {
       'name': name,
       'description': description,
       'category': category,
       'image': base64Encode(imageBytes),
-      'imageName': imageName,
-      'cheeseBorderPrice': cheeseBorderPrice,
-      'hasCheeseBorder': hasCheeseBorder,
-      'sizes': sizes,
+      'image_name': imageName,
+      'cheese_border_price': cheeseBorderPrice,
+      'has_cheese_border': hasCheeseBorder,
+      'pizza_variants_attributes': pizza_variants_attributes
+          .map((s) => {'size': s['size'], 'price': s['price']})
+          .toList(),
     };
 
     final response = await http.post(
       url,
-      headers: {'Content-Type': 'application/json'},
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
       body: jsonEncode(data),
     );
 
+    return response.statusCode == 201 || response.statusCode == 200;
+  }
+
+  Future<bool> createPizzaWebMultipart({
+    required String name,
+    required String description,
+    required String category,
+    required Uint8List imageBytes,
+    required String imageName,
+    required int cheeseBorderPrice,
+    required bool hasCheeseBorder,
+    required List<Map<String, Object>> pizza_variants_attributes,
+  }) async {
+    final token = await storage.read(key: 'token');
+    if (token == null) throw Exception('No hay token');
+
+    final uri = Uri.parse('$apiBaseUrl/admin/pizza_bases');
+    final request = http.MultipartRequest('POST', uri)
+      ..headers['Authorization'] = 'Bearer $token'
+      ..fields['name'] = name
+      ..fields['description'] = description
+      ..fields['category'] = category
+      ..fields['cheese_border_price'] = cheeseBorderPrice.toString()
+      ..fields['has_cheese_border'] = hasCheeseBorder.toString();
+
+    // Agregar variantes de pizza como campos anidados
+    for (int i = 0; i < pizza_variants_attributes.length; i++) {
+      final variant = pizza_variants_attributes[i];
+      request.fields['pizza_variants_attributes[$i][size]'] = variant['size']
+          .toString();
+      request.fields['pizza_variants_attributes[$i][price]'] = variant['price']
+          .toString();
+    }
+
+    request.files.add(
+      http.MultipartFile.fromBytes('image', imageBytes, filename: imageName),
+    );
+
+    final response = await http.Response.fromStream(await request.send());
     return response.statusCode == 201 || response.statusCode == 200;
   }
 
@@ -215,26 +275,34 @@ class ApiService {
     String? imageName,
     required int cheeseBorderPrice,
     required bool hasCheeseBorder,
-    required List<Map<String, Object>> sizes,
+    required List<Map<String, Object>> pizza_variants_attributes,
   }) async {
-    final url = Uri.parse('$baseUrl/pizzas/$id');
+    final token = await storage.read(key: 'token');
+    if (token == null) throw Exception('No hay token');
+
+    final url = Uri.parse('$apiBaseUrl/admin/pizza_bases/$id');
     final Map<String, dynamic> data = {
       'name': name,
       'description': description,
       'category': category,
-      'cheeseBorderPrice': cheeseBorderPrice,
-      'hasCheeseBorder': hasCheeseBorder,
-      'sizes': sizes,
+      'cheese_border_price': cheeseBorderPrice,
+      'has_cheese_border': hasCheeseBorder,
+      'pizza_variants_attributes': pizza_variants_attributes
+          .map((s) => {'size': s['size'], 'price': s['price']})
+          .toList(),
     };
 
     if (imageBytes != null && imageName != null) {
       data['image'] = base64Encode(imageBytes);
-      data['imageName'] = imageName;
+      data['image_name'] = imageName;
     }
 
     final response = await http.put(
       url,
-      headers: {'Content-Type': 'application/json'},
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
       body: jsonEncode(data),
     );
 
@@ -250,7 +318,7 @@ class ApiService {
     required bool hasCheeseBorder,
     required List<Map<String, Object>> sizes,
   }) async {
-    final url = Uri.parse('$baseUrl/pizzas');
+    final url = Uri.parse('$apiBaseUrl/admin/pizza_bases');
     final request = http.MultipartRequest('POST', url)
       ..fields['name'] = name
       ..fields['description'] = description
@@ -277,7 +345,7 @@ class ApiService {
     final token = await storage.read(key: 'token');
     if (token == null) throw Exception('No hay token');
 
-    final uri = Uri.parse('$apiBaseUrl/pizzas/$id');
+    final uri = Uri.parse('$apiBaseUrl/admin/pizza_bases/$id');
     final request = http.MultipartRequest('PUT', uri)
       ..headers['Authorization'] = 'Bearer \$token'
       ..fields['name'] = name

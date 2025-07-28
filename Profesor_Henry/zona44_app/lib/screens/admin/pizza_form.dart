@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'dart:typed_data';
-import 'dart:convert';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
@@ -55,10 +54,10 @@ class _PizzaFormScreenState extends State<PizzaFormScreen> {
 
       if (pizza.sizes != null) {
         _sizes = pizza.sizes!
-            .map((s) => PizzaSizeInput(
-                  size: s['size'],
-                  price: s['price'].toString(),
-                ))
+            .map(
+              (s) =>
+                  PizzaSizeInput(size: s['size'], price: s['price'].toString()),
+            )
             .toList();
       }
     }
@@ -98,12 +97,14 @@ class _PizzaFormScreenState extends State<PizzaFormScreen> {
 
     final isEdit = widget.pizza != null;
 
-    final sizesToSend = _sizes
+    final pizzaVariantsAttributes = _sizes
         .where((s) => s.size.isNotEmpty && s.price.isNotEmpty)
-        .map((s) => {
-              'size': s.size,
-              'price': int.tryParse(s.price) ?? 0,
-            })
+        .map(
+          (s) => {
+            'size': s.size.trim().toLowerCase(),
+            'price': int.tryParse(s.price) ?? 0,
+          },
+        )
         .toList();
 
     bool ok = false;
@@ -118,17 +119,17 @@ class _PizzaFormScreenState extends State<PizzaFormScreen> {
                 category: _category,
                 imageBytes: _webImageBytes!,
                 imageName: _webImageName!,
-                sizes: sizesToSend,
+                pizza_variants_attributes: pizzaVariantsAttributes,
                 hasCheeseBorder: _hasCheeseBorder,
                 cheeseBorderPrice: cheesePrice,
               )
-            : await _api.createPizzaWeb(
+            : await _api.createPizzaWebMultipart(
                 name: name,
                 description: desc,
                 category: _category,
                 imageBytes: _webImageBytes!,
                 imageName: _webImageName!,
-                sizes: sizesToSend,
+                pizza_variants_attributes: pizzaVariantsAttributes,
                 hasCheeseBorder: _hasCheeseBorder,
                 cheeseBorderPrice: cheesePrice,
               );
@@ -140,7 +141,7 @@ class _PizzaFormScreenState extends State<PizzaFormScreen> {
           category: _category,
           imageBytes: null,
           imageName: null,
-          sizes: sizesToSend,
+          pizza_variants_attributes: pizzaVariantsAttributes,
           hasCheeseBorder: _hasCheeseBorder,
           cheeseBorderPrice: cheesePrice,
         );
@@ -154,7 +155,7 @@ class _PizzaFormScreenState extends State<PizzaFormScreen> {
                 description: desc,
                 category: _category,
                 imageFile: _image!,
-                sizes: sizesToSend,
+                sizes: pizzaVariantsAttributes,
                 hasCheeseBorder: _hasCheeseBorder,
                 cheeseBorderPrice: cheesePrice,
               )
@@ -163,7 +164,7 @@ class _PizzaFormScreenState extends State<PizzaFormScreen> {
                 description: desc,
                 category: _category,
                 imageFile: _image!,
-                sizes: sizesToSend,
+                sizes: pizzaVariantsAttributes,
                 hasCheeseBorder: _hasCheeseBorder,
                 cheeseBorderPrice: cheesePrice,
               );
@@ -174,7 +175,7 @@ class _PizzaFormScreenState extends State<PizzaFormScreen> {
           description: desc,
           category: _category,
           imageFile: null,
-          sizes: sizesToSend,
+          sizes: pizzaVariantsAttributes,
           hasCheeseBorder: _hasCheeseBorder,
           cheeseBorderPrice: cheesePrice,
         );
@@ -184,9 +185,9 @@ class _PizzaFormScreenState extends State<PizzaFormScreen> {
     if (ok) {
       Navigator.pop(context, true);
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Error al guardar')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Error al guardar')));
     }
   }
 
@@ -213,25 +214,38 @@ class _PizzaFormScreenState extends State<PizzaFormScreen> {
                 value: _category,
                 decoration: const InputDecoration(labelText: 'Categoría'),
                 items: const [
-                  DropdownMenuItem(value: 'tradicional', child: Text('Tradicional')),
+                  DropdownMenuItem(
+                    value: 'tradicional',
+                    child: Text('Tradicional'),
+                  ),
                   DropdownMenuItem(value: 'especial', child: Text('Especial')),
-                  DropdownMenuItem(value: 'combinada', child: Text('Combinada')),
+                  DropdownMenuItem(
+                    value: 'combinada',
+                    child: Text('Combinada'),
+                  ),
                 ],
-                onChanged: (value) => setState(() => _category = value.toString()),
+                onChanged: (value) =>
+                    setState(() => _category = value.toString()),
               ),
 
               const SizedBox(height: 10),
               kIsWeb
                   ? (_webImageBytes != null
-                      ? Image.memory(_webImageBytes!, height: 80)
-                      : (widget.pizza?.imageUrl != null
-                          ? Image.network(widget.pizza!.imageUrl!, height: 80)
-                          : const Text('Sin imagen')))
+                        ? Image.memory(_webImageBytes!, height: 80)
+                        : (widget.pizza?.imageUrl != null
+                              ? Image.network(
+                                  widget.pizza!.imageUrl!,
+                                  height: 80,
+                                )
+                              : const Text('Sin imagen')))
                   : (_image != null
-                      ? Image.file(_image!, height: 80)
-                      : (widget.pizza?.imageUrl != null
-                          ? Image.network(widget.pizza!.imageUrl!, height: 80)
-                          : const Text('Sin imagen'))),
+                        ? Image.file(_image!, height: 80)
+                        : (widget.pizza?.imageUrl != null
+                              ? Image.network(
+                                  widget.pizza!.imageUrl!,
+                                  height: 80,
+                                )
+                              : const Text('Sin imagen'))),
 
               TextButton.icon(
                 icon: const Icon(Icons.image),
@@ -252,15 +266,19 @@ class _PizzaFormScreenState extends State<PizzaFormScreen> {
               ),
               TextField(
                 controller: _cheesePriceController,
-                decoration: const InputDecoration(labelText: 'Precio del borde de queso'),
+                decoration: const InputDecoration(
+                  labelText: 'Precio del borde de queso',
+                ),
                 keyboardType: TextInputType.number,
               ),
 
               const SizedBox(height: 20),
               Align(
                 alignment: Alignment.centerLeft,
-                child: Text('Tamaños y precios',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                child: Text(
+                  'Tamaños y precios',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
               ),
               ListView.builder(
                 shrinkWrap: true,
@@ -273,7 +291,9 @@ class _PizzaFormScreenState extends State<PizzaFormScreen> {
                         child: TextField(
                           decoration: InputDecoration(labelText: 'Tamaño'),
                           onChanged: (value) => _sizes[index].size = value,
-                          controller: TextEditingController(text: _sizes[index].size),
+                          controller: TextEditingController(
+                            text: _sizes[index].size,
+                          ),
                         ),
                       ),
                       SizedBox(width: 10),
@@ -282,7 +302,9 @@ class _PizzaFormScreenState extends State<PizzaFormScreen> {
                           decoration: InputDecoration(labelText: 'Precio'),
                           keyboardType: TextInputType.number,
                           onChanged: (value) => _sizes[index].price = value,
-                          controller: TextEditingController(text: _sizes[index].price),
+                          controller: TextEditingController(
+                            text: _sizes[index].price,
+                          ),
                         ),
                       ),
                       IconButton(

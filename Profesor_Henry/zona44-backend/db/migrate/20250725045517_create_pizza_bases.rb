@@ -3,7 +3,7 @@ class CreatePizzaBases < ActiveRecord::Migration[8.0]
     create_table :pizza_bases do |t|
       t.string :name
       t.text :description
-      t.integer :category
+      t.integer :category, default: 0, null: false
 
       t.timestamps
     end

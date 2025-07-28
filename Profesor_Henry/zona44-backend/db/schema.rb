@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_25_050301) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_28_190004) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -93,9 +93,16 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_25_050301) do
   create_table "pizza_bases", force: :cascade do |t|
     t.string "name"
     t.text "description"
-    t.integer "category"
+    t.integer "category", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "has_cheese_border"
+    t.integer "cheese_border_price"
+  end
+
+  create_table "pizza_bases_toppings", id: false, force: :cascade do |t|
+    t.bigint "pizza_base_id", null: false
+    t.bigint "topping_id", null: false
   end
 
   create_table "pizza_combinations", force: :cascade do |t|

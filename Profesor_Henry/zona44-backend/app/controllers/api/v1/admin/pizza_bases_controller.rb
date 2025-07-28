@@ -40,7 +40,15 @@ module Api
         private
 
         def pizza_params
-          params.permit(:name, :description, :category, topping_ids: [])
+          params.permit(
+            :name,
+            :description,
+            :category,
+            :has_cheese_border,
+            :cheese_border_price,
+            topping_ids: [],
+            pizza_variants_attributes: [:size, :price]
+          )
         end
       end
     end
