@@ -3,6 +3,7 @@ module Api
     module Admin
       class ProductsController < ApplicationController
         before_action :authorize_request
+        before_action :authorize_admin
         before_action :set_product, only: [ :show, :update, :destroy ]
 
         # GET /api/v1/admin/products
@@ -66,6 +67,12 @@ module Api
             group_id: product.group_id,
             image_url: product.image.attached? ? url_for(product.image) : nil
           }
+        end
+
+        def authorize_admin
+          unless current_user&.admin?
+            render json: { error: "Acceso denegado" }, status: :forbidden
+          end
         end
       end
     end

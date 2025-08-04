@@ -1,6 +1,7 @@
 module Api
   module V1
     class ProductsController < BaseController
+      skip_before_action :authorize_request
       def index
         if params[:group_id]
           products = Product.where(group_id: params[:group_id])

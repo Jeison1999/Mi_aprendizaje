@@ -3,6 +3,7 @@ module Api
     module Admin
       class GroupsController < ApplicationController
         before_action :authorize_request
+        before_action :authorize_admin
         before_action :set_group, only: [ :update, :destroy ]
 
         # GET /api/v1/admin/groups
@@ -58,6 +59,12 @@ module Api
             params.require(:group).permit(:name, :description)
           else
             params.permit(:name, :description)
+          end
+        end
+        
+        def authorize_admin
+          unless current_user&.admin?
+            render json: { error: "Acceso denegado" }, status: :forbidden
           end
         end
       end

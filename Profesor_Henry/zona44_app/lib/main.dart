@@ -1,8 +1,11 @@
 // lib/main.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:zona44_app/screens/register_screen.dart';
 import 'screens/login_screen.dart';
 import 'screens/home_screen.dart';
+import 'screens/client_home_screen.dart';
+import 'screens/admin_dashboard_screen.dart';
 import 'providers/auth_provider.dart';
 import 'screens/admin/pizza_form.dart';
 
@@ -26,8 +29,11 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': (context) => const LoginScreen(),
+        '/client': (context) => const ClientHomeScreen(),
+        '/admin': (context) => const AdminDashboardScreen(),
         '/home': (context) => const HomeScreen(),
         '/pizza_form': (context) => const PizzaFormScreen(),
+        '/register': (context) => const RegisterScreen(),
       },
     );
   }

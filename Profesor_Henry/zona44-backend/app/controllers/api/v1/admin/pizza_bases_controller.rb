@@ -4,6 +4,7 @@ module Api
     module Admin
       class PizzaBasesController < ApplicationController
         before_action :authorize_request
+        before_action :authorize_admin
 
         def index
           pizzas = PizzaBase.includes(:pizza_variants, :ingredients, :toppings, image_attachment: :blob).all
@@ -55,6 +56,12 @@ module Api
             pizza_variants_attributes: [:size, :price],
             pizza_ingredients_attributes: [:ingredient_id, :_destroy]
           )
+        end
+
+        def authorize_admin
+          unless current_user&.admin?
+            render json: { error: "Acceso denegado" }, status: :forbidden
+          end
         end
       end
     end

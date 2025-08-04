@@ -31,7 +31,12 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() => _loading = false);
 
     if (success) {
-      Navigator.pushReplacementNamed(context, '/home');
+      final role = authProvider.user?['role'];
+      if (role == 'admin') {
+        Navigator.pushReplacementNamed(context, '/admin');
+      } else {
+        Navigator.pushReplacementNamed(context, '/client');
+      }
     } else {
       setState(() => _error = 'Correo o contraseña incorrectos');
     }
@@ -63,6 +68,13 @@ class _LoginScreenState extends State<LoginScreen> {
               child: _loading
                   ? const CircularProgressIndicator()
                   : const Text('Ingresar'),
+            ),
+            const SizedBox(height: 10),
+            TextButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/register');
+              },
+              child: const Text('¿No tienes cuenta? Regístrate'),
             ),
           ],
         ),

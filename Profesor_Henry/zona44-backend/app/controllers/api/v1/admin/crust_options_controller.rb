@@ -3,6 +3,7 @@ module Api
     module Admin
       class CrustOptionsController < ApplicationController
         before_action :authorize_request
+        before_action :authorize_admin
 
         def index
           render json: CrustOption.all
@@ -26,6 +27,12 @@ module Api
 
         def crust_params
           params.permit(:size, :price)
+        end
+
+        def authorize_admin
+          unless current_user&.admin?
+            render json: { error: "Acceso denegado" }, status: :forbidden
+          end
         end
       end
     end

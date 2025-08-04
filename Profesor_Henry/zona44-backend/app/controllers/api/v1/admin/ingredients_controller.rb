@@ -3,6 +3,7 @@ module Api
     module Admin
       class IngredientsController < ApplicationController
         before_action :authorize_request
+        before_action :authorize_admin
 
         def index
           ingredients = Ingredient.all
@@ -38,6 +39,12 @@ module Api
 
         def ingredient_params
           params.permit(:name, :image_url, :is_available, prices_by_size: {})
+        end
+
+        def authorize_admin
+          unless current_user&.admin?
+            render json: { error: "Acceso denegado" }, status: :forbidden
+          end
         end
       end
     end

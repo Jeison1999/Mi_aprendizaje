@@ -3,6 +3,7 @@ module Api
     module Admin
       class PizzaSizesController < ApplicationController
         before_action :authorize_request
+        before_action :authorize_admin
 
         def index
           sizes = PizzaSize.all
@@ -38,6 +39,12 @@ module Api
 
         def pizza_size_params
           params.permit(:name, :slices, :diameter, :base_price)
+        end
+
+        def authorize_admin
+          unless current_user&.admin?
+            render json: { error: "Acceso denegado" }, status: :forbidden
+          end
         end
       end
     end

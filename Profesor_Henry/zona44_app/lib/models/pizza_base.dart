@@ -1,5 +1,3 @@
-import 'pizza_size.dart';
-import 'ingredient.dart';
 
 class PizzaBase {
   final int? id;
