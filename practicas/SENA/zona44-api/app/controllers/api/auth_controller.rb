@@ -18,7 +18,7 @@ class Api::AuthController < ApplicationController
       token = generar_token(usuario)
       render json: { usuario: usuario_response(usuario), token: token }
     else
-      render json: { error: 'Credenciales inválidas' }, status: :unauthorized
+      render json: { error: "Credenciales inválidas" }, status: :unauthorized
     end
   end
 
@@ -45,13 +45,13 @@ class Api::AuthController < ApplicationController
 
   def generar_token(usuario)
     payload = { usuario_id: usuario.id }
-    JWT.encode(payload, Rails.application.secrets.secret_key_base)
+    JWT.encode(payload, Rails.application.credentials.secret_key_base)
   end
 
   def usuario_actual
-    cabecera = request.headers['Authorization']
+    cabecera = request.headers["Authorization"]
     token = cabecera.split.last rescue nil
-    decoded = JWT.decode(token, Rails.application.secrets.secret_key_base)[0]
+    decoded = JWT.decode(token, Rails.application.credentials.secret_key_base)[0]
     Usuario.find(decoded["usuario_id"])
   rescue
     nil
