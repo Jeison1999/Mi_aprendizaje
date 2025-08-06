@@ -47,4 +47,6 @@ group :development, :test do
   
   # Load environment variables from .env file
   gem "dotenv-rails"
+  gem 'bcrypt', '~> 3.1.7'        # Para manejar contraseñas seguras
+  gem 'jwt'                       # Para generar y leer tokens JWT
 end
