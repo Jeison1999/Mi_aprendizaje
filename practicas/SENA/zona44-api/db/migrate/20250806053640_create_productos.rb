@@ -3,7 +3,7 @@ class CreateProductos < ActiveRecord::Migration[8.0]
     create_table :productos do |t|
       t.string :nombre, null: false
       t.text :descripcion
-      t.string :imagen
+      t.decimal :precio, precision: 10, scale: 2  # <- Añadido
       t.references :grupo, null: false, foreign_key: true
 
       t.timestamps

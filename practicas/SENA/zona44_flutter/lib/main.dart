@@ -6,6 +6,8 @@ void main() {
 }
 
 class Zona44App extends StatelessWidget {
+  const Zona44App({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(

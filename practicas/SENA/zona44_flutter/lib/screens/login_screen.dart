@@ -3,8 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../config/api_config.dart';
+import 'verificar_sesion.dart'; // 👈 Asegúrate de importar esto
 
 class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
   @override
   State<LoginScreen> createState() => _LoginScreenState();
 }
@@ -30,13 +33,19 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
+
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setString("token", data['token']);
 
-      // Aquí puedes navegar a otra pantalla como HomeScreen
       setState(() {
         mensaje = "Inicio de sesión exitoso ✅";
       });
+
+      // ✅ Redirige a VerificarSesion para validar el rol
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => VerificarSesion()),
+      );
     } else {
       setState(() {
         mensaje = "Error: ${jsonDecode(response.body)['error']}";

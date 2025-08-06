@@ -5,6 +5,8 @@ import 'package:zona44_flutter/screens/panel_admin.dart';
 import 'package:zona44_flutter/services/api_service.dart';
 
 class VerificarSesion extends StatefulWidget {
+  const VerificarSesion({super.key});
+
   @override
   _VerificarSesionState createState() => _VerificarSesionState();
 }

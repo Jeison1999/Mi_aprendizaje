@@ -5,8 +5,8 @@ Rails.application.routes.draw do
     get    'perfil',   to: 'auth#perfil'
     post 'payu/pagar', to: 'payu#pagar'
 
-    resources :grupos, only: [:index, :show, :create]
-    resources :productos, only: [:index, :show, :create]
+    resources :grupos, only: [:index, :show, :create, :update, :destroy]
+    resources :productos, only: [:index, :show, :create, :update, :destroy]
     resources :tamano_pizzas, only: [:index]
     resources :adicionals, only: [:index, :create]
 

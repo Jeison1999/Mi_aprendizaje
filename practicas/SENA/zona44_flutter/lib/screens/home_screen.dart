@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class HomeScreen extends StatelessWidget {
   final Map<String, dynamic>? usuario;
 
-  const HomeScreen({Key? key, this.usuario}) : super(key: key);
+  const HomeScreen({super.key, this.usuario});
 
   @override
   Widget build(BuildContext context) {
