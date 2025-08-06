@@ -49,4 +49,6 @@ group :development, :test do
   gem "dotenv-rails"
   gem 'bcrypt', '~> 3.1.7'        # Para manejar contraseñas seguras
   gem 'jwt'                       # Para generar y leer tokens JWT
+  gem 'http'
+
 end
