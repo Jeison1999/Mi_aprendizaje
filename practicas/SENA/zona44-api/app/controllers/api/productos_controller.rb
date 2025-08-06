@@ -1,9 +1,15 @@
 class Api::ProductosController < ApplicationController
-  before_action :set_producto, only: [:show, :update, :destroy]
-  skip_before_action :autorizar_usuario, only: [:index, :show]
+  before_action :set_producto, only: [ :show, :update, :destroy ]
+  skip_before_action :autorizar_usuario, only: [ :index, :show ]
 
   def index
-    productos = Producto.all.includes(:grupo)
+    productos = if params[:grupo_id]
+                  Producto.where(grupo_id: params[:grupo_id])
+    else
+                  Producto.all
+    end
+
+    productos = productos.includes(:grupo)
     render json: productos.map { |p| producto_response(p) }
   end
 

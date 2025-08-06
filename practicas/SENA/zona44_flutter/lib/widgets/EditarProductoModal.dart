@@ -4,32 +4,37 @@ import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:mime/mime.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:path/path.dart' as path;
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../config/api_config.dart';
 
-class CrearProductoModal extends StatefulWidget {
-  final VoidCallback onProductoCreado;
+class EditarProductoModal extends StatefulWidget {
+  final Map producto;
+  final VoidCallback onProductoEditado;
 
-  const CrearProductoModal({super.key, required this.onProductoCreado});
+  const EditarProductoModal({
+    super.key,
+    required this.producto,
+    required this.onProductoEditado,
+  });
 
   @override
-  _CrearProductoModalState createState() => _CrearProductoModalState();
+  State<EditarProductoModal> createState() => _EditarProductoModalState();
 }
 
-class _CrearProductoModalState extends State<CrearProductoModal> {
-  final nombreController = TextEditingController();
-  final descripcionController = TextEditingController();
-  final precioController = TextEditingController();
+class _EditarProductoModalState extends State<EditarProductoModal> {
+  late TextEditingController nombreController;
+  late TextEditingController descripcionController;
+  late TextEditingController precioController;
 
-  File? imagenSeleccionada; // móvil
-  Uint8List? imagenWeb; // web
-  String? imagenNombre; // nombre del archivo
+  File? imagenSeleccionada;
+  Uint8List? imagenWeb;
+  String? imagenNombre;
   int? grupoSeleccionado;
   List grupos = [];
   bool cargando = false;
@@ -37,6 +42,14 @@ class _CrearProductoModalState extends State<CrearProductoModal> {
   @override
   void initState() {
     super.initState();
+    nombreController = TextEditingController(text: widget.producto['nombre']);
+    descripcionController = TextEditingController(
+      text: widget.producto['descripcion'] ?? '',
+    );
+    precioController = TextEditingController(
+      text: widget.producto['precio'].toString(),
+    );
+    grupoSeleccionado = widget.producto['grupo_id'];
     cargarGrupos();
   }
 
@@ -67,21 +80,18 @@ class _CrearProductoModalState extends State<CrearProductoModal> {
     }
   }
 
-  Future<void> crearProducto() async {
+  Future<void> actualizarProducto() async {
     if (nombreController.text.isEmpty ||
         precioController.text.isEmpty ||
-        grupoSeleccionado == null ||
-        (imagenSeleccionada == null && imagenWeb == null)) {
+        grupoSeleccionado == null)
       return;
-    }
 
     setState(() => cargando = true);
 
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token');
-
-    final uri = Uri.parse('$apiUrl/api/productos');
-    final request = http.MultipartRequest('POST', uri);
+    final uri = Uri.parse('$apiUrl/api/productos/${widget.producto['id']}');
+    final request = http.MultipartRequest('PATCH', uri);
     request.headers['Authorization'] = 'Bearer $token';
 
     request.fields['nombre'] = nombreController.text;
@@ -89,49 +99,48 @@ class _CrearProductoModalState extends State<CrearProductoModal> {
     request.fields['precio'] = precioController.text;
     request.fields['grupo_id'] = grupoSeleccionado.toString();
 
-    http.MultipartFile archivo;
-
-    if (kIsWeb && imagenWeb != null) {
-      final mimeType = lookupMimeType(imagenNombre ?? 'file.jpg', headerBytes: imagenWeb!) ?? 'image/jpeg';
-      archivo = http.MultipartFile.fromBytes(
-        'imagen',
-        imagenWeb!,
-        filename: imagenNombre ?? 'imagen.jpg',
-        contentType: MediaType.parse(mimeType),
+    if (imagenWeb != null) {
+      final mimeType =
+          lookupMimeType(imagenNombre ?? 'file.jpg', headerBytes: imagenWeb!) ??
+          'image/jpeg';
+      request.files.add(
+        http.MultipartFile.fromBytes(
+          'imagen',
+          imagenWeb!,
+          filename: imagenNombre ?? 'imagen.jpg',
+          contentType: MediaType.parse(mimeType),
+        ),
       );
     } else if (imagenSeleccionada != null) {
       final mimeType = lookupMimeType(imagenSeleccionada!.path) ?? 'image/jpeg';
-      archivo = await http.MultipartFile.fromPath(
-        'imagen',
-        imagenSeleccionada!.path,
-        contentType: MediaType.parse(mimeType),
-        filename: path.basename(imagenSeleccionada!.path),
+      request.files.add(
+        await http.MultipartFile.fromPath(
+          'imagen',
+          imagenSeleccionada!.path,
+          contentType: MediaType.parse(mimeType),
+          filename: path.basename(imagenSeleccionada!.path),
+        ),
       );
-    } else {
-      setState(() => cargando = false);
-      return;
     }
-
-    request.files.add(archivo);
 
     final response = await request.send();
 
     setState(() => cargando = false);
 
-    if (response.statusCode == 201) {
+    if (response.statusCode == 200) {
       Navigator.pop(context);
-      widget.onProductoCreado();
+      widget.onProductoEditado();
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error al crear producto")),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Error al actualizar producto")));
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text("Crear nuevo producto"),
+      title: Text("Editar producto"),
       content: SingleChildScrollView(
         child: Column(
           children: [
@@ -156,7 +165,8 @@ class _CrearProductoModalState extends State<CrearProductoModal> {
                   child: Text(g['nombre']),
                 );
               }).toList(),
-              onChanged: (val) => setState(() => grupoSeleccionado = val as int),
+              onChanged: (val) =>
+                  setState(() => grupoSeleccionado = val as int),
               decoration: InputDecoration(labelText: "Grupo"),
             ),
             SizedBox(height: 10),
@@ -165,10 +175,12 @@ class _CrearProductoModalState extends State<CrearProductoModal> {
             if (imagenWeb != null && kIsWeb)
               Image.memory(imagenWeb!, height: 100),
             if (imagenSeleccionada == null && imagenWeb == null)
-              Text("No se ha seleccionado imagen"),
+              widget.producto['imagen_url'] != null
+                  ? Image.network(widget.producto['imagen_url'], height: 100)
+                  : Text("No se ha seleccionado imagen"),
             TextButton(
               onPressed: seleccionarImagen,
-              child: Text("Seleccionar imagen"),
+              child: Text("Cambiar imagen"),
             ),
           ],
         ),
@@ -179,8 +191,8 @@ class _CrearProductoModalState extends State<CrearProductoModal> {
           child: Text("Cancelar"),
         ),
         ElevatedButton(
-          onPressed: cargando ? null : crearProducto,
-          child: cargando ? CircularProgressIndicator() : Text("Crear"),
+          onPressed: cargando ? null : actualizarProducto,
+          child: cargando ? CircularProgressIndicator() : Text("Guardar"),
         ),
       ],
     );
