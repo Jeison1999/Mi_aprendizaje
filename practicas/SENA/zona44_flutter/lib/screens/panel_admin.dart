@@ -91,6 +91,7 @@ class _PanelAdminState extends State<PanelAdmin> {
                         Expanded(
                           child: Image.network(
                             grupo['imagen_url'] ?? '',
+                            key: ValueKey(grupo['imagen_url']),
                             fit: BoxFit.cover,
                             width: double.infinity,
                             errorBuilder: (_, __, ___) =>
@@ -110,16 +111,30 @@ class _PanelAdminState extends State<PanelAdmin> {
                             IconButton(
                               icon: Icon(Icons.edit),
                               onPressed: () async {
-                                final actualizado = await showDialog<bool>(
+                                final timestamp =
+                                    DateTime.now().millisecondsSinceEpoch;
+                                await showDialog(
                                   context: context,
                                   builder: (_) => EditarGrupoModal(
                                     grupo: grupo,
-                                    onGrupoActualizado: () {},
+                                    onGrupoActualizado: () async {
+                                      final grupoActualizado =
+                                          await ApiService.getGrupoPorId(
+                                            grupo['id'],
+                                          );
+                                      setState(() {
+                                        final idx = grupos.indexWhere(
+                                          (g) => g['id'] == grupo['id'],
+                                        );
+                                        if (idx != -1) {
+                                          grupoActualizado['imagen_url'] =
+                                              '${grupoActualizado['imagen_url']}?t=$timestamp';
+                                          grupos[idx] = grupoActualizado;
+                                        }
+                                      });
+                                    },
                                   ),
                                 );
-                                if (actualizado == true) {
-                                  cargarGrupos();
-                                }
                               },
                             ),
                             IconButton(

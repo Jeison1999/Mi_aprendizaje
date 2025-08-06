@@ -4,6 +4,20 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../config/api_config.dart';
 
 class ApiService {
+  static Future<Map<String, dynamic>> getGrupoPorId(int id) async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+    final response = await http.get(
+      Uri.parse('$apiUrl/api/grupos/$id'),
+      headers: {'Authorization': 'Bearer $token'},
+    );
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception('Error al cargar grupo');
+    }
+  }
+
   static Future<List<dynamic>> getProductosPorGrupo(int grupoId) async {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token');
