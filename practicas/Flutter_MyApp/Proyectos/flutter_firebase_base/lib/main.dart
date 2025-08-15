@@ -1,8 +1,14 @@
+import 'package:flutter_firebase_base/src/screens/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_firebase_base/src/models/paciente.dart';
+import 'package:flutter_firebase_base/src/screens/ordenes_screen.dart';
+import 'package:flutter_firebase_base/src/screens/resultados_screen.dart';
 import 'firebase_options.dart'; // generado por FlutterFire CLI
+import 'src/screens/login_screen.dart';
+import 'src/screens/perfil_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,97 +29,65 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Flutter Firebase Base',
-      home: FutureBuilder(
-        future: _initializeFirebase(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Scaffold(
-              body: Center(child: CircularProgressIndicator()),
-            );
-          } else if (snapshot.hasError) {
-            return const Scaffold(
-              body: Center(child: Text('Error al conectar con Firebase')),
-            );
+      initialRoute: '/',
+      routes: {
+        '/home': (context) {
+          final args = ModalRoute.of(context)!.settings.arguments;
+          if (args is Paciente) {
+            return HomeScreen(paciente: args);
           } else {
-            return FirebaseAuth.instance.currentUser == null
-                ? const LoginPage()
-                : const HomePage();
+            return const Scaffold(
+              body: Center(
+                child: Text('Error: No se recibió información del paciente.'),
+              ),
+            );
           }
         },
-      ),
-    );
-  }
-}
-
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
-
-  @override
-  State<LoginPage> createState() => _LoginPageState();
-}
-
-class _LoginPageState extends State<LoginPage> {
-  final emailController = TextEditingController();
-  final passwordController = TextEditingController();
-
-  Future<void> login() async {
-    try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: emailController.text.trim(),
-        password: passwordController.text.trim(),
-      );
-      setState(() {});
-    } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Error: $e")));
-    }
-  }
-
-  Future<void> register() async {
-    try {
-      await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: emailController.text.trim(),
-        password: passwordController.text.trim(),
-      );
-      setState(() {});
-    } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Error: $e")));
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text("Login")),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            TextField(
-              controller: emailController,
-              decoration: const InputDecoration(labelText: "Email"),
-            ),
-            TextField(
-              controller: passwordController,
-              decoration: const InputDecoration(labelText: "Contraseña"),
-              obscureText: true,
-            ),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: login,
-              child: const Text("Iniciar sesión"),
-            ),
-            ElevatedButton(onPressed: register, child: const Text("Registrar")),
-          ],
+        '/': (context) => FutureBuilder(
+          future: _initializeFirebase(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Scaffold(
+                body: Center(child: CircularProgressIndicator()),
+              );
+            } else if (snapshot.hasError) {
+              return const Scaffold(
+                body: Center(child: Text('Error al conectar con Firebase')),
+              );
+            } else {
+              return const LoginScreen();
+            }
+          },
         ),
-      ),
+        '/perfil': (context) {
+          final args = ModalRoute.of(context)!.settings.arguments;
+          if (args is Paciente) {
+            return PerfilScreen(paciente: args);
+          } else {
+            return const Scaffold(
+              body: Center(
+                child: Text('Error: No se recibió información del paciente.'),
+              ),
+            );
+          }
+        },
+        '/ordenes': (context) {
+          final numeroId = ModalRoute.of(context)!.settings.arguments as String;
+          return OrdenesScreen(idDocumento: numeroId);
+        },
+        '/resultados': (context) {
+          final idOrden = ModalRoute.of(context)!.settings.arguments as String;
+          return ResultadosScreen(idOrden: idOrden);
+        },
+      },
     );
   }
 }
+
+// ...existing code...
+
+// The login and register logic should be handled inside LoginScreen (src/screens/login_screen.dart).
+// Remove this duplicate code from main.dart.
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -132,7 +106,7 @@ class HomePage extends StatelessWidget {
               await FirebaseAuth.instance.signOut();
               Navigator.pushAndRemoveUntil(
                 context,
-                MaterialPageRoute(builder: (_) => const LoginPage()),
+                MaterialPageRoute(builder: (_) => const LoginScreen()),
                 (route) => false,
               );
             },
