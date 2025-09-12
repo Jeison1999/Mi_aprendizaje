@@ -12,6 +12,11 @@ export const routes: Routes = [
     {
         path: 'hero',
         component: HeroPageComponent
+    },
+    {
+        //catch all, redirigir a la página principal
+        path: '**',
+        redirectTo: ''
     }
 
 ];
