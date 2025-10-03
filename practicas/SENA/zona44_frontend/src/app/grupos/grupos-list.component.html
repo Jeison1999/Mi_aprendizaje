@@ -1,0 +1,15 @@
+<div class="grupos-list">
+  <h2>Grupos de comida</h2>
+  <button *ngIf="esAdmin() && !mostrarForm" (click)="crearGrupo()">Crear grupo</button>
+  <app-grupo-form *ngIf="mostrarForm" [grupo]="editando" (guardar)="guardarGrupo($event)" (cancelar)="cancelarForm()"></app-grupo-form>
+  <ul>
+    <li *ngFor="let grupo of grupos">
+      <strong>{{ grupo.nombre }}</strong>: {{ grupo.descripcion }}
+      <span *ngIf="esAdmin() && !mostrarForm">
+        <button (click)="editarGrupo(grupo)">Editar</button>
+        <button (click)="eliminarGrupo(grupo)">Eliminar</button>
+      </span>
+    </li>
+  </ul>
+  <div *ngIf="error" class="error">{{ error }}</div>
+</div>

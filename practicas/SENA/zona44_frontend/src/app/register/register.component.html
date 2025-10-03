@@ -1,0 +1,10 @@
+<div class="register-form">
+  <h2>Registrarse</h2>
+  <form (ngSubmit)="register()">
+    <input type="text" [(ngModel)]="nombre" name="nombre" placeholder="Nombre" required>
+    <input type="email" [(ngModel)]="email" name="email" placeholder="Correo" required>
+    <input type="password" [(ngModel)]="password" name="password" placeholder="Contraseña" required>
+    <button type="submit">Registrarse</button>
+  </form>
+  <div *ngIf="error" class="error">{{ error }}</div>
+</div>

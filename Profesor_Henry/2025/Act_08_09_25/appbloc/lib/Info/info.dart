@@ -1,7 +1,7 @@
 import 'package:appbloc/imports/imports.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'bloc/info_bloc.dart';
+import 'cubit/info_bloc_cubit.dart';
 
 class Info extends StatelessWidget {
   final int cedula;
@@ -14,7 +14,7 @@ class Info extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: Center(child: Text('Bienvenido'))),
       body: BlocProvider(
-        create: (context) => InfoBloc()..add(TraerinfoEvent()),
+        create: (context) => InfoBlocCubit()..traerInfo(),
         child: Column(
           children: [
             Center(
@@ -25,16 +25,15 @@ class Info extends StatelessWidget {
               ),
             ),
             SizedBox(height: size.height * 0.1),
-            BlocBuilder<InfoBloc, InfoState>(
+            BlocBuilder<InfoBlocCubit, InfoBlocState>(
               builder: (context, state) {
-                if (state is InfoInitialState) {
+                if (state is InfoBlocInitial) {
                   return InfoInitial(size: size);
-                } else if (state is InfoLoadingState) {
+                } else if (state is InfoBlocLoading) {
                   return InfoLoading(size: size);
-                } else if (state is InfoFailureState) {
+                } else if (state is InfoBlocFailure) {
                   return InfoFailure(size: size);
-                  
-                } else if (state is InfoSuccessState) {
+                } else if (state is InfoBlocSuccess) {
                   return InfoSuccess(size: size, vehiculo: state.vehiculo);
                 }
                 return Center(child: Text('Cargando datos'));

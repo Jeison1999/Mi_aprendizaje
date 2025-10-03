@@ -1,0 +1,15 @@
+<div class="productos-list">
+  <h2>Productos</h2>
+  <button *ngIf="esAdmin() && !mostrarForm" (click)="crearProducto()">Crear producto</button>
+  <app-producto-form *ngIf="mostrarForm" [producto]="editando" (guardar)="guardarProducto($event)" (cancelar)="cancelarForm()"></app-producto-form>
+  <ul>
+    <li *ngFor="let producto of productos">
+      <strong>{{ producto.nombre }}</strong>: {{ producto.descripcion }} - ${{ producto.precio }}
+      <span *ngIf="esAdmin() && !mostrarForm">
+        <button (click)="editarProducto(producto)">Editar</button>
+        <button (click)="eliminarProducto(producto)">Eliminar</button>
+      </span>
+    </li>
+  </ul>
+  <div *ngIf="error" class="error">{{ error }}</div>
+</div>

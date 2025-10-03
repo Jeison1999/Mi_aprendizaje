@@ -1,7 +1,6 @@
 import 'package:appbloc/imports/imports.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-import '../bloc/info_bloc.dart';
+import 'package:appbloc/Info/cubit/info_bloc_cubit.dart';
 
 class InfoFailure extends StatelessWidget {
   const InfoFailure({super.key, required this.size});
@@ -20,11 +19,14 @@ class InfoFailure extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon( Icons.cancel_outlined),
+          Icon(Icons.cancel_outlined),
           Text('Error al cargar los datos'),
-          ElevatedButton(onPressed: (){
-            context.read<InfoBloc>().add(TraerinfoEvent());
-          }, child: Text('reintentar'))
+          ElevatedButton(
+            onPressed: () {
+              context.read<InfoBlocCubit>().traerInfo();
+            },
+            child: Text('reintentar'),
+          ),
         ],
       ),
     );

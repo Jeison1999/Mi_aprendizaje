@@ -1,0 +1,11 @@
+<form (ngSubmit)="submit()">
+  <label>Nombre:</label>
+  <input type="text" [(ngModel)]="producto.nombre" name="nombre" required>
+  <label>Descripción:</label>
+  <input type="text" [(ngModel)]="producto.descripcion" name="descripcion" required>
+  <label>Precio:</label>
+  <input type="number" [(ngModel)]="producto.precio" name="precio" required min="1">
+  <button type="submit">Guardar</button>
+  <button type="button" (click)="cancelar.emit()">Cancelar</button>
+  <div *ngIf="error" class="error">{{ error }}</div>
+</form>

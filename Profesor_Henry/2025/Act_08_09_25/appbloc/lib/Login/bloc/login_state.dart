@@ -18,5 +18,4 @@ final class LoginSuccessbloc extends LoginState {
   final String nombre;
 
   LoginSuccessbloc({required this.cedula, required this.nombre});
-
 }

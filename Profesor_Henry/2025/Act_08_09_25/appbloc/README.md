@@ -14,3 +14,33 @@ A few resources to get you started if this is your first Flutter project:
 For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
+
+{
+  "usuarios": [
+    {
+      "cedula": "12345678",
+      "nombre": "Juan Pablo",
+      "activo": true
+    },
+    {
+      "cedula": "1043128768", 
+      "nombre": "Jeison Ortiz",
+      "activo": true
+    },
+    {
+      "cedula": "11223344",
+      "nombre": "Carlos López",
+      "activo": true
+    },
+    {
+      "cedula": "55667788",
+      "nombre": "Ana Martínez",
+      "activo": false
+    },
+    {
+      "cedula": "99887766",
+      "nombre": "Luis Rodríguez",
+      "activo": true
+    }
+  ]
+}

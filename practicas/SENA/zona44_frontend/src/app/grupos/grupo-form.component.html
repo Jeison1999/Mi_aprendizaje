@@ -1,0 +1,9 @@
+<form (ngSubmit)="submit()">
+  <label>Nombre:</label>
+  <input type="text" [(ngModel)]="grupo.nombre" name="nombre" required>
+  <label>Descripción:</label>
+  <input type="text" [(ngModel)]="grupo.descripcion" name="descripcion" required>
+  <button type="submit">Guardar</button>
+  <button type="button" (click)="cancelar.emit()">Cancelar</button>
+  <div *ngIf="error" class="error">{{ error }}</div>
+</form>
