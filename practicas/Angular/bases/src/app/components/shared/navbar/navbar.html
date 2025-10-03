@@ -10,11 +10,25 @@
         color: white;
         text-decoration: none;
     }
+    
+    nav a.active{
+        color: red;
+    }
+    
 </style>
 
 <nav>
-    <a routerLink="/">Counter</a>
-    <a [routerLink]="['/hero']">Hero</a>
+    <!-- esta foma de enlazar rutas es la mas sencilla -->
+    <!-- el routerLinkActive="active" sirve para poner una clase css cuando la ruta esta activa. -->
+    <!-- el [routerLinkActiveOptions]="{exact: true}" con esta uno se pone en rojo y el otro se quita. -->
+    <a routerLink="/" routerLinkActive="active"
+    [routerLinkActiveOptions]="{exact: true}">
+
+    Counter</a>
+
+    <!-- esta es otra forma de enlazar rutas segun angular -->
+    <a [routerLink]="['/hero']" [routerLinkActive]="'active'">Hero</a>
+    <a routerLink="/dragonball" [routerLinkActive]="'active'">DragonBall</a>
 
     <!-- <a href="">p</a> -->
 </nav>

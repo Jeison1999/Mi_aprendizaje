@@ -1,0 +1,38 @@
+<h1>dragonball</h1>
+<hr>
+
+<section class="row">
+    <div class="col-12 col-sm-6">
+        <h3>agregar: {{name()}}</h3>
+        <input
+         type="text" 
+         class="form-control" 
+         placeholder="nombre"
+         [value]="name()"
+        >
+        <input type="number" class="form-control mt-2" placeholder="poder">
+        <button class="mt-2 btn btn-primary">Agregar</button>
+    </div>
+
+    <div class="col-12 col-sm-6">
+        <h3>Listado</h3>
+        <ul>
+            @for (character of characters(); track character.id; let cont = $index) {
+                @if (character.power > 500) {
+                    <li>
+                        <span>{{cont + 1}}-{{ character.name }}</span>
+                        <strong
+                        [class.text-danger]="character.power > 9000"
+                        [class.text-primary]="character.power < 9000"
+                        > 
+                        ({{ character.power}})
+                            
+                        </strong>
+                    </li>
+                }@else {
+                    <li><strong>aqui no hay nada</strong></li>
+                }
+            }
+        </ul>
+    </div>
+</section>

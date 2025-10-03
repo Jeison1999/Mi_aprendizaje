@@ -10,7 +10,7 @@ export class HeroPageComponent {
     age = signal(45);
 
 
-    //señal computalizada
+    //señal computalizada, solo recibe texto y no puede ser modificada
     heroDescription = computed(() => {
         const description = `Mi nombre es ${ this.name() } y tengo ${ this.age() } años`;
         return description;
