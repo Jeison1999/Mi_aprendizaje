@@ -47,7 +47,7 @@
         <span>Total:</span>
         <strong>{{ total | currency:'COP':'symbol':'1.0-0' }}</strong>
       </div>
-      <button class="checkout" [disabled]="items.length === 0" (click)="checkout.emit()">
+      <button class="checkout" [disabled]="items.length === 0" (click)="goToCheckout()">
         <i class="fas fa-credit-card"></i>
         Ordenar
       </button>

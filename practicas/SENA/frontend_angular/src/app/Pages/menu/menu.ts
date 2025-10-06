@@ -2,6 +2,7 @@ import { Component, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CarritoComponent, CarritoItem } from '../../Components/shared/carrito/carrito';
 import { Grupo, Producto, MenuService } from './menu.service';
+import { OrdersService } from '../order/orders.service';
 
 interface CartItem {
   producto: Producto;
@@ -31,7 +32,7 @@ export class Menu implements OnInit {
     }));
   }
 
-  constructor(private menuService: MenuService) {}
+  constructor(private menuService: MenuService, private ordersService: OrdersService) {}
 
   ngOnInit(): void {
     this.menuService.getGrupos().subscribe({
@@ -88,9 +89,32 @@ export class Menu implements OnInit {
   }
 
   goToCheckout(): void {
-    // Implement checkout logic
-    console.log('Proceeding to checkout with items:', this.cartItems);
-    // You can navigate to a checkout page or show a modal
+    const payload = {
+      customer: {
+        name: 'Invitado',
+        email: 'guest@example.com',
+        phone: '0000000000'
+      },
+      delivery_type: 'recoger' as const,
+      total_amount: this.getTotalPrice(),
+      cart: this.cartItems.map(i => ({ producto_id: i.producto.id, cantidad: i.cantidad }))
+    };
+
+    this.ordersService.createOrder(payload).subscribe({
+      next: (res) => {
+        if (res.success) {
+          console.log('Orden creada:', res.order_id);
+          alert('Orden creada exitosamente');
+          // TODO: Navegar a pantalla de pago o resumen
+        } else {
+          alert(`Error al crear la orden: ${res.errors?.join(', ')}`);
+        }
+      },
+      error: (err) => {
+        console.error('Error creando la orden', err);
+        alert('No se pudo crear la orden');
+      }
+    });
   }
 
   increaseItem = (id: number) => {
