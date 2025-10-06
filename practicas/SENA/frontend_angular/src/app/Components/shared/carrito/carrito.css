@@ -1,0 +1,78 @@
+.cart-fab {
+  position: fixed;
+  right: 1.5rem;
+  bottom: 1.5rem;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ff8c00, #ffa500);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+  cursor: pointer;
+  z-index: 1100;
+}
+
+.cart-fab i { font-size: 1.2rem; }
+
+.badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: #02133e;
+  color: #fff;
+  border-radius: 999px;
+  padding: 2px 6px;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 1200;
+}
+
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 420px;
+  max-width: 92vw;
+  max-height: 80vh;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+  display: flex;
+  flex-direction: column;
+  z-index: 1300;
+}
+
+.modal-header, .modal-footer { padding: 1rem; }
+.modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; }
+.modal-body { padding: 0.5rem 1rem; overflow: auto; }
+.close-btn { background: transparent; border: none; font-size: 1.2rem; cursor: pointer; }
+
+.cart-item { display: flex; gap: 0.75rem; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid #f2f2f2; }
+.cart-item img { width: 56px; height: 56px; object-fit: cover; border-radius: 8px; }
+.cart-item .info { flex: 1; }
+.cart-item .qty { display: inline-flex; gap: 0.5rem; align-items: center; }
+.cart-item .qty button { width: 28px; height: 28px; border-radius: 6px; border: 1px solid #ddd; background: #fff; cursor: pointer; }
+.cart-item .remove { background: transparent; border: none; font-size: 1.1rem; cursor: pointer; color: #999; }
+
+.modal-footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #eee; }
+.modal-footer .total { display: flex; gap: 0.5rem; align-items: baseline; }
+.checkout { background: linear-gradient(135deg, #ff8c00, #ffa500); border: none; color: #fff; padding: 0.6rem 1rem; border-radius: 8px; font-weight: 700; cursor: pointer; }
+
+@media (max-width: 480px) {
+  .modal {
+    width: calc(100vw - 2rem);
+    max-height: 80vh;
+  }
+}
+
+

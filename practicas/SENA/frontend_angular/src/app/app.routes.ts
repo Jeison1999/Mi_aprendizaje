@@ -1,5 +1,4 @@
 import { Routes } from '@angular/router';
-import { App } from './app';
 import { Home } from './Pages/home/home';
 import { Menu } from './Pages/menu/menu';
 

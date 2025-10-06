@@ -92,18 +92,15 @@
       </div>
     </div>
   </div>
-</div>
-
-<!-- Cart Summary (Fixed) -->
-<div *ngIf="cartItems.length > 0" class="cart-summary">
-  <div class="cart-content">
-    <div class="cart-info">
-      <i class="fas fa-shopping-cart"></i>
-      <span>{{ cartItems.length }} item(s) - {{ getTotalPrice() | currency:'COP':'symbol':'1.0-0' }}</span>
-    </div>
-    <button class="checkout-btn" (click)="goToCheckout()">
-      <i class="fas fa-credit-card"></i>
-      <span>Ordenar</span>
-    </button>
   </div>
-</div>
+
+
+<!-- Carrito Component -->
+<app-carrito
+  [items]="carritoItems"
+  [total]="getTotalPrice()"
+  (increase)="increaseItem($event)"
+  (decrease)="decreaseItem($event)"
+  (remove)="removeItem($event)"
+  (checkout)="goToCheckout()"
+></app-carrito>

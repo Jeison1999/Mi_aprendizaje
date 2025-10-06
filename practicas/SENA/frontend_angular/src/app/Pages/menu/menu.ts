@@ -1,5 +1,6 @@
 import { Component, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { CarritoComponent, CarritoItem } from '../../Components/shared/carrito/carrito';
 import { Grupo, Producto, MenuService } from './menu.service';
 
 interface CartItem {
@@ -9,7 +10,7 @@ interface CartItem {
 
 @Component({
   selector: 'app-menu',
-  imports: [CommonModule],
+  imports: [CommonModule, CarritoComponent],
   templateUrl: './menu.html',
   styleUrl: './menu.css'
 })
@@ -19,6 +20,16 @@ export class Menu implements OnInit {
   loading = true;
   selectedCategory = 'all';
   cartItems: CartItem[] = [];
+
+  get carritoItems(): CarritoItem[] {
+    return this.cartItems.map(ci => ({
+      id: ci.producto.id,
+      name: ci.producto.name,
+      precio: ci.producto.precio,
+      cantidad: ci.cantidad,
+      foto_url: ci.producto.foto_url
+    }));
+  }
 
   constructor(private menuService: MenuService) {}
 
@@ -81,4 +92,19 @@ export class Menu implements OnInit {
     console.log('Proceeding to checkout with items:', this.cartItems);
     // You can navigate to a checkout page or show a modal
   }
+
+  increaseItem = (id: number) => {
+    const it = this.cartItems.find(i => i.producto.id === id);
+    if (it) it.cantidad += 1;
+  };
+
+  decreaseItem = (id: number) => {
+    const it = this.cartItems.find(i => i.producto.id === id);
+    if (!it) return;
+    if (it.cantidad > 1) it.cantidad -= 1; else this.removeItem(id);
+  };
+
+  removeItem = (id: number) => {
+    this.cartItems = this.cartItems.filter(i => i.producto.id !== id);
+  };
 }
