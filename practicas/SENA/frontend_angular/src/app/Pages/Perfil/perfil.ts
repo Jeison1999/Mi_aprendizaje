@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService, User } from '../../Services/auth.service';
+import { UserOrdersService, Order } from '../../Services/user-orders.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -19,6 +20,14 @@ export class PerfilComponent implements OnInit, OnDestroy {
   error = '';
   success = '';
   
+  // Orders data
+  orders: Order[] = [];
+  ordersLoading = false;
+  ordersError = '';
+  selectedOrder: Order | null = null;
+  showOrderDetails = false;
+  showOrdersView = false; // Nueva propiedad para controlar la vista
+  
   // Form data for editing
   editForm = {
     first_name: '',
@@ -34,6 +43,7 @@ export class PerfilComponent implements OnInit, OnDestroy {
 
   constructor(
     private authService: AuthService,
+    private userOrdersService: UserOrdersService,
     private router: Router
   ) {}
 
@@ -58,6 +68,9 @@ export class PerfilComponent implements OnInit, OnDestroy {
     if (!this.currentUser) {
       this.loadUserProfile();
     }
+
+    // Cargar órdenes del usuario
+    this.loadUserOrders();
   }
 
   ngOnDestroy(): void {
@@ -190,5 +203,64 @@ export class PerfilComponent implements OnInit, OnDestroy {
 
   goToMenu(): void {
     this.router.navigate(['/menu']);
+  }
+
+  // Orders methods
+  private loadUserOrders(): void {
+    this.ordersLoading = true;
+    this.ordersError = '';
+
+    this.userOrdersService.getUserOrders().subscribe({
+      next: (orders) => {
+        this.orders = orders;
+        this.ordersLoading = false;
+      },
+      error: (error) => {
+        this.ordersError = 'Error al cargar el historial de órdenes';
+        this.ordersLoading = false;
+        console.error('Orders load error:', error);
+      }
+    });
+  }
+
+  viewOrderDetails(order: Order): void {
+    this.selectedOrder = order;
+    this.showOrderDetails = true;
+  }
+
+  closeOrderDetails(): void {
+    this.showOrderDetails = false;
+    this.selectedOrder = null;
+  }
+
+  getOrderStatusText(status: string): string {
+    return this.userOrdersService.getOrderStatusText(status);
+  }
+
+  getOrderStatusClass(status: string): string {
+    return this.userOrdersService.getOrderStatusClass(status);
+  }
+
+  getDeliveryTypeText(deliveryType: string): string {
+    return this.userOrdersService.getDeliveryTypeText(deliveryType);
+  }
+
+  formatDate(dateString: string): string {
+    return this.userOrdersService.formatDate(dateString);
+  }
+
+  // Navigation methods
+  toggleOrdersView(): void {
+    this.showOrdersView = !this.showOrdersView;
+    this.isEditing = false; // Cerrar edición si está abierta
+    this.error = '';
+    this.success = '';
+  }
+
+  goToProfileView(): void {
+    this.showOrdersView = false;
+    this.isEditing = false;
+    this.error = '';
+    this.success = '';
   }
 }
