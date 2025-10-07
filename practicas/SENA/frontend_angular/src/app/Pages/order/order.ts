@@ -89,10 +89,13 @@ export class OrderComponent implements OnInit {
         this.success = true;
         this.orderCreated.emit(response);
         
-        // Redirigir después de 2 segundos
-        setTimeout(() => {
-          this.router.navigate(['/']);
-        }, 2000);
+        // Redirigir al pago con el order_id
+        this.router.navigate(['/pago'], {
+          queryParams: {
+            order_id: response.order_id,
+            total: this.total
+          }
+        });
       },
       error: (error) => {
         this.loading = false;
