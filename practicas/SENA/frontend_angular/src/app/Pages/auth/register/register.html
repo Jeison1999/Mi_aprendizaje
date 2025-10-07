@@ -1,0 +1,219 @@
+<div class="register-container">
+  <div class="register-card">
+    <!-- Header -->
+    <div class="register-header">
+      <button class="back-btn" (click)="goToHome()">
+        <i class="fas fa-arrow-left"></i>
+        <span>Volver</span>
+      </button>
+      <div class="logo-section">
+        <div class="logo">
+          <span class="logo-text">ZONA</span>
+          <span class="logo-icon">📍</span>
+          <span class="logo-number">44</span>
+        </div>
+        <h1>Crear Cuenta</h1>
+        <p>Únete a nuestra comunidad</p>
+      </div>
+    </div>
+
+    <!-- Form -->
+    <form (ngSubmit)="onSubmit()" #registerForm="ngForm" class="register-form">
+      <!-- Personal Information -->
+      <div class="form-section">
+        <h3><i class="fas fa-user"></i> Información Personal</h3>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="first_name">Nombre *</label>
+            <div class="input-group">
+              <i class="fas fa-user input-icon"></i>
+              <input 
+                type="text" 
+                id="first_name"
+                name="first_name"
+                [(ngModel)]="userData.first_name"
+                required
+                placeholder="Tu nombre"
+                class="form-control">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="last_name">Apellido *</label>
+            <div class="input-group">
+              <i class="fas fa-user input-icon"></i>
+              <input 
+                type="text" 
+                id="last_name"
+                name="last_name"
+                [(ngModel)]="userData.last_name"
+                required
+                placeholder="Tu apellido"
+                class="form-control">
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="phone">Teléfono *</label>
+          <div class="input-group">
+            <i class="fas fa-phone input-icon"></i>
+            <input 
+              type="tel" 
+              id="phone"
+              name="phone"
+              [(ngModel)]="userData.phone"
+              required
+              placeholder="300 123 4567"
+              class="form-control">
+          </div>
+        </div>
+      </div>
+
+      <!-- Contact Information -->
+      <div class="form-section">
+        <h3><i class="fas fa-envelope"></i> Información de Contacto</h3>
+        
+        <div class="form-group">
+          <label for="email">Email *</label>
+          <div class="input-group">
+            <i class="fas fa-envelope input-icon"></i>
+            <input 
+              type="email" 
+              id="email"
+              name="email"
+              [(ngModel)]="userData.email"
+              required
+              placeholder="tu@email.com"
+              class="form-control">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="password">Contraseña *</label>
+            <div class="input-group">
+              <i class="fas fa-lock input-icon"></i>
+              <input 
+                type="password" 
+                id="password"
+                name="password"
+                [(ngModel)]="userData.password"
+                required
+                placeholder="Mínimo 6 caracteres"
+                class="form-control">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="confirmPassword">Confirmar Contraseña *</label>
+            <div class="input-group">
+              <i class="fas fa-lock input-icon"></i>
+              <input 
+                type="password" 
+                id="confirmPassword"
+                name="confirmPassword"
+                [(ngModel)]="confirmPassword"
+                required
+                placeholder="Repite tu contraseña"
+                class="form-control">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Location Information -->
+      <div class="form-section">
+        <h3><i class="fas fa-map-marker-alt"></i> Ubicación</h3>
+        
+        <div class="form-group">
+          <label for="address">Dirección *</label>
+          <div class="input-group">
+            <i class="fas fa-home input-icon"></i>
+            <input 
+              type="text" 
+              id="address"
+              name="address"
+              [(ngModel)]="userData.address"
+              required
+              placeholder="Calle 123 #45-67"
+              class="form-control">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="city">Ciudad *</label>
+            <div class="input-group">
+              <i class="fas fa-city input-icon"></i>
+              <input 
+                type="text" 
+                id="city"
+                name="city"
+                [(ngModel)]="userData.city"
+                required
+                placeholder="Tu ciudad"
+                class="form-control">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="department">Departamento *</label>
+            <div class="input-group">
+              <i class="fas fa-map input-icon"></i>
+              <input 
+                type="text" 
+                id="department"
+                name="department"
+                [(ngModel)]="userData.department"
+                required
+                placeholder="Tu departamento"
+                class="form-control">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Messages -->
+      <div class="alert alert-error" *ngIf="error">
+        <i class="fas fa-exclamation-triangle"></i>
+        <span>{{ error }}</span>
+      </div>
+
+      <div class="alert alert-success" *ngIf="success">
+        <i class="fas fa-check-circle"></i>
+        <span>{{ success }}</span>
+      </div>
+
+      <!-- Submit Button -->
+      <button 
+        type="submit" 
+        class="btn-register"
+        [disabled]="loading || registerForm.invalid">
+        <i class="fas fa-user-plus" *ngIf="!loading"></i>
+        <i class="fas fa-spinner fa-spin" *ngIf="loading"></i>
+        <span>{{ loading ? 'Creando cuenta...' : 'Crear Cuenta' }}</span>
+      </button>
+
+      <!-- Divider -->
+      <div class="divider">
+        <span>o</span>
+      </div>
+
+      <!-- Login Link -->
+      <div class="login-link">
+        <p>¿Ya tienes cuenta?</p>
+        <button type="button" class="btn-login" (click)="goToLogin()">
+          <i class="fas fa-sign-in-alt"></i>
+          <span>Iniciar Sesión</span>
+        </button>
+      </div>
+    </form>
+
+    <!-- Footer -->
+    <div class="register-footer">
+      <p>Al crear una cuenta, aceptas nuestros <a href="#">Términos de Servicio</a> y <a href="#">Política de Privacidad</a></p>
+    </div>
+  </div>
+</div>

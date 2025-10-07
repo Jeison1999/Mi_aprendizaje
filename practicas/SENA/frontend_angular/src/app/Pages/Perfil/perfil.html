@@ -1,0 +1,166 @@
+<div class="perfil-container">
+  <!-- Header -->
+  <div class="perfil-header">
+    <button class="back-btn" (click)="goToHome()">
+      <i class="fas fa-arrow-left"></i>
+      <span>Volver</span>
+    </button>
+    <div class="header-content">
+      <div class="logo">
+        <span class="logo-text">ZONA</span>
+        <span class="logo-icon">📍</span>
+        <span class="logo-number">44</span>
+      </div>
+      <h1>Mi Perfil</h1>
+      <p>Gestiona tu información personal</p>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading && !currentUser" class="loading-container">
+    <div class="loader">
+      <div class="spinner"></div>
+      <p>Cargando tu perfil...</p>
+    </div>
+  </div>
+
+  <!-- Profile Content -->
+  <div *ngIf="currentUser && !loading" class="perfil-content">
+    <!-- Profile Card -->
+    <div class="profile-card">
+      <div class="profile-header">
+        <div class="avatar">
+          <i class="fas fa-user"></i>
+        </div>
+        <div class="profile-info">
+          <h2>{{ currentUser.first_name }} {{ currentUser.last_name }}</h2>
+          <p class="email">{{ currentUser.email }}</p>
+          <span class="role-badge">{{ currentUser.role || 'Cliente' }}</span>
+        </div>
+        <div class="profile-actions">
+          <button 
+            *ngIf="!isEditing" 
+            class="btn-edit" 
+            (click)="toggleEdit()">
+            <i class="fas fa-edit"></i>
+            <span>Editar</span>
+          </button>
+          <div *ngIf="isEditing" class="edit-actions">
+            <button class="btn-save" (click)="saveProfile()" [disabled]="loading">
+              <i class="fas fa-save" *ngIf="!loading"></i>
+              <i class="fas fa-spinner fa-spin" *ngIf="loading"></i>
+              <span>{{ loading ? 'Guardando...' : 'Guardar' }}</span>
+            </button>
+            <button class="btn-cancel" (click)="cancelEdit()">
+              <i class="fas fa-times"></i>
+              <span>Cancelar</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Profile Details -->
+      <div class="profile-details">
+        <!-- Personal Information -->
+        <div class="detail-section">
+          <h3><i class="fas fa-user"></i> Información Personal</h3>
+          <div class="detail-grid">
+            <div class="detail-item">
+              <label>Nombre</label>
+              <div *ngIf="!isEditing" class="detail-value">{{ currentUser.first_name }}</div>
+              <input *ngIf="isEditing" 
+                     type="text" 
+                     [(ngModel)]="editForm.first_name"
+                     class="form-control">
+            </div>
+            <div class="detail-item">
+              <label>Apellido</label>
+              <div *ngIf="!isEditing" class="detail-value">{{ currentUser.last_name }}</div>
+              <input *ngIf="isEditing" 
+                     type="text" 
+                     [(ngModel)]="editForm.last_name"
+                     class="form-control">
+            </div>
+            <div class="detail-item">
+              <label>Email</label>
+              <div *ngIf="!isEditing" class="detail-value">{{ currentUser.email }}</div>
+              <input *ngIf="isEditing" 
+                     type="email" 
+                     [(ngModel)]="editForm.email"
+                     class="form-control">
+            </div>
+            <div class="detail-item">
+              <label>Teléfono</label>
+              <div *ngIf="!isEditing" class="detail-value">{{ currentUser.phone }}</div>
+              <input *ngIf="isEditing" 
+                     type="tel" 
+                     [(ngModel)]="editForm.phone"
+                     class="form-control">
+            </div>
+          </div>
+        </div>
+
+        <!-- Location Information -->
+        <div class="detail-section">
+          <h3><i class="fas fa-map-marker-alt"></i> Ubicación</h3>
+          <div class="detail-grid">
+            <div class="detail-item full-width">
+              <label>Dirección</label>
+              <div *ngIf="!isEditing" class="detail-value">{{ currentUser.address }}</div>
+              <input *ngIf="isEditing" 
+                     type="text" 
+                     [(ngModel)]="editForm.address"
+                     class="form-control">
+            </div>
+            <div class="detail-item">
+              <label>Ciudad</label>
+              <div *ngIf="!isEditing" class="detail-value">{{ currentUser.city }}</div>
+              <input *ngIf="isEditing" 
+                     type="text" 
+                     [(ngModel)]="editForm.city"
+                     class="form-control">
+            </div>
+            <div class="detail-item">
+              <label>Departamento</label>
+              <div *ngIf="!isEditing" class="detail-value">{{ currentUser.department }}</div>
+              <input *ngIf="isEditing" 
+                     type="text" 
+                     [(ngModel)]="editForm.department"
+                     class="form-control">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Messages -->
+      <div class="alert alert-error" *ngIf="error">
+        <i class="fas fa-exclamation-triangle"></i>
+        <span>{{ error }}</span>
+      </div>
+
+      <div class="alert alert-success" *ngIf="success">
+        <i class="fas fa-check-circle"></i>
+        <span>{{ success }}</span>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+      <h3>Acciones Rápidas</h3>
+      <div class="actions-grid">
+        <button class="action-btn" (click)="goToMenu()">
+          <i class="fas fa-utensils"></i>
+          <span>Ver Menú</span>
+        </button>
+        <button class="action-btn" (click)="goToHome()">
+          <i class="fas fa-home"></i>
+          <span>Ir al Inicio</span>
+        </button>
+        <button class="action-btn logout" (click)="logout()">
+          <i class="fas fa-sign-out-alt"></i>
+          <span>Cerrar Sesión</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

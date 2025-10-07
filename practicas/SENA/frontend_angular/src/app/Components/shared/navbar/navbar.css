@@ -2,11 +2,12 @@
 .navbar {
   background: linear-gradient(135deg, #02133e 0%, #0a1a3a 100%);
   padding: 0;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.2);
   position: sticky;
   top: 0;
   z-index: 1000;
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(15px);
+  border-bottom: 1px solid rgba(255, 140, 0, 0.1);
 }
 
 .navbar-container {
@@ -16,7 +17,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 70px;
+  height: 75px;
 }
 
 /* ===== LOGO ===== */
@@ -119,11 +120,164 @@
   font-size: 1rem;
 }
 
-/* ===== CTA BUTTON ===== */
-.navbar-cta {
+/* ===== USER ACTIONS ===== */
+.navbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
   flex-shrink: 0;
 }
 
+/* Removed user-menu and guest-menu styles since we simplified the structure */
+
+/* ===== PROFILE LINK ===== */
+.profile-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: white;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.9rem;
+  padding: 0.6rem 1rem;
+  border-radius: 20px;
+  transition: all 0.3s ease;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.profile-link::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 140, 0, 0.3), transparent);
+  transition: left 0.5s;
+}
+
+.profile-link:hover::before {
+  left: 100%;
+}
+
+.profile-link:hover {
+  color: #ff8c00;
+  background: rgba(255, 140, 0, 0.15);
+  border-color: rgba(255, 140, 0, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(255, 140, 0, 0.2);
+}
+
+.profile-link.active {
+  color: #ff8c00;
+  background: rgba(255, 140, 0, 0.2);
+  border-color: rgba(255, 140, 0, 0.4);
+  box-shadow: 0 2px 10px rgba(255, 140, 0, 0.3);
+}
+
+.profile-link i {
+  font-size: 1rem;
+  transition: transform 0.3s ease;
+}
+
+.profile-link:hover i {
+  transform: scale(1.1);
+}
+
+.profile-text {
+  transition: all 0.3s ease;
+}
+
+/* ===== LOGIN LINK ===== */
+.login-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: white;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.9rem;
+  padding: 0.6rem 1rem;
+  border-radius: 20px;
+  transition: all 0.3s ease;
+  background: rgba(255, 140, 0, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 140, 0, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.login-link::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 140, 0, 0.3), transparent);
+  transition: left 0.5s;
+}
+
+.login-link:hover::before {
+  left: 100%;
+}
+
+.login-link:hover {
+  color: #ff8c00;
+  background: rgba(255, 140, 0, 0.2);
+  border-color: rgba(255, 140, 0, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(255, 140, 0, 0.2);
+}
+
+.login-link.active {
+  color: #ff8c00;
+  background: rgba(255, 140, 0, 0.25);
+  border-color: rgba(255, 140, 0, 0.5);
+  box-shadow: 0 2px 10px rgba(255, 140, 0, 0.3);
+}
+
+.login-link i {
+  font-size: 1rem;
+  transition: transform 0.3s ease;
+}
+
+.login-link:hover i {
+  transform: scale(1.1);
+}
+
+.login-text {
+  transition: all 0.3s ease;
+}
+
+/* ===== LOGOUT BUTTON ===== */
+.logout-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: rgba(220, 53, 69, 0.1);
+  border: 1px solid rgba(220, 53, 69, 0.2);
+  color: #dc3545;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+}
+
+.logout-btn:hover {
+  background: rgba(220, 53, 69, 0.2);
+  border-color: rgba(220, 53, 69, 0.4);
+  transform: scale(1.1);
+  box-shadow: 0 4px 15px rgba(220, 53, 69, 0.2);
+}
+
+/* ===== CTA BUTTON ===== */
 .cta-button {
   display: flex;
   align-items: center;
@@ -137,6 +291,23 @@
   border-radius: 25px;
   transition: all 0.3s ease;
   box-shadow: 0 4px 15px rgba(255, 140, 0, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.cta-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.cta-button:hover::before {
+  left: 100%;
 }
 
 .cta-button:hover {
@@ -233,6 +404,30 @@
   transform: scale(1.02);
 }
 
+/* ===== MOBILE LOGOUT BUTTON ===== */
+.mobile-logout-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: rgba(220, 53, 69, 0.1);
+  color: #dc3545;
+  text-decoration: none;
+  font-weight: 500;
+  padding: 1rem 0;
+  border: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+}
+
+.mobile-logout-btn:hover {
+  color: #dc3545;
+  padding-left: 1rem;
+  background: rgba(220, 53, 69, 0.2);
+}
+
 /* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
   .navbar-container {
@@ -240,7 +435,7 @@
   }
 
   .navbar-menu,
-  .navbar-cta {
+  .navbar-actions {
     display: none;
   }
 

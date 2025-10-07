@@ -34,8 +34,28 @@
       </a>
     </div>
 
-    <!-- CTA Button -->
-    <div class="navbar-cta">
+    <!-- User Actions -->
+    <div class="navbar-actions">
+      <!-- Profile Link (Always visible) -->
+      <a [routerLink]="isAuthenticated ? ['/perfil'] : ['/login']" 
+         routerLinkActive="active" 
+         class="profile-link"
+         [title]="isAuthenticated ? 'Mi Perfil' : 'Iniciar Sesión'">
+        <i class="fas fa-user"></i>
+        <span class="profile-text">
+          {{ isAuthenticated ? (currentUser?.first_name || 'Perfil') : 'Login' }}
+        </span>
+      </a>
+      
+      <!-- Logout Button (Only for authenticated users) -->
+      <button *ngIf="isAuthenticated" 
+              class="logout-btn" 
+              (click)="logout()" 
+              title="Cerrar Sesión">
+        <i class="fas fa-sign-out-alt"></i>
+      </button>
+      
+      <!-- CTA Button -->
       <a href="#reservation" class="cta-button">
         <i class="fas fa-calendar-alt"></i>
         <span>Reservar</span>
@@ -77,6 +97,33 @@
       <i class="fas fa-envelope"></i>
       <span>Contact</span>
     </a>
+    <!-- Profile Link Mobile (Always visible) -->
+    <a [routerLink]="isAuthenticated ? ['/perfil'] : ['/login']" 
+       routerLinkActive="active" 
+       class="mobile-nav-link" 
+       (click)="closeMobileMenu()">
+      <i class="fas fa-user"></i>
+      <span>{{ isAuthenticated ? (currentUser?.first_name || 'Perfil') : 'Login' }}</span>
+    </a>
+    
+    <!-- Register Link Mobile (Only for guests) -->
+    <a *ngIf="!isAuthenticated"
+       [routerLink]="['/register']" 
+       routerLinkActive="active" 
+       class="mobile-nav-link" 
+       (click)="closeMobileMenu()">
+      <i class="fas fa-user-plus"></i>
+      <span>Registrarse</span>
+    </a>
+    
+    <!-- Logout Button Mobile (Only for authenticated users) -->
+    <button *ngIf="isAuthenticated" 
+            class="mobile-logout-btn" 
+            (click)="logout()">
+      <i class="fas fa-sign-out-alt"></i>
+      <span>Cerrar Sesión</span>
+    </button>
+    
     <a href="#reservation" class="mobile-cta-button" (click)="closeMobileMenu()">
       <i class="fas fa-calendar-alt"></i>
       <span>Reservar</span>

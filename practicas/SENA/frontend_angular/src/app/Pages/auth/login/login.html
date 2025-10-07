@@ -1,0 +1,95 @@
+<div class="login-container">
+  <div class="login-card">
+    <!-- Header -->
+    <div class="login-header">
+      <button class="back-btn" (click)="goToHome()">
+        <i class="fas fa-arrow-left"></i>
+        <span>Volver</span>
+      </button>
+      <div class="logo-section">
+        <div class="logo">
+          <span class="logo-text">ZONA</span>
+          <span class="logo-icon">📍</span>
+          <span class="logo-number">44</span>
+        </div>
+        <h1>Iniciar Sesión</h1>
+        <p>Accede a tu cuenta para continuar</p>
+      </div>
+    </div>
+
+    <!-- Form -->
+    <form (ngSubmit)="onSubmit()" #loginForm="ngForm" class="login-form">
+      <!-- Email -->
+      <div class="form-group">
+        <label for="email">Email</label>
+        <div class="input-group">
+          <i class="fas fa-envelope input-icon"></i>
+          <input 
+            type="email" 
+            id="email"
+            name="email"
+            [(ngModel)]="credentials.email"
+            required
+            placeholder="tu@email.com"
+            class="form-control">
+        </div>
+      </div>
+
+      <!-- Password -->
+      <div class="form-group">
+        <label for="password">Contraseña</label>
+        <div class="input-group">
+          <i class="fas fa-lock input-icon"></i>
+          <input 
+            type="password" 
+            id="password"
+            name="password"
+            [(ngModel)]="credentials.password"
+            required
+            placeholder="Tu contraseña"
+            class="form-control">
+        </div>
+      </div>
+
+      <!-- Messages -->
+      <div class="alert alert-error" *ngIf="error">
+        <i class="fas fa-exclamation-triangle"></i>
+        <span>{{ error }}</span>
+      </div>
+
+      <div class="alert alert-success" *ngIf="success">
+        <i class="fas fa-check-circle"></i>
+        <span>{{ success }}</span>
+      </div>
+
+      <!-- Submit Button -->
+      <button 
+        type="submit" 
+        class="btn-login"
+        [disabled]="loading || loginForm.invalid">
+        <i class="fas fa-sign-in-alt" *ngIf="!loading"></i>
+        <i class="fas fa-spinner fa-spin" *ngIf="loading"></i>
+        <span>{{ loading ? 'Iniciando sesión...' : 'Iniciar Sesión' }}</span>
+      </button>
+
+      <!-- Divider -->
+      <div class="divider">
+        <span>o</span>
+      </div>
+
+      <!-- Register Link -->
+      <div class="register-link">
+        <p>¿No tienes cuenta?</p>
+        <button type="button" class="btn-register" (click)="goToRegister()">
+          <i class="fas fa-user-plus"></i>
+          <span>Crear Cuenta</span>
+        </button>
+      </div>
+    </form>
+
+    <!-- Footer -->
+    <div class="login-footer">
+      <p>Al iniciar sesión, aceptas nuestros <a href="#">Términos de Servicio</a> y <a href="#">Política de Privacidad</a></p>
+    </div>
+  </div>
+</div>
