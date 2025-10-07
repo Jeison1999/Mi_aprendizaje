@@ -27,7 +27,7 @@
     </section>
   
     <!-- 🔹 Contenido del perfil -->
-    <main *ngIf="currentUser && !loading" class="perfil-content">
+    <main *ngIf="currentUser && !loading" class="perfil-content" [ngClass]="{ 'orders-active': showOrdersView }">
   
       <!-- 🧍 Tarjeta de perfil -->
       <section *ngIf="!showOrdersView" class="profile-card">
@@ -171,13 +171,18 @@
       </section>
   
       <!-- ⚡ Acciones rápidas -->
-      <aside class="quick-actions">
+      <aside class="quick-actions" [ngClass]="{ 'compact': showOrdersView }">
         <h3>Acciones Rápidas</h3>
         <div class="actions-grid">
           <button class="action-btn" (click)="goToMenu()">
             <i class="fas fa-utensils"></i><span>Ver Menú</span>
           </button>
   
+          <button *ngIf="currentUser?.role === 'admin'" class="action-btn admin" (click)="goToAdmin()">
+            <i class="fas fa-tools"></i>
+            <span>Panel de Administración</span>
+          </button>
+
           <button class="action-btn" (click)="toggleOrdersView()" [class.active]="showOrdersView">
             <i class="fas fa-history"></i>
             <span>{{ showOrdersView ? 'Mi Perfil' : 'Mis Órdenes' }}</span>
@@ -189,6 +194,9 @@
   
           <button class="action-btn logout" (click)="logout()">
             <i class="fas fa-sign-out-alt"></i><span>Cerrar Sesión</span>
+          </button>
+          <button class="action-btn danger" (click)="confirmDelete()">
+            <i class="fas fa-user-slash"></i><span>Eliminar Cuenta</span>
           </button>
         </div>
       </aside>

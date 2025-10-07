@@ -347,7 +347,7 @@
 .mobile-menu {
   display: none;
   background: linear-gradient(135deg, #02133e 0%, #0a1a3a 100%);
-  padding: 1rem 2rem;
+    padding: 1rem 2rem;
   border-top: 1px solid rgba(255, 140, 0, 0.2);
   transform: translateY(-100%);
   opacity: 0;
@@ -364,9 +364,9 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  color: white;
-  text-decoration: none;
-  font-weight: 500;
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
   padding: 1rem 0;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   transition: all 0.3s ease;
@@ -411,7 +411,7 @@
   gap: 0.75rem;
   background: rgba(220, 53, 69, 0.1);
   color: #dc3545;
-  text-decoration: none;
+    text-decoration: none;
   font-weight: 500;
   padding: 1rem 0;
   border: none;
@@ -469,4 +469,4 @@
   .mobile-menu {
     padding: 0.75rem 1rem;
   }
-}
+  }

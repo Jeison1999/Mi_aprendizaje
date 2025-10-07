@@ -7,6 +7,7 @@ import { PerfilComponent } from './Pages/Perfil/perfil';
 import { LoginComponent } from './Pages/auth/login/login';
 import { RegisterComponent } from './Pages/auth/register/register';
 import { AuthGuard } from './Guards/auth.guard';
+import { AdminPage } from './Pages/admin/admin';
 
 export const routes: Routes = [
     {
@@ -37,5 +38,11 @@ export const routes: Routes = [
     {
         path: 'register',
         component: RegisterComponent,
+    }
+    ,
+    {
+        path: 'admin',
+        component: AdminPage,
+        canActivate: [AuthGuard]
     }
 ];

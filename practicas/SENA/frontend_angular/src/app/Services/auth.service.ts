@@ -115,6 +115,59 @@ export class AuthService {
     );
   }
 
+  updateProfile(userData: Partial<User>): Observable<{ success: boolean; message?: string; errors?: string[] }> {
+    const token = this.getToken();
+    if (!token) {
+      return of({ success: false, message: 'No autorizado' });
+    }
+
+    const headers = new HttpHeaders({
+      'Authorization': token,
+      'Content-Type': 'application/json'
+    });
+
+    const payload = { user: userData };
+
+    return this.http.put<{ success: boolean; message?: string; errors?: string[] }>(`${this.apiUrl}/profile`, payload, { headers }).pipe(
+      map(res => {
+        // Tras actualizar, recargar el perfil para mantener el estado consistente
+        if (res.success) {
+          this.loadUserProfile().subscribe();
+        }
+        return res;
+      }),
+      catchError(error => {
+        console.error('Profile update error:', error);
+        return of({ success: false, message: 'Error al actualizar el perfil' });
+      })
+    );
+  }
+
+  deleteProfile(): Observable<{ success: boolean; message?: string }> {
+    const token = this.getToken();
+    if (!token) {
+      return of({ success: false, message: 'No autorizado' });
+    }
+
+    const headers = new HttpHeaders({
+      'Authorization': token,
+      'Content-Type': 'application/json'
+    });
+
+    return this.http.delete<{ success: boolean; message?: string }>(`${this.apiUrl}/profile`, { headers }).pipe(
+      map(res => {
+        if (res.success) {
+          this.logout();
+        }
+        return res;
+      }),
+      catchError(error => {
+        console.error('Profile delete error:', error);
+        return of({ success: false, message: 'Error al eliminar el perfil' });
+      })
+    );
+  }
+
   logout(): void {
     localStorage.removeItem('auth_token');
     localStorage.removeItem('current_user');

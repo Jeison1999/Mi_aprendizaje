@@ -125,21 +125,21 @@ export class PerfilComponent implements OnInit, OnDestroy {
     this.loading = true;
     this.error = '';
     this.success = '';
-
-    // Aquí implementarías la lógica para actualizar el perfil
-    // Por ahora simulamos una actualización exitosa
-    setTimeout(() => {
-      this.loading = false;
-      this.success = 'Perfil actualizado exitosamente';
-      this.isEditing = false;
-      
-      // Actualizar el usuario actual con los nuevos datos
-      if (this.currentUser) {
-        const updatedUser = { ...this.currentUser, ...this.editForm };
-        // Aquí deberías actualizar el usuario en el AuthService
-        // this.authService.updateCurrentUser(updatedUser);
+    this.authService.updateProfile(this.editForm).subscribe({
+      next: (res) => {
+        this.loading = false;
+        if (res.success) {
+          this.success = res.message || 'Perfil actualizado exitosamente';
+          this.isEditing = false;
+        } else {
+          this.error = (res as any).errors?.join(', ') || res.message || 'No se pudo actualizar el perfil';
+        }
+      },
+      error: (err) => {
+        this.loading = false;
+        this.error = err?.message || 'Error de conexión al actualizar el perfil';
       }
-    }, 1000);
+    });
   }
 
   cancelEdit(): void {
@@ -197,12 +197,41 @@ export class PerfilComponent implements OnInit, OnDestroy {
     this.router.navigate(['/']);
   }
 
+  confirmDelete(): void {
+    const confirmed = window.confirm('¿Seguro que deseas eliminar tu cuenta? Esta acción es irreversible.');
+    if (!confirmed) return;
+
+    this.loading = true;
+    this.error = '';
+    this.success = '';
+
+    this.authService.deleteProfile().subscribe({
+      next: (res) => {
+        this.loading = false;
+        if (res.success) {
+          // Redirigido por logout(); aseguramos navegación
+          this.router.navigate(['/']);
+        } else {
+          this.error = res.message || 'No se pudo eliminar el perfil';
+        }
+      },
+      error: (err) => {
+        this.loading = false;
+        this.error = err?.message || 'Error de conexión al eliminar el perfil';
+      }
+    });
+  }
+
   goToHome(): void {
     this.router.navigate(['/']);
   }
 
   goToMenu(): void {
     this.router.navigate(['/menu']);
+  }
+
+  goToAdmin(): void {
+    this.router.navigate(['/admin']);
   }
 
   // Orders methods
