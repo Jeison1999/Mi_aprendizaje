@@ -2,14 +2,16 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AuthService, User } from '../../Services/auth.service';
-import { UserOrdersService, Order } from '../../Services/user-orders.service';
+import { AuthService, User } from '../auth/auth.service';
+import { UserOrdersService, Order } from './user-orders.service';
 import { Subscription } from 'rxjs';
+import { NavbarComponent } from "../../Components/shared/navbar/navbar";
+import { FooterComponent } from "../../Components/shared/footer/footer";
 
 @Component({
   selector: 'app-perfil',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, NavbarComponent, FooterComponent],
   templateUrl: './perfil.html',
   styleUrl: './perfil.css'
 })

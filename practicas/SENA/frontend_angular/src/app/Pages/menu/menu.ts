@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { CarritoComponent, CarritoItem } from '../../Components/shared/carrito/carrito';
 import { Grupo, Producto, MenuService } from './menu.service';
 import { OrdersService } from '../order/orders.service';
+import { NavbarComponent } from "../../Components/shared/navbar/navbar";
+import { FooterComponent } from "../../Components/shared/footer/footer";
 
 interface CartItem {
   producto: Producto;
@@ -11,7 +13,8 @@ interface CartItem {
 
 @Component({
   selector: 'app-menu',
-  imports: [CommonModule, CarritoComponent],
+  standalone: true,
+  imports: [CommonModule, CarritoComponent, NavbarComponent, FooterComponent],
   templateUrl: './menu.html',
   styleUrl: './menu.css'
 })

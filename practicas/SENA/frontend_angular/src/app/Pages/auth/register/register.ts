@@ -2,12 +2,14 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { AuthService, RegisterRequest } from '../../../Services/auth.service';
+import { AuthService, RegisterRequest } from '../auth.service';
+import { NavbarComponent } from "../../../Components/shared/navbar/navbar";
+import { FooterComponent } from "../../../Components/shared/footer/footer";
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, NavbarComponent, FooterComponent],
   templateUrl: './register.html',
   styleUrl: './register.css'
 })

@@ -1,0 +1,89 @@
+<div class="admin-dashboard">
+  <div class="dashboard-header">
+    <h1><i class="fas fa-chart-pie"></i> Dashboard</h1>
+    <p>Bienvenido al panel de administración</p>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon">
+        <i class="fas fa-users"></i>
+      </div>
+      <div class="stat-content">
+        <h3>{{ stats.totalUsers }}</h3>
+        <p>Usuarios Registrados</p>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">
+        <i class="fas fa-shopping-cart"></i>
+      </div>
+      <div class="stat-content">
+        <h3>{{ stats.totalOrders }}</h3>
+        <p>Pedidos Totales</p>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">
+        <i class="fas fa-box"></i>
+      </div>
+      <div class="stat-content">
+        <h3>{{ stats.totalProducts }}</h3>
+        <p>Productos Activos</p>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">
+        <i class="fas fa-dollar-sign"></i>
+      </div>
+      <div class="stat-content">
+        <h3>${{ stats.totalRevenue | number:'1.0-0' }}</h3>
+        <p>Ingresos Totales</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts Section -->
+  <div class="charts-grid">
+    <div class="chart-card">
+      <h3><i class="fas fa-chart-line"></i> Ventas por Mes</h3>
+      <div class="chart-placeholder">
+        <p>Gráfica de ventas mensuales</p>
+        <small>Aquí iría Chart.js o similar</small>
+      </div>
+    </div>
+
+    <div class="chart-card">
+      <h3><i class="fas fa-chart-bar"></i> Productos Más Vendidos</h3>
+      <div class="chart-placeholder">
+        <p>Top 5 productos</p>
+        <small>Aquí iría una gráfica de barras</small>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Orders -->
+  <div class="recent-orders">
+    <h3><i class="fas fa-clock"></i> Pedidos Recientes</h3>
+    <div class="orders-table">
+      <div class="table-header">
+        <span>ID</span>
+        <span>Cliente</span>
+        <span>Total</span>
+        <span>Estado</span>
+        <span>Fecha</span>
+      </div>
+      <div class="table-row" *ngFor="let order of recentOrders">
+        <span>#{{ order.order_number }}</span>
+        <span>{{ order.customer_name }}</span>
+        <span>${{ order.total_amount | number:'1.0-0' }}</span>
+        <span [class]="'status-' + order.status">{{ getStatusText(order.status) }}</span>
+        <span>{{ order.created_at | date:'short' }}</span>
+      </div>
+    </div>
+  </div>
+</div>

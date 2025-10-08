@@ -1,0 +1,186 @@
+<div class="admin-promociones">
+  <div class="page-header">
+    <h1><i class="fas fa-tags"></i> Gestión de Promociones</h1>
+    <p>Administra las promociones y ofertas especiales</p>
+  </div>
+
+  <!-- Formulario para crear/editar promoción -->
+  <div class="form-section">
+    <div class="form-card">
+      <h3>{{ isEditing ? 'Editar Promoción' : 'Crear Nueva Promoción' }}</h3>
+      
+      <form (ngSubmit)="isEditing ? updatePromocion() : createPromocion()" #form="ngForm">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="nombre">Nombre de la Promoción *</label>
+            <input 
+              type="text" 
+              id="nombre" 
+              name="nombre" 
+              [(ngModel)]="promocionForm.nombre" 
+              required 
+              class="form-control"
+              placeholder="Ej: 2x1 en Hamburguesas">
+          </div>
+          
+          <div class="form-group">
+            <label for="descuento">Descuento (%) *</label>
+            <input 
+              type="number" 
+              id="descuento" 
+              name="descuento" 
+              [(ngModel)]="promocionForm.descuento" 
+              required 
+              min="1"
+              max="100"
+              class="form-control"
+              placeholder="20">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="fecha_inicio">Fecha de Inicio *</label>
+            <input 
+              type="date" 
+              id="fecha_inicio" 
+              name="fecha_inicio" 
+              [(ngModel)]="promocionForm.fecha_inicio" 
+              required 
+              class="form-control">
+          </div>
+          
+          <div class="form-group">
+            <label for="fecha_fin">Fecha de Fin *</label>
+            <input 
+              type="date" 
+              id="fecha_fin" 
+              name="fecha_fin" 
+              [(ngModel)]="promocionForm.fecha_fin" 
+              required 
+              class="form-control">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="descripcion">Descripción</label>
+          <textarea 
+            id="descripcion" 
+            name="descripcion" 
+            [(ngModel)]="promocionForm.descripcion" 
+            class="form-control"
+            rows="3"
+            placeholder="Descripción detallada de la promoción"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="checkbox-label">
+            <input 
+              type="checkbox" 
+              name="activa" 
+              [(ngModel)]="promocionForm.activa"
+              class="form-checkbox">
+            <span class="checkmark"></span>
+            Promoción activa
+          </label>
+        </div>
+
+        <div class="form-actions">
+          <button 
+            type="submit" 
+            class="btn btn-primary"
+            [disabled]="!form.valid || loading">
+            <i class="fas fa-save"></i>
+            {{ isEditing ? 'Actualizar' : 'Crear' }} Promoción
+          </button>
+          
+          <button 
+            type="button" 
+            class="btn btn-secondary"
+            (click)="cancelEdit()"
+            [disabled]="loading">
+            <i class="fas fa-times"></i>
+            Cancelar
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Lista de promociones -->
+  <div class="list-section">
+    <div class="list-header">
+      <h3>Promociones Existentes</h3>
+      <div class="list-actions">
+        <button class="btn btn-outline" (click)="loadPromociones()" [disabled]="loading">
+          <i class="fas fa-sync-alt"></i>
+          Actualizar
+        </button>
+      </div>
+    </div>
+
+    <div class="loading" *ngIf="loading">
+      <i class="fas fa-spinner fa-spin"></i>
+      <p>Cargando promociones...</p>
+    </div>
+
+    <div class="error" *ngIf="error">
+      <i class="fas fa-exclamation-triangle"></i>
+      <p>{{ error }}</p>
+      <button class="btn btn-outline" (click)="loadPromociones()">Reintentar</button>
+    </div>
+
+    <div class="success" *ngIf="success">
+      <i class="fas fa-check-circle"></i>
+      <p>{{ success }}</p>
+    </div>
+
+    <div class="promociones-grid" *ngIf="!loading && !error">
+      <div class="promocion-card" *ngFor="let promocion of promociones">
+        <div class="promocion-header">
+          <h4>{{ promocion.nombre }}</h4>
+          <span [class]="'status ' + (promocion.activa ? 'activa' : 'inactiva')">
+            {{ promocion.activa ? 'Activa' : 'Inactiva' }}
+          </span>
+        </div>
+        
+        <div class="promocion-content">
+          <div class="promocion-descuento">
+            <i class="fas fa-percentage"></i>
+            <span>{{ promocion.descuento }}% de descuento</span>
+          </div>
+          
+          <div class="promocion-fechas">
+            <div class="fecha">
+              <i class="fas fa-calendar-alt"></i>
+              <span>Inicio: {{ promocion.fecha_inicio | date:'short' }}</span>
+            </div>
+            <div class="fecha">
+              <i class="fas fa-calendar-check"></i>
+              <span>Fin: {{ promocion.fecha_fin | date:'short' }}</span>
+            </div>
+          </div>
+          
+          <p class="promocion-desc" *ngIf="promocion.descripcion">{{ promocion.descripcion }}</p>
+        </div>
+        
+        <div class="promocion-actions">
+          <button class="btn btn-sm btn-primary" (click)="editPromocion(promocion)">
+            <i class="fas fa-edit"></i>
+            Editar
+          </button>
+          <button class="btn btn-sm btn-danger" (click)="deletePromocion(promocion.id!)">
+            <i class="fas fa-trash"></i>
+            Eliminar
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="empty-state" *ngIf="!loading && !error && promociones.length === 0">
+      <i class="fas fa-tags"></i>
+      <h4>No hay promociones creadas</h4>
+      <p>Crea tu primera promoción para comenzar</p>
+    </div>
+  </div>
+</div>

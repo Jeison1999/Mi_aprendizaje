@@ -1,7 +1,9 @@
 import { Component } from '@angular/core';
+import { NavbarComponent } from "../../Components/shared/navbar/navbar";
+import { FooterComponent } from "../../Components/shared/footer/footer";
 
 @Component({
-  imports: [],
+  imports: [NavbarComponent, FooterComponent],
   templateUrl: './home.html',
   styleUrl: './home.css'
 })

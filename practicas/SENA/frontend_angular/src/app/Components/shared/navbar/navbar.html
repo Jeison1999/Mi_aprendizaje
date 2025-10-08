@@ -24,35 +24,27 @@
         <i class="fas fa-utensils"></i>
         <span>Menu</span>
       </a>
-      <a href="#about" class="nav-link">
-        <i class="fas fa-info-circle"></i>
-        <span>About</span>
-      </a>
       <a href="#contact" class="nav-link">
         <i class="fas fa-envelope"></i>
         <span>Contact</span>
       </a>
-    </div>
-
-    <!-- User Actions -->
-    <div class="navbar-actions">
-      <!-- Profile Link (Always visible) -->
+      
+      <!-- Profile Link -->
       <a [routerLink]="isAuthenticated ? ['/perfil'] : ['/login']" 
          routerLinkActive="active" 
-         class="profile-link"
+         class="nav-link profile-link"
          [title]="isAuthenticated ? 'Mi Perfil' : 'Iniciar Sesión'">
         <i class="fas fa-user"></i>
-        <span class="profile-text">
-          {{ isAuthenticated ? (currentUser?.first_name || 'Perfil') : 'Login' }}
-        </span>
+        <span>{{ isAuthenticated ? (currentUser?.first_name || 'Perfil') : 'Login' }}</span>
       </a>
       
       <!-- Logout Button (Only for authenticated users) -->
       <button *ngIf="isAuthenticated" 
-              class="logout-btn" 
+              class="nav-link logout-btn" 
               (click)="logout()" 
               title="Cerrar Sesión">
         <i class="fas fa-sign-out-alt"></i>
+        <span>Salir</span>
       </button>
       
       <!-- CTA Button -->

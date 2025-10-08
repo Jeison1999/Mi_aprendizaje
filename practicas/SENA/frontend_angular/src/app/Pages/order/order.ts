@@ -4,11 +4,13 @@ import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { OrdersService, CreateOrderRequest } from './orders.service';
 import { CarritoItem } from '../../Components/shared/carrito/carrito';
+import { NavbarComponent } from "../../Components/shared/navbar/navbar";
+import { FooterComponent } from "../../Components/shared/footer/footer";
 
 @Component({
   selector: 'app-order',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, NavbarComponent, FooterComponent],
   templateUrl: './order.html',
   styleUrl: './order.css'
 })

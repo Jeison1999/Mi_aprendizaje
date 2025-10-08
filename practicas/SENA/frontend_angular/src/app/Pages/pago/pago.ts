@@ -4,6 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { NavbarComponent } from "../../Components/shared/navbar/navbar";
+import { FooterComponent } from "../../Components/shared/footer/footer";
 
 interface PaymentRequest {
   card_number: string;
@@ -22,7 +24,7 @@ interface PaymentResponse {
 @Component({
   selector: 'app-pago',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, NavbarComponent, FooterComponent],
   templateUrl: './pago.html',
   styleUrl: './pago.css'
 })
