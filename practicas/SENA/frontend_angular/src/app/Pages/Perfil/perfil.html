@@ -173,11 +173,7 @@
   
       <!-- ⚡ Acciones rápidas -->
       <aside class="quick-actions" [ngClass]="{ 'compact': showOrdersView }">
-        <h3>Acciones Rápidas</h3>
         <div class="actions-grid">
-          <button class="action-btn" (click)="goToMenu()">
-            <i class="fas fa-utensils"></i><span>Ver Menú</span>
-          </button>
   
           <button *ngIf="currentUser?.role === 'admin'" class="action-btn admin" (click)="goToAdmin()">
             <i class="fas fa-tools"></i>
@@ -187,10 +183,6 @@
           <button class="action-btn" (click)="toggleOrdersView()" [class.active]="showOrdersView">
             <i class="fas fa-history"></i>
             <span>{{ showOrdersView ? 'Mi Perfil' : 'Mis Órdenes' }}</span>
-          </button>
-  
-          <button class="action-btn" (click)="goToHome()">
-            <i class="fas fa-home"></i><span>Inicio</span>
           </button>
   
           <button class="action-btn logout" (click)="logout()">

@@ -1,5 +1,6 @@
 
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService, User } from '../../../Pages/auth/auth.service';
 import { Subscription } from 'rxjs';
@@ -7,7 +8,7 @@ import { Subscription } from 'rxjs';
 @Component({
     selector: 'app-navbar',
     templateUrl: 'navbar.html',
-    imports: [RouterLink, RouterLinkActive],
+    imports: [CommonModule, RouterLink, RouterLinkActive],
     styleUrl: 'navbar.css'
 })
 export class NavbarComponent implements OnInit, OnDestroy {

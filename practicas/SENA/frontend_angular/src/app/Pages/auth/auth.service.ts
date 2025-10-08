@@ -39,6 +39,10 @@ export interface AuthResponse {
   errors?: string[];
 }
 
+export interface GoogleAuthRequest {
+  id_token: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -87,6 +91,24 @@ export class AuthService {
       catchError(error => {
         console.error('Register error:', error);
         return of({ success: false, message: 'Error al registrarse' });
+      })
+    );
+  }
+
+  loginWithGoogle(idToken: string): Observable<AuthResponse> {
+    const payload: GoogleAuthRequest = { id_token: idToken };
+    return this.http.post<AuthResponse>(`${this.apiUrl}/auth/google`, payload).pipe(
+      map(response => {
+        if (response.success && response.token) {
+          this.setToken(response.token);
+          // Cargar perfil del usuario después del login con Google
+          this.loadUserProfile().subscribe();
+        }
+        return response;
+      }),
+      catchError(error => {
+        console.error('Google login error:', error);
+        return of({ success: false, message: 'Error al iniciar sesión con Google' });
       })
     );
   }
