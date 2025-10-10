@@ -1,32 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { AdminOrdersService, Order, OrderItem } from '../admin-orders.service';
 
-interface OrderItem {
-  id: number;
-  quantity: number;
-  unit_price: number;
-  total_price: number;
-  producto: {
-    id: number;
-    name: string;
-    precio: number;
-    descripcion: string;
-  };
-}
-
-interface Pedido {
-  id: number;
-  order_number: string;
-  customer_name: string;
-  customer_email: string;
-  customer_phone: string;
-  total_amount: number;
-  status: string;
-  delivery_type: string;
-  created_at: string;
-  order_items?: OrderItem[];
-}
+// Alias para mantener compatibilidad con el template
+type Pedido = Order;
 
 @Component({
   selector: 'app-admin-pedidos',
@@ -51,7 +29,7 @@ export class AdminPedidosComponent implements OnInit {
     return !!(this.statusFilter || this.deliveryFilter || this.dateFilter);
   }
 
-  constructor() {}
+  constructor(private adminOrdersService: AdminOrdersService) {}
 
   ngOnInit() {
     this.loadPedidos();
@@ -61,101 +39,18 @@ export class AdminPedidosComponent implements OnInit {
     this.loading = true;
     this.error = null;
     
-    // Mock data - aquí cargarías los datos reales del backend
-    setTimeout(() => {
-      this.pedidos = [
-        {
-          id: 1,
-          order_number: 'ORD-20241201-A1B2',
-          customer_name: 'Juan Pérez',
-          customer_email: 'juan@email.com',
-          customer_phone: '3001234567',
-          total_amount: 45000,
-          status: 'paid',
-          delivery_type: 'domicilio',
-          created_at: '2024-12-01T10:30:00Z',
-          order_items: [
-            {
-              id: 1,
-              quantity: 2,
-              unit_price: 15000,
-              total_price: 30000,
-              producto: {
-                id: 1,
-                name: 'Hamburguesa Clásica',
-                precio: 15000,
-                descripcion: 'Hamburguesa con carne, lechuga, tomate y queso'
-              }
-            },
-            {
-              id: 2,
-              quantity: 1,
-              unit_price: 15000,
-              total_price: 15000,
-              producto: {
-                id: 2,
-                name: 'Papas Fritas',
-                precio: 15000,
-                descripcion: 'Papas fritas crujientes'
-              }
-            }
-          ]
-        },
-        {
-          id: 2,
-          order_number: 'ORD-20241201-C3D4',
-          customer_name: 'María García',
-          customer_email: 'maria@email.com',
-          customer_phone: '3007654321',
-          total_amount: 32000,
-          status: 'pending',
-          delivery_type: 'recoger',
-          created_at: '2024-12-01T14:15:00Z',
-          order_items: [
-            {
-              id: 3,
-              quantity: 1,
-              unit_price: 32000,
-              total_price: 32000,
-              producto: {
-                id: 3,
-                name: 'Combo Familiar',
-                precio: 32000,
-                descripcion: '2 hamburguesas, 2 papas y 2 bebidas'
-              }
-            }
-          ]
-        },
-        {
-          id: 3,
-          order_number: 'ORD-20241130-E5F6',
-          customer_name: 'Carlos López',
-          customer_email: 'carlos@email.com',
-          customer_phone: '3009876543',
-          total_amount: 28000,
-          status: 'delivered',
-          delivery_type: 'domicilio',
-          created_at: '2024-11-30T18:45:00Z',
-          order_items: [
-            {
-              id: 4,
-              quantity: 1,
-              unit_price: 28000,
-              total_price: 28000,
-              producto: {
-                id: 4,
-                name: 'Pizza Margherita',
-                precio: 28000,
-                descripcion: 'Pizza con tomate, mozzarella y albahaca'
-              }
-            }
-          ]
-        }
-      ];
-      
-      this.applyFilters();
-      this.loading = false;
-    }, 1000);
+    this.adminOrdersService.getOrders().subscribe({
+      next: (orders) => {
+        this.pedidos = orders;
+        this.applyFilters();
+        this.loading = false;
+      },
+      error: (error) => {
+        console.error('Error loading orders:', error);
+        this.error = 'Error al cargar los pedidos';
+        this.loading = false;
+      }
+    });
   }
 
   applyFilters() {
@@ -202,12 +97,46 @@ export class AdminPedidosComponent implements OnInit {
       return;
     }
 
-    // Mock update - aquí harías la llamada al backend
-    const pedido = this.pedidos.find(p => p.id === pedidoId);
-    if (pedido) {
-      pedido.status = 'delivered';
-      this.applyFilters();
+    this.adminOrdersService.updateOrderStatus(pedidoId, 'delivered').subscribe({
+      next: (response) => {
+        if (response.success) {
+          // Actualizar el estado local
+          const pedido = this.pedidos.find(p => p.id === pedidoId);
+          if (pedido) {
+            pedido.status = 'delivered';
+            this.applyFilters();
+          }
+        }
+      },
+      error: (error) => {
+        console.error('Error updating order status:', error);
+        alert('Error al actualizar el estado del pedido');
+      }
+    });
+  }
+
+  updateOrderStatus(pedidoId: number, newStatus: string) {
+    const statusText = this.getStatusText(newStatus);
+    if (!confirm(`¿Cambiar el estado a "${statusText}"?`)) {
+      return;
     }
+
+    this.adminOrdersService.updateOrderStatus(pedidoId, newStatus).subscribe({
+      next: (response) => {
+        if (response.success) {
+          // Actualizar el estado local
+          const pedido = this.pedidos.find(p => p.id === pedidoId);
+          if (pedido) {
+            pedido.status = newStatus;
+            this.applyFilters();
+          }
+        }
+      },
+      error: (error) => {
+        console.error('Error updating order status:', error);
+        alert('Error al actualizar el estado del pedido');
+      }
+    });
   }
 
   getStatusText(status: string): string {
@@ -226,5 +155,48 @@ export class AdminPedidosComponent implements OnInit {
       'recoger': 'Recoger en tienda'
     };
     return typeMap[deliveryType] || deliveryType;
+  }
+
+  getStatusClass(status: string): string {
+    const classMap: { [key: string]: string } = {
+      'pending': 'status-pending',
+      'paid': 'status-paid',
+      'failed': 'status-failed',
+      'delivered': 'status-delivered'
+    };
+    return classMap[status] || 'status-default';
+  }
+
+  formatDate(dateString: string): string {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('es-CO', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  }
+
+  formatPrice(amount: number): string {
+    return new Intl.NumberFormat('es-CO', {
+      style: 'currency',
+      currency: 'COP',
+      minimumFractionDigits: 0
+    }).format(amount);
+  }
+
+  getAvailableStatuses(currentStatus: string): string[] {
+    const statusFlow: { [key: string]: string[] } = {
+      'pending': ['paid', 'failed'],
+      'paid': ['delivered', 'failed'],
+      'failed': ['pending'],
+      'delivered': [] // No se puede cambiar desde entregado
+    };
+    return statusFlow[currentStatus] || [];
+  }
+
+  refreshOrders() {
+    this.loadPedidos();
   }
 }

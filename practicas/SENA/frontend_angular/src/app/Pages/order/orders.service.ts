@@ -7,6 +7,7 @@ export interface CreateOrderRequest {
   cart: Array<{ producto_id: number; cantidad: number }>;
   delivery_type: 'domicilio' | 'recoger';
   total_amount: number;
+  user_id?: number;
 }
 
 export interface CreateOrderResponse {

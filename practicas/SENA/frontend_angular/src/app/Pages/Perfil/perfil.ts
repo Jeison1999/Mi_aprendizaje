@@ -9,7 +9,7 @@ import { NavbarComponent } from "../../Components/shared/navbar/navbar";
 import { FooterComponent } from "../../Components/shared/footer/footer";
 
 @Component({
-  selector: 'app-perfil',
+    selector: 'app-perfil',
   standalone: true,
   imports: [CommonModule, FormsModule, NavbarComponent, FooterComponent],
   templateUrl: './perfil.html',

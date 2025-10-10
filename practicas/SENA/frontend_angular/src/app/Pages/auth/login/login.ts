@@ -67,26 +67,35 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   private handleGoogleAuthSuccess = (event: any): void => {
+    console.log('Google auth success event received:', event.detail);
+    
     this.loading = false;
     this.error = '';
     this.success = '¡Inicio de sesión con Google exitoso!';
     
-    // Recargar el perfil del usuario
-    this.authService.loadUserProfile().subscribe({
-      next: () => {
-        // Redirigir al perfil después de 1 segundo
-        setTimeout(() => {
-          this.router.navigate(['/perfil']);
-        }, 1000);
-      },
-      error: (error) => {
-        console.error('Error loading user profile:', error);
-        // Aún así redirigir al perfil
-        setTimeout(() => {
-          this.router.navigate(['/perfil']);
-        }, 1000);
-      }
-    });
+    console.log('Starting redirect process...');
+    
+    // Redirigir directamente al perfil después de mostrar el mensaje
+    setTimeout(() => {
+      console.log('Redirecting to profile...');
+      console.log('Current token before navigation:', this.authService.getToken());
+      console.log('Is authenticated before navigation:', this.authService.isAuthenticated());
+      
+      // Intentar navegación con diferentes métodos
+      this.router.navigate(['/perfil']).then(success => {
+        if (success) {
+          console.log('Navigation successful');
+        } else {
+          console.log('Navigation failed, trying with window.location...');
+          // Usar window.location como fallback
+          window.location.href = '/perfil';
+        }
+      }).catch(error => {
+        console.error('Navigation error:', error);
+        console.log('Trying with window.location...');
+        window.location.href = '/perfil';
+      });
+    }, 2000); // Aumentar el delay para dar tiempo al token
   };
 
   private handleGoogleAuthError = (event: any): void => {

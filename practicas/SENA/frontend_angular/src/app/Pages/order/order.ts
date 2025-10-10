@@ -5,6 +5,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { OrdersService, CreateOrderRequest } from './orders.service';
 import { CarritoItem } from '../../Components/shared/carrito/carrito';
 import { NavbarComponent } from "../../Components/shared/navbar/navbar";
+import { AuthService } from '../auth/auth.service';
 import { FooterComponent } from "../../Components/shared/footer/footer";
 
 @Component({
@@ -37,7 +38,8 @@ export class OrderComponent implements OnInit {
   constructor(
     private ordersService: OrdersService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -60,6 +62,14 @@ export class OrderComponent implements OnInit {
     if (this.cartItems.length === 0) {
       this.router.navigate(['/menu']);
     }
+
+    // Precargar datos del usuario si está autenticado
+    const currentUser = this.authService.getCurrentUser();
+    if (currentUser) {
+      this.customer.name = `${currentUser.first_name} ${currentUser.last_name}`.trim();
+      this.customer.email = currentUser.email;
+      this.customer.phone = currentUser.phone || '';
+    }
   }
 
   onSubmit(): void {
@@ -77,8 +87,13 @@ export class OrderComponent implements OnInit {
       cart: this.cartItems.map(item => ({
         producto_id: item.id,
         cantidad: item.cantidad
-      }))
+      })),
+      user_id: this.authService.getCurrentUser()?.id // Agregar user_id si está autenticado
     };
+
+    console.log('Creating order with payload:', payload);
+    console.log('Current user:', this.authService.getCurrentUser());
+    console.log('User ID being sent:', this.authService.getCurrentUser()?.id);
 
     // Si es domicilio, agregar dirección
     if (this.deliveryType === 'domicilio' && this.deliveryAddress) {
