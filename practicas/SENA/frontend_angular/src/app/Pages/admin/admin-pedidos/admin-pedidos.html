@@ -14,10 +14,8 @@
           <label for="statusFilter">Estado</label>
           <select id="statusFilter" [(ngModel)]="statusFilter" (change)="applyFilters()" class="form-control">
             <option value="">Todos los estados</option>
-            <option value="pending">Pendiente</option>
+            <option value="processing">En Proceso</option>
             <option value="paid">Pagado</option>
-            <option value="failed">Fallido</option>
-            <option value="delivered">Entregado</option>
           </select>
         </div>
         
@@ -51,7 +49,7 @@
   </div>
 
   <!-- Lista de pedidos -->
-  <div class="list-section">
+  <div class="list-section" (click)="closeAllDropdowns()">
     <div class="list-header">
       <h3>Pedidos ({{ filteredPedidos.length }})</h3>
       <div class="list-actions">
@@ -104,26 +102,28 @@
           </button>
           
           <!-- Dropdown para cambiar estado -->
-          <div class="status-dropdown" *ngIf="getAvailableStatuses(pedido.status).length > 0">
-            <button class="btn btn-sm btn-outline dropdown-toggle" type="button">
+          <div class="status-dropdown" *ngIf="getAvailableStatuses(pedido.status).length > 0" (click)="$event.stopPropagation()">
+            <button class="btn btn-sm btn-outline dropdown-toggle" type="button" (click)="toggleDropdown(pedido.id)">
               <i class="fas fa-edit"></i>
+              <i class="fas fa-chevron-down"></i>
             </button>
-            <div class="dropdown-menu">
+            <div class="dropdown-menu" [class.show]="openDropdowns.has(pedido.id)">
               <button 
                 *ngFor="let status of getAvailableStatuses(pedido.status)"
                 class="dropdown-item"
                 (click)="updateOrderStatus(pedido.id, status)">
+                <i [class]="getStatusIcon(status)"></i>
                 Cambiar a {{ getStatusText(status) }}
               </button>
             </div>
           </div>
           
-          <!-- Botón rápido para marcar como entregado -->
+          <!-- Botón rápido para marcar como pagado -->
           <button 
             class="btn btn-sm btn-success" 
-            *ngIf="pedido.status === 'paid'"
-            (click)="markAsDelivered(pedido.id)"
-            title="Marcar como entregado">
+            *ngIf="pedido.status === 'processing'"
+            (click)="markAsPaid(pedido.id)"
+            title="Marcar como pagado">
             <i class="fas fa-check"></i>
           </button>
         </div>

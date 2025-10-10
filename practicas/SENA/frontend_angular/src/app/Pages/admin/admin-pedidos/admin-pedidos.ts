@@ -25,6 +25,9 @@ export class AdminPedidosComponent implements OnInit {
   deliveryFilter = '';
   dateFilter = '';
 
+  // Dropdowns
+  openDropdowns = new Set<number>();
+
   get hasActiveFilters(): boolean {
     return !!(this.statusFilter || this.deliveryFilter || this.dateFilter);
   }
@@ -92,20 +95,21 @@ export class AdminPedidosComponent implements OnInit {
     this.selectedPedido = null;
   }
 
-  markAsDelivered(pedidoId: number) {
-    if (!confirm('¿Marcar este pedido como entregado?')) {
+  markAsPaid(pedidoId: number) {
+    if (!confirm('¿Marcar este pedido como pagado?')) {
       return;
     }
 
-    this.adminOrdersService.updateOrderStatus(pedidoId, 'delivered').subscribe({
+    this.adminOrdersService.updateOrderStatus(pedidoId, 'paid').subscribe({
       next: (response) => {
         if (response.success) {
           // Actualizar el estado local
           const pedido = this.pedidos.find(p => p.id === pedidoId);
           if (pedido) {
-            pedido.status = 'delivered';
+            pedido.status = 'paid';
             this.applyFilters();
           }
+          alert('Pedido marcado como pagado');
         }
       },
       error: (error) => {
@@ -121,6 +125,8 @@ export class AdminPedidosComponent implements OnInit {
       return;
     }
 
+    this.closeAllDropdowns();
+
     this.adminOrdersService.updateOrderStatus(pedidoId, newStatus).subscribe({
       next: (response) => {
         if (response.success) {
@@ -130,6 +136,7 @@ export class AdminPedidosComponent implements OnInit {
             pedido.status = newStatus;
             this.applyFilters();
           }
+          alert(`Estado actualizado a "${statusText}"`);
         }
       },
       error: (error) => {
@@ -141,10 +148,8 @@ export class AdminPedidosComponent implements OnInit {
 
   getStatusText(status: string): string {
     const statusMap: { [key: string]: string } = {
-      'pending': 'Pendiente',
-      'paid': 'Pagado',
-      'failed': 'Fallido',
-      'delivered': 'Entregado'
+      'processing': 'En Proceso',
+      'paid': 'Pagado'
     };
     return statusMap[status] || status;
   }
@@ -159,10 +164,8 @@ export class AdminPedidosComponent implements OnInit {
 
   getStatusClass(status: string): string {
     const classMap: { [key: string]: string } = {
-      'pending': 'status-pending',
-      'paid': 'status-paid',
-      'failed': 'status-failed',
-      'delivered': 'status-delivered'
+      'processing': 'status-processing',
+      'paid': 'status-paid'
     };
     return classMap[status] || 'status-default';
   }
@@ -188,15 +191,34 @@ export class AdminPedidosComponent implements OnInit {
 
   getAvailableStatuses(currentStatus: string): string[] {
     const statusFlow: { [key: string]: string[] } = {
-      'pending': ['paid', 'failed'],
-      'paid': ['delivered', 'failed'],
-      'failed': ['pending'],
-      'delivered': [] // No se puede cambiar desde entregado
+      'processing': ['paid'],
+      'paid': [] // No se puede cambiar desde pagado
     };
     return statusFlow[currentStatus] || [];
   }
 
   refreshOrders() {
     this.loadPedidos();
+  }
+
+  toggleDropdown(pedidoId: number) {
+    if (this.openDropdowns.has(pedidoId)) {
+      this.openDropdowns.delete(pedidoId);
+    } else {
+      this.openDropdowns.clear();
+      this.openDropdowns.add(pedidoId);
+    }
+  }
+
+  getStatusIcon(status: string): string {
+    const iconMap: { [key: string]: string } = {
+      'processing': 'fas fa-clock',
+      'paid': 'fas fa-check-circle'
+    };
+    return iconMap[status] || 'fas fa-circle';
+  }
+
+  closeAllDropdowns() {
+    this.openDropdowns.clear();
   }
 }

@@ -4,6 +4,17 @@
     <p>Administra las promociones y ofertas especiales</p>
   </div>
 
+  <!-- Alertas -->
+  <div class="alert alert-error" *ngIf="error">
+    <i class="fas fa-exclamation-circle"></i>
+    <span>{{ error }}</span>
+  </div>
+
+  <div class="alert alert-success" *ngIf="success">
+    <i class="fas fa-check-circle"></i>
+    <span>{{ success }}</span>
+  </div>
+
   <!-- Formulario para crear/editar promoción -->
   <div class="form-section">
     <div class="form-card">
@@ -24,6 +35,38 @@
           </div>
           
           <div class="form-group">
+            <label for="producto_id">Producto *</label>
+            <select 
+              id="producto_id" 
+              name="producto_id" 
+              [(ngModel)]="promocionForm.producto_id" 
+              required 
+              class="form-control">
+              <option value="">Seleccionar producto...</option>
+              <option *ngFor="let producto of productos" [value]="producto.id">
+                {{ producto.name }} - {{ formatPrice(producto.precio) }}
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="precio_original">Precio Original *</label>
+            <input 
+              type="number" 
+              id="precio_original" 
+              name="precio_original" 
+              [(ngModel)]="promocionForm.precio_original" 
+              required 
+              min="0"
+              step="100"
+              class="form-control"
+              placeholder="50000"
+              (input)="calculateTotalPrice()">
+          </div>
+          
+          <div class="form-group">
             <label for="descuento">Descuento (%) *</label>
             <input 
               type="number" 
@@ -34,71 +77,61 @@
               min="1"
               max="100"
               class="form-control"
-              placeholder="20">
+              placeholder="20"
+              (input)="calculateTotalPrice()">
           </div>
         </div>
 
         <div class="form-row">
           <div class="form-group">
-            <label for="fecha_inicio">Fecha de Inicio *</label>
+            <label for="precio_total">Precio Total *</label>
             <input 
-              type="date" 
-              id="fecha_inicio" 
-              name="fecha_inicio" 
-              [(ngModel)]="promocionForm.fecha_inicio" 
+              type="number" 
+              id="precio_total" 
+              name="precio_total" 
+              [(ngModel)]="promocionForm.precio_total" 
               required 
-              class="form-control">
+              min="0"
+              step="100"
+              class="form-control"
+              placeholder="40000"
+              (input)="calculateDiscount()">
           </div>
           
           <div class="form-group">
-            <label for="fecha_fin">Fecha de Fin *</label>
+            <label for="imagen">Imagen de la Promoción</label>
             <input 
-              type="date" 
-              id="fecha_fin" 
-              name="fecha_fin" 
-              [(ngModel)]="promocionForm.fecha_fin" 
-              required 
-              class="form-control">
+              type="file" 
+              id="imagen" 
+              name="imagen" 
+              accept="image/*"
+              class="form-control"
+              (change)="onImageSelected($event)">
           </div>
         </div>
 
-        <div class="form-group">
-          <label for="descripcion">Descripción</label>
-          <textarea 
-            id="descripcion" 
-            name="descripcion" 
-            [(ngModel)]="promocionForm.descripcion" 
-            class="form-control"
-            rows="3"
-            placeholder="Descripción detallada de la promoción"></textarea>
-        </div>
-
-        <div class="form-group">
-          <label class="checkbox-label">
-            <input 
-              type="checkbox" 
-              name="activa" 
-              [(ngModel)]="promocionForm.activa"
-              class="form-checkbox">
-            <span class="checkmark"></span>
-            Promoción activa
-          </label>
+        <!-- Preview de imagen -->
+        <div class="form-group" *ngIf="selectedImagePreview">
+          <label>Vista previa:</label>
+          <div class="image-preview">
+            <img [src]="selectedImagePreview" alt="Preview" class="preview-image">
+          </div>
         </div>
 
         <div class="form-actions">
           <button 
             type="submit" 
-            class="btn btn-primary"
-            [disabled]="!form.valid || loading">
+            class="btn btn-primary" 
+            [disabled]="loading || !form.form.valid">
             <i class="fas fa-save"></i>
             {{ isEditing ? 'Actualizar' : 'Crear' }} Promoción
           </button>
           
           <button 
             type="button" 
-            class="btn btn-secondary"
-            (click)="cancelEdit()"
-            [disabled]="loading">
+            class="btn btn-outline" 
+            (click)="cancelEdit()" 
+            *ngIf="isEditing">
             <i class="fas fa-times"></i>
             Cancelar
           </button>
@@ -110,68 +143,69 @@
   <!-- Lista de promociones -->
   <div class="list-section">
     <div class="list-header">
-      <h3>Promociones Existentes</h3>
+      <h3>Promociones ({{ promociones.length }})</h3>
       <div class="list-actions">
         <button class="btn btn-outline" (click)="loadPromociones()" [disabled]="loading">
-          <i class="fas fa-sync-alt"></i>
+          <i class="fas fa-sync-alt" [class.fa-spin]="loading"></i>
           Actualizar
         </button>
       </div>
     </div>
 
-    <div class="loading" *ngIf="loading">
+    <div class="loading" *ngIf="loading && promociones.length === 0">
       <i class="fas fa-spinner fa-spin"></i>
       <p>Cargando promociones...</p>
     </div>
 
-    <div class="error" *ngIf="error">
+    <div class="error" *ngIf="error && promociones.length === 0">
       <i class="fas fa-exclamation-triangle"></i>
       <p>{{ error }}</p>
       <button class="btn btn-outline" (click)="loadPromociones()">Reintentar</button>
     </div>
 
-    <div class="success" *ngIf="success">
-      <i class="fas fa-check-circle"></i>
-      <p>{{ success }}</p>
-    </div>
-
-    <div class="promociones-grid" *ngIf="!loading && !error">
-      <div class="promocion-card" *ngFor="let promocion of promociones">
-        <div class="promocion-header">
-          <h4>{{ promocion.nombre }}</h4>
-          <span [class]="'status ' + (promocion.activa ? 'activa' : 'inactiva')">
-            {{ promocion.activa ? 'Activa' : 'Inactiva' }}
-          </span>
+    <div class="promociones-table" *ngIf="!loading || promociones.length > 0">
+      <div class="table-header">
+        <span data-label="Imagen">Imagen</span>
+        <span data-label="Promoción">Promoción</span>
+        <span data-label="Producto">Producto</span>
+        <span data-label="Precios">Precios</span>
+        <span data-label="Descuento">Descuento</span>
+        <span data-label="Acciones">Acciones</span>
+      </div>
+      
+      <div class="table-row" *ngFor="let promocion of promociones">
+        <div class="promocion-image" data-label="Imagen">
+          <img 
+            [src]="promocion.imagen_url || '/assets/no-image.png'" 
+            [alt]="promocion.nombre"
+            class="product-image">
         </div>
         
-        <div class="promocion-content">
-          <div class="promocion-descuento">
-            <i class="fas fa-percentage"></i>
-            <span>{{ promocion.descuento }}% de descuento</span>
-          </div>
-          
-          <div class="promocion-fechas">
-            <div class="fecha">
-              <i class="fas fa-calendar-alt"></i>
-              <span>Inicio: {{ promocion.fecha_inicio | date:'short' }}</span>
-            </div>
-            <div class="fecha">
-              <i class="fas fa-calendar-check"></i>
-              <span>Fin: {{ promocion.fecha_fin | date:'short' }}</span>
-            </div>
-          </div>
-          
-          <p class="promocion-desc" *ngIf="promocion.descripcion">{{ promocion.descripcion }}</p>
+        <div class="promocion-info" data-label="Promoción">
+          <div class="promocion-nombre">{{ promocion.nombre }}</div>
+          <div class="promocion-id">ID: #{{ promocion.id }}</div>
         </div>
         
-        <div class="promocion-actions">
-          <button class="btn btn-sm btn-primary" (click)="editPromocion(promocion)">
+        <div class="producto-info" data-label="Producto">
+          <div class="producto-nombre">{{ getProductoName(promocion.producto_id) }}</div>
+          <div class="producto-id">ID: #{{ promocion.producto_id }}</div>
+        </div>
+        
+        <div class="precios-info" data-label="Precios">
+          <div class="precio-original">Original: {{ formatPrice(promocion.precio_original) }}</div>
+          <div class="precio-total">Total: {{ formatPrice(promocion.precio_total) }}</div>
+          <div class="ahorro">Ahorro: {{ formatPrice(promocion.precio_original - promocion.precio_total) }}</div>
+        </div>
+        
+        <span class="descuento-badge" data-label="Descuento">{{ promocion.descuento }}%</span>
+        
+        <div class="promocion-actions" data-label="Acciones">
+          <button class="btn btn-sm btn-primary" (click)="startEdit(promocion)" title="Editar">
             <i class="fas fa-edit"></i>
-            Editar
           </button>
-          <button class="btn btn-sm btn-danger" (click)="deletePromocion(promocion.id!)">
+          
+          <button class="btn btn-sm btn-danger" (click)="deletePromocion(promocion.id)" title="Eliminar">
             <i class="fas fa-trash"></i>
-            Eliminar
           </button>
         </div>
       </div>
@@ -179,8 +213,8 @@
 
     <div class="empty-state" *ngIf="!loading && !error && promociones.length === 0">
       <i class="fas fa-tags"></i>
-      <h4>No hay promociones creadas</h4>
-      <p>Crea tu primera promoción para comenzar</p>
+      <h4>No hay promociones</h4>
+      <p>Aún no hay promociones registradas</p>
     </div>
   </div>
 </div>

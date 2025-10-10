@@ -1,16 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-
-interface Promocion {
-  id?: number;
-  nombre: string;
-  descuento: number;
-  fecha_inicio: string;
-  fecha_fin: string;
-  descripcion?: string;
-  activa: boolean;
-}
+import { AdminPromocionesService, Promocion } from '../admin-promociones.service';
 
 @Component({
   selector: 'app-admin-promociones',
@@ -29,47 +20,113 @@ export class AdminPromocionesComponent implements OnInit {
 
   promocionForm = {
     nombre: '',
+    precio_total: 0,
+    precio_original: 0,
     descuento: 0,
-    fecha_inicio: '',
-    fecha_fin: '',
-    descripcion: '',
-    activa: true
+    producto_id: 0,
+    imagen: null as File | null
   };
 
-  constructor() {}
+  productos: any[] = [];
+  selectedImagePreview: string | null = null;
+
+  constructor(private promocionesService: AdminPromocionesService) {}
 
   ngOnInit() {
     this.loadPromociones();
+    this.loadProductos();
   }
 
   loadPromociones() {
     this.loading = true;
     this.error = null;
     
-    // Mock data - aquí cargarías los datos reales del backend
-    setTimeout(() => {
-      this.promociones = [
-        {
-          id: 1,
-          nombre: '2x1 en Hamburguesas',
-          descuento: 50,
-          fecha_inicio: '2024-12-01',
-          fecha_fin: '2024-12-31',
-          descripcion: 'Promoción especial de fin de año',
-          activa: true
-        },
-        {
-          id: 2,
-          nombre: '20% de descuento en Bebidas',
-          descuento: 20,
-          fecha_inicio: '2024-12-15',
-          fecha_fin: '2024-12-25',
-          descripcion: 'Oferta navideña en todas las bebidas',
-          activa: true
-        }
-      ];
-      this.loading = false;
-    }, 1000);
+    this.promocionesService.getPromociones().subscribe({
+      next: (promociones) => {
+        this.promociones = promociones;
+        this.loading = false;
+      },
+      error: (error) => {
+        console.error('Error loading promociones:', error);
+        this.error = 'Error al cargar las promociones';
+        this.loading = false;
+      }
+    });
+  }
+
+  loadProductos() {
+    this.promocionesService.getProductos().subscribe({
+      next: (productos) => {
+        this.productos = productos;
+      },
+      error: (error) => {
+        console.error('Error loading productos:', error);
+      }
+    });
+  }
+
+  resetForm() {
+    this.promocionForm = {
+      nombre: '',
+      precio_total: 0,
+      precio_original: 0,
+      descuento: 0,
+      producto_id: 0,
+      imagen: null
+    };
+    this.selectedImagePreview = null;
+    this.isEditing = false;
+    this.currentPromocion = null;
+    this.error = null;
+    this.success = null;
+  }
+
+  startEdit(promocion: Promocion) {
+    this.currentPromocion = promocion;
+    this.promocionForm = {
+      nombre: promocion.nombre,
+      precio_total: promocion.precio_total,
+      precio_original: promocion.precio_original,
+      descuento: promocion.descuento,
+      producto_id: promocion.producto_id,
+      imagen: null
+    };
+    this.selectedImagePreview = promocion.imagen_url || null;
+    this.isEditing = true;
+    this.error = null;
+    this.success = null;
+  }
+
+  cancelEdit() {
+    this.resetForm();
+  }
+
+  validateForm(): boolean {
+    if (!this.promocionForm.nombre.trim()) {
+      this.error = 'El nombre es requerido';
+      return false;
+    }
+    if (this.promocionForm.producto_id <= 0) {
+      this.error = 'Debe seleccionar un producto';
+      return false;
+    }
+    if (this.promocionForm.precio_original <= 0) {
+      this.error = 'El precio original debe ser mayor a 0';
+      return false;
+    }
+    if (this.promocionForm.precio_total <= 0) {
+      this.error = 'El precio total debe ser mayor a 0';
+      return false;
+    }
+    if (this.promocionForm.precio_total >= this.promocionForm.precio_original) {
+      this.error = 'El precio total debe ser menor al precio original';
+      return false;
+    }
+    if (this.promocionForm.descuento <= 0 || this.promocionForm.descuento > 100) {
+      this.error = 'El descuento debe estar entre 1 y 100';
+      return false;
+    }
+    return true;
   }
 
   createPromocion() {
@@ -77,33 +134,33 @@ export class AdminPromocionesComponent implements OnInit {
 
     this.loading = true;
     this.error = null;
-    this.success = null;
 
-    // Mock creation - aquí harías la llamada al backend
-    setTimeout(() => {
-      const newPromocion: Promocion = {
-        id: Date.now(),
-        ...this.promocionForm
-      };
-      
-      this.promociones.push(newPromocion);
-      this.success = 'Promoción creada exitosamente';
-      this.clearForm();
-      this.loading = false;
-    }, 1000);
-  }
-
-  editPromocion(promocion: Promocion) {
-    this.isEditing = true;
-    this.currentPromocion = promocion;
-    this.promocionForm = {
-      nombre: promocion.nombre,
-      descuento: promocion.descuento,
-      fecha_inicio: promocion.fecha_inicio,
-      fecha_fin: promocion.fecha_fin,
-      descripcion: promocion.descripcion || '',
-      activa: promocion.activa
+    const payload = {
+      promocion: {
+        nombre: this.promocionForm.nombre,
+        precio_total: this.promocionForm.precio_total,
+        precio_original: this.promocionForm.precio_original,
+        descuento: this.promocionForm.descuento,
+        producto_id: this.promocionForm.producto_id,
+        imagen: this.promocionForm.imagen || undefined
+      }
     };
+
+    this.promocionesService.createPromocion(payload).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.success = 'Promoción creada exitosamente';
+          this.resetForm();
+          this.loadPromociones();
+        }
+        this.loading = false;
+      },
+      error: (error) => {
+        console.error('Error creating promocion:', error);
+        this.error = error.error?.errors?.[0] || 'Error al crear la promoción';
+        this.loading = false;
+      }
+    });
   }
 
   updatePromocion() {
@@ -111,22 +168,33 @@ export class AdminPromocionesComponent implements OnInit {
 
     this.loading = true;
     this.error = null;
-    this.success = null;
 
-    // Mock update - aquí harías la llamada al backend
-    setTimeout(() => {
-      const index = this.promociones.findIndex(p => p.id === this.currentPromocion!.id);
-      if (index !== -1) {
-        this.promociones[index] = {
-          ...this.currentPromocion,
-          ...this.promocionForm
-        };
+    const payload = {
+      promocion: {
+        nombre: this.promocionForm.nombre,
+        precio_total: this.promocionForm.precio_total,
+        precio_original: this.promocionForm.precio_original,
+        descuento: this.promocionForm.descuento,
+        producto_id: this.promocionForm.producto_id,
+        imagen: this.promocionForm.imagen || undefined
       }
-      
-      this.success = 'Promoción actualizada exitosamente';
-      this.cancelEdit();
-      this.loading = false;
-    }, 1000);
+    };
+
+    this.promocionesService.updatePromocion(this.currentPromocion.id, payload).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.success = 'Promoción actualizada exitosamente';
+          this.resetForm();
+          this.loadPromociones();
+        }
+        this.loading = false;
+      },
+      error: (error) => {
+        console.error('Error updating promocion:', error);
+        this.error = error.error?.errors?.[0] || 'Error al actualizar la promoción';
+        this.loading = false;
+      }
+    });
   }
 
   deletePromocion(id: number) {
@@ -136,54 +204,61 @@ export class AdminPromocionesComponent implements OnInit {
 
     this.loading = true;
     this.error = null;
-    this.success = null;
 
-    // Mock deletion - aquí harías la llamada al backend
-    setTimeout(() => {
-      this.promociones = this.promociones.filter(p => p.id !== id);
-      this.success = 'Promoción eliminada exitosamente';
-      this.loading = false;
-    }, 1000);
+    this.promocionesService.deletePromocion(id).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.success = 'Promoción eliminada exitosamente';
+          this.loadPromociones();
+        }
+        this.loading = false;
+      },
+      error: (error) => {
+        console.error('Error deleting promocion:', error);
+        this.error = 'Error al eliminar la promoción';
+        this.loading = false;
+      }
+    });
   }
 
-  cancelEdit() {
-    this.isEditing = false;
-    this.currentPromocion = null;
-    this.clearForm();
+  onImageSelected(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      this.promocionForm.imagen = file;
+      
+      // Crear preview de la imagen
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.selectedImagePreview = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
   }
 
-  clearForm() {
-    this.promocionForm = {
-      nombre: '',
-      descuento: 0,
-      fecha_inicio: '',
-      fecha_fin: '',
-      descripcion: '',
-      activa: true
-    };
+  calculateDiscount() {
+    if (this.promocionForm.precio_original > 0 && this.promocionForm.precio_total > 0) {
+      const discount = ((this.promocionForm.precio_original - this.promocionForm.precio_total) / this.promocionForm.precio_original) * 100;
+      this.promocionForm.descuento = Math.round(discount);
+    }
   }
 
-  validateForm(): boolean {
-    if (!this.promocionForm.nombre.trim()) {
-      this.error = 'El nombre de la promoción es requerido';
-      return false;
+  calculateTotalPrice() {
+    if (this.promocionForm.precio_original > 0 && this.promocionForm.descuento > 0) {
+      const discountAmount = (this.promocionForm.precio_original * this.promocionForm.descuento) / 100;
+      this.promocionForm.precio_total = this.promocionForm.precio_original - discountAmount;
     }
-    if (!this.promocionForm.descuento || this.promocionForm.descuento <= 0 || this.promocionForm.descuento > 100) {
-      this.error = 'El descuento debe estar entre 1 y 100';
-      return false;
-    }
-    if (!this.promocionForm.fecha_inicio) {
-      this.error = 'La fecha de inicio es requerida';
-      return false;
-    }
-    if (!this.promocionForm.fecha_fin) {
-      this.error = 'La fecha de fin es requerida';
-      return false;
-    }
-    if (new Date(this.promocionForm.fecha_inicio) >= new Date(this.promocionForm.fecha_fin)) {
-      this.error = 'La fecha de fin debe ser posterior a la fecha de inicio';
-      return false;
-    }
-    return true;
+  }
+
+  formatPrice(amount: number): string {
+    return new Intl.NumberFormat('es-CO', {
+      style: 'currency',
+      currency: 'COP',
+      minimumFractionDigits: 0
+    }).format(amount);
+  }
+
+  getProductoName(producto_id: number): string {
+    const producto = this.productos.find(p => p.id === producto_id);
+    return producto ? producto.name : 'Producto no encontrado';
   }
 }

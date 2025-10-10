@@ -196,3 +196,80 @@
     margin-bottom: 0.25rem;
   }
 }
+
+/* Chart Styles */
+.chart-container {
+  position: relative;
+  height: 300px;
+  width: 100%;
+}
+
+.chart-placeholder {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  padding: 2rem;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.6);
+  border: 2px dashed rgba(255, 255, 255, 0.2);
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Header Actions */
+.header-actions {
+  margin-top: 1rem;
+}
+
+.btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+}
+
+.btn-outline {
+  background: transparent;
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.btn-outline:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Status Badges */
+.status-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-processing {
+  background: rgba(243, 156, 18, 0.2);
+  color: #f39c12;
+  border: 1px solid #f39c12;
+}
+
+.status-paid {
+  background: rgba(39, 174, 96, 0.2);
+  color: #27ae60;
+  border: 1px solid #27ae60;
+}

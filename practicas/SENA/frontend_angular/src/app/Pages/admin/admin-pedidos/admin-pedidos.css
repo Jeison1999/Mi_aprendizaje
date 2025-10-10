@@ -234,7 +234,7 @@
 }
 
 .pedido-total {
-  color: #27ae60;
+  color: white;
   font-weight: 600;
 }
 
@@ -246,7 +246,7 @@
   text-align: center;
 }
 
-.status-pending {
+.status-processing {
   background: rgba(243, 156, 18, 0.2);
   color: #f39c12;
   border: 1px solid #f39c12;
@@ -256,18 +256,6 @@
   background: rgba(39, 174, 96, 0.2);
   color: #27ae60;
   border: 1px solid #27ae60;
-}
-
-.status-failed {
-  background: rgba(231, 76, 60, 0.2);
-  color: #e74c3c;
-  border: 1px solid #e74c3c;
-}
-
-.status-delivered {
-  background: rgba(52, 152, 219, 0.2);
-  color: #3498db;
-  border: 1px solid #3498db;
 }
 
 .pedido-tipo {
@@ -490,7 +478,7 @@
 }
 
 /* Estilos para estados de pedidos */
-.status-pending {
+.status-processing {
   background: linear-gradient(135deg, #f39c12, #e67e22);
   color: white;
   padding: 0.25rem 0.75rem;
@@ -503,28 +491,6 @@
 
 .status-paid {
   background: linear-gradient(135deg, #27ae60, #2ecc71);
-  color: white;
-  padding: 0.25rem 0.75rem;
-  border-radius: 20px;
-  font-size: 0.8rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.status-failed {
-  background: linear-gradient(135deg, #e74c3c, #c0392b);
-  color: white;
-  padding: 0.25rem 0.75rem;
-  border-radius: 20px;
-  font-size: 0.8rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.status-delivered {
-  background: linear-gradient(135deg, #3498db, #2980b9);
   color: white;
   padding: 0.25rem 0.75rem;
   border-radius: 20px;
@@ -568,16 +534,19 @@
   visibility: hidden;
   transform: translateY(-10px);
   transition: all 0.3s ease;
+  margin-top: 0.5rem;
 }
 
-.status-dropdown:hover .dropdown-menu {
+.dropdown-menu.show {
   opacity: 1;
   visibility: visible;
   transform: translateY(0);
 }
 
 .dropdown-item {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
   width: 100%;
   padding: 0.75rem 1rem;
   border: none;
@@ -592,6 +561,11 @@
 .dropdown-item:hover {
   background: #f8f9fa;
   color: #007bff;
+}
+
+.dropdown-item i {
+  width: 16px;
+  text-align: center;
 }
 
 .dropdown-item:first-child {
