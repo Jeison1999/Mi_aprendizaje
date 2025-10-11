@@ -7,6 +7,16 @@
   align-items: center;
   position: relative;
   overflow: hidden;
+  font-family: 'Poppins', sans-serif;
+}
+
+.hero *:not(i) {
+  font-family: 'Poppins', sans-serif;
+}
+
+.hero i {
+  font-family: 'Font Awesome 6 Free' !important;
+  font-weight: 900 !important;
 }
 
 .hero::before {
@@ -383,6 +393,16 @@
 .features {
   padding: 5rem 0;
   background: #f8f9fa;
+  font-family: 'Poppins', sans-serif;
+}
+
+.features *:not(i) {
+  font-family: 'Poppins', sans-serif;
+}
+
+.features i {
+  font-family: 'Font Awesome 6 Free' !important;
+  font-weight: 900 !important;
 }
 
 .container {
@@ -485,8 +505,18 @@
   padding: 5rem 0;
   background: linear-gradient(135deg, #02133e 0%, #0a1a3a 100%);
   color: white;
-    text-align: center;
-  }
+  text-align: center;
+  font-family: 'Poppins', sans-serif;
+}
+
+.cta-section *:not(i) {
+  font-family: 'Poppins', sans-serif;
+}
+
+.cta-section i {
+  font-family: 'Font Awesome 6 Free' !important;
+  font-weight: 900 !important;
+}
 
 .cta-content h2 {
   font-size: 2.5rem;
@@ -590,5 +620,154 @@
     width: 100%;
     max-width: 300px;
     justify-content: center;
+  }
+}
+
+/* ===== PROMOCIONES SECTION ===== */
+.promociones-section {
+  padding: 4rem 0;
+  background: #ffffff;
+  font-family: 'Poppins', sans-serif;
+}
+
+.promociones-section *:not(i) {
+  font-family: 'Poppins', sans-serif;
+}
+
+.promociones-section i {
+  font-family: 'Font Awesome 6 Free' !important;
+  font-weight: 900 !important;
+}
+
+.promociones-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.promocion-card {
+  background: white;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  position: relative;
+  border: 1px solid rgba(255, 140, 0, 0.1);
+}
+
+.promocion-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+.promocion-image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  position: relative;
+}
+
+.promocion-badge {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: linear-gradient(135deg, #ff8c00, #ff6b35);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  box-shadow: 0 4px 15px rgba(255, 140, 0, 0.3);
+}
+
+.promocion-content {
+  padding: 1.5rem;
+}
+
+.promocion-name {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 0.5rem;
+  line-height: 1.3;
+}
+
+.producto-info {
+  color: #666;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+  font-weight: 500;
+}
+
+.price-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.promocion-price {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #ff8c00;
+}
+
+.original-price {
+  font-size: 1rem;
+  color: #999;
+  text-decoration: line-through;
+  font-weight: 500;
+}
+
+.savings {
+  background: rgba(39, 174, 96, 0.1);
+  color: #27ae60;
+  padding: 0.3rem 0.8rem;
+  border-radius: 15px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.btn-add-to-cart {
+  width: 100%;
+  background: linear-gradient(135deg, #ff8c00, #ff6b35);
+  color: white;
+  border: none;
+  padding: 1rem;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Poppins', sans-serif;
+}
+
+.btn-add-to-cart:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(255, 140, 0, 0.4);
+  background: linear-gradient(135deg, #ff6b35, #ff8c00);
+}
+
+/* ===== TOAST NOTIFICATIONS ===== */
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOutRight {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
   }
 }

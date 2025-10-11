@@ -45,4 +45,12 @@ export class NavbarComponent implements OnInit, OnDestroy {
         this.authService.logout();
         this.closeMobileMenu();
     }
+
+    scrollToFooter() {
+        // Hacer scroll suave hasta el final de la página
+        window.scrollTo({
+            top: document.body.scrollHeight,
+            behavior: 'smooth'
+        });
+    }
 }

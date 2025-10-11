@@ -8,6 +8,31 @@
   z-index: 1000;
   backdrop-filter: blur(15px);
   border-bottom: 1px solid rgba(255, 140, 0, 0.1);
+  font-family: 'Poppins', sans-serif;
+}
+
+.navbar *:not(i) {
+  font-family: 'Poppins', sans-serif;
+}
+
+.navbar i {
+  font-family: 'Font Awesome 6 Free' !important;
+  font-weight: 900 !important;
+}
+
+.navbar {
+  background: linear-gradient(135deg, #02133e 0%, #0a1a3a 100%);
+  padding: 0;
+  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.2);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  backdrop-filter: blur(15px);
+  border-bottom: 1px solid rgba(255, 140, 0, 0.1);
+  font-family: 'Poppins', sans-serif;
+  display: flex;
+  align-items: center;
+  height: 75px;
 }
 
 .navbar-container {
@@ -16,16 +41,21 @@
   padding: 0 2rem;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   height: 75px;
+  flex: 1;
 }
 
 /* ===== LOGO ===== */
 .navbar-logo {
-  flex-shrink: 0;
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
+  padding-left: 2rem;
+  height: 75px;
+  position: absolute;
+  left: 0;
+  top: 0;
 }
 
 .logo-link {
@@ -33,20 +63,23 @@
   align-items: center;
   text-decoration: none;
   color: white;
-  font-weight: 900;
-  font-size: 1.5rem;
+  font-weight: 800;
+  font-size: 1.6rem;
   transition: all 0.3s ease;
+  font-family: 'Poppins', sans-serif;
 }
 
 .logo-text {
   color: white;
   letter-spacing: 2px;
+  font-weight: 800;
 }
 
 .logo-icon {
   margin: 0 0.5rem;
-  font-size: 1.2rem;
+  font-size: 1.3rem;
   animation: bounce 2s infinite;
+  display: inline-block;
 }
 
 .logo-number {
@@ -63,8 +96,8 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  justify-content: center;
   flex: 1;
-  justify-content: flex-end;
 }
 
 .nav-link {
@@ -83,6 +116,7 @@
   cursor: pointer;
   position: relative;
   overflow: hidden;
+  font-family: 'Poppins', sans-serif;
 }
 
 .nav-link::before {
@@ -117,6 +151,9 @@
   font-size: 1rem;
   width: 16px;
   text-align: center;
+  display: inline-block;
+  font-family: 'Font Awesome 6 Free';
+  font-weight: 900;
 }
 
 /* ===== CTA BUTTON ===== */
@@ -133,9 +170,12 @@
   font-size: 0.95rem;
   transition: all 0.3s ease;
   box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
-  margin-left: 1rem;
-  position: relative;
+  position: absolute;
+  right: 2rem;
+  top: 50%;
+  transform: translateY(-50%);
   overflow: hidden;
+  font-family: 'Poppins', sans-serif;
 }
 
 .cta-button::before {
@@ -161,11 +201,18 @@
 
 .cta-button i {
   font-size: 1rem;
+  display: inline-block;
+  font-family: 'Font Awesome 6 Free';
+  font-weight: 900;
 }
 
 /* ===== MOBILE MENU TOGGLE ===== */
 .mobile-menu-toggle {
   display: none;
+  position: absolute;
+  right: 2rem;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 .toggle-btn {
@@ -240,6 +287,9 @@
   width: 20px;
   text-align: center;
   font-size: 1.1rem;
+  display: inline-block;
+  font-family: 'Font Awesome 6 Free' !important;
+  font-weight: 900 !important;
 }
 
 .mobile-logout-btn {
@@ -283,6 +333,7 @@
   border-radius: 10px;
   transition: all 0.3s ease;
   box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
+  font-family: 'Poppins', sans-serif;
 }
 
 .mobile-cta-button:hover {
@@ -294,6 +345,9 @@
   width: 20px;
   text-align: center;
   font-size: 1.1rem;
+  display: inline-block;
+  font-family: 'Font Awesome 6 Free' !important;
+  font-weight: 900 !important;
 }
 
 /* ===== ANIMATIONS ===== */
@@ -311,37 +365,33 @@
 
 /* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
-  .navbar-container {
-    padding: 0 1rem;
+  .navbar-logo {
+    padding-left: 1rem;
   }
   
   .navbar-menu {
     display: none;
   }
   
+  .cta-button {
+    display: none;
+  }
+  
   .mobile-menu-toggle {
     display: block;
-  }
-  
-  .mobile-menu {
-    display: block;
-  }
-  
-  .logo-link {
-    font-size: 1.3rem;
   }
 }
 
 @media (max-width: 480px) {
-  .navbar-container {
-    padding: 0 0.5rem;
-  }
-  
-  .logo-link {
-    font-size: 1.2rem;
+  .navbar-logo {
+    padding-left: 0.5rem;
   }
   
   .logo-text {
-    letter-spacing: 1px;
+    font-size: 1.4rem;
+  }
+  
+  .logo-number {
+    font-size: 1.6rem;
   }
 }

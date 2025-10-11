@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { AdminGruposService, AdminGrupo } from '../grupos.service';
+import { AdminGruposService, AdminGrupo } from '../services/grupos.service';
 
 @Component({
   selector: 'app-admin-grupos',

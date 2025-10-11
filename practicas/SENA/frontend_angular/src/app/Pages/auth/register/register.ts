@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { AuthService, RegisterRequest } from '../auth.service';
 import { NavbarComponent } from "../../../Components/shared/navbar/navbar";
 import { FooterComponent } from "../../../Components/shared/footer/footer";
@@ -29,6 +29,8 @@ export class RegisterComponent implements OnInit {
   loading = false;
   error = '';
   success = '';
+  showPassword = false;
+  showConfirmPassword = false;
 
   constructor(
     private authService: AuthService,
@@ -139,5 +141,13 @@ export class RegisterComponent implements OnInit {
 
   goToHome(): void {
     this.router.navigate(['/']);
+  }
+
+  togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
+  }
+
+  toggleConfirmPasswordVisibility(): void {
+    this.showConfirmPassword = !this.showConfirmPassword;
   }
 }

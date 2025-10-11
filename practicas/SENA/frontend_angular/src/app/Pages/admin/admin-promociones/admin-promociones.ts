@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { AdminPromocionesService, Promocion } from '../admin-promociones.service';
+import { AdminPromocionesService, Promocion } from '../services/admin-promociones.service';
 
 @Component({
   selector: 'app-admin-promociones',

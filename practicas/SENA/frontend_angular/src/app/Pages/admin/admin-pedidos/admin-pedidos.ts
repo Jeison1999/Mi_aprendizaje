@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { AdminOrdersService, Order, OrderItem } from '../admin-orders.service';
+import { AdminOrdersService, Order, OrderItem } from '../services/admin-orders.service';
 
 // Alias para mantener compatibilidad con el template
 type Pedido = Order;

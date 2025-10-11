@@ -6,6 +6,7 @@ import { PagoComponent } from './Pages/pago/pago';
 import { PerfilComponent } from './Pages/Perfil/perfil';
 import { LoginComponent } from './Pages/auth/login/login';
 import { RegisterComponent } from './Pages/auth/register/register';
+import { ForgotPasswordComponent } from './Pages/auth/forgot-password/forgot-password';
 import { AuthGuard } from './Guards/auth.guard';
 import { AdminLayoutComponent } from './Pages/admin/admin-layout/admin-layout';
 import { AdminDashboardComponent } from './Pages/admin/admin-dashboard/admin-dashboard';
@@ -43,6 +44,10 @@ export const routes: Routes = [
     {
         path: 'register',
         component: RegisterComponent,
+    },
+    {
+        path: 'forgot-password',
+        component: ForgotPasswordComponent,
     }
     ,
     {

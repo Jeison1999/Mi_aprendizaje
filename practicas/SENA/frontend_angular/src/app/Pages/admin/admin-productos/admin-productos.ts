@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { AdminProductosService, AdminProducto } from '../productos.service';
-import { AdminGruposService, AdminGrupo } from '../grupos.service';
+import { AdminProductosService, AdminProducto } from '../services/productos.service';
+import { AdminGruposService, AdminGrupo } from '../services/grupos.service';
 
 @Component({
   selector: 'app-admin-productos',
