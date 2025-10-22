@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_10_22_004114) do
+ActiveRecord::Schema[8.0].define(version: 2025_10_22_011752) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -26,13 +26,12 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_22_004114) do
     t.index ["tipodocumento", "ndocumento"], name: "index_aprendizs_on_tipodocumento_and_ndocumento", unique: true
   end
 
-  create_table "asignacion_ficha_instructors", force: :cascade do |t|
+  create_table "asignacion_fichas", force: :cascade do |t|
     t.integer "instructorid", null: false
-    t.integer "asignaturaid", null: false
     t.integer "fichaid", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["instructorid", "asignaturaid", "fichaid"], name: "index_asignacion_unique", unique: true
+    t.index ["instructorid", "fichaid"], name: "index_instructor_ficha_unique", unique: true
   end
 
   create_table "asignaturas", force: :cascade do |t|
@@ -67,14 +66,16 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_22_004114) do
     t.string "rol", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "asignatura_id"
+    t.index ["asignatura_id"], name: "index_usuarios_on_asignatura_id"
     t.index ["correo"], name: "index_usuarios_on_correo", unique: true
     t.index ["rol"], name: "index_usuarios_on_rol"
   end
 
   add_foreign_key "aprendizs", "fichas"
-  add_foreign_key "asignacion_ficha_instructors", "asignaturas", column: "asignaturaid"
-  add_foreign_key "asignacion_ficha_instructors", "fichas", column: "fichaid"
-  add_foreign_key "asignacion_ficha_instructors", "usuarios", column: "instructorid"
+  add_foreign_key "asignacion_fichas", "fichas", column: "fichaid"
+  add_foreign_key "asignacion_fichas", "usuarios", column: "instructorid"
   add_foreign_key "asistencias", "aprendizs", column: "aprendizid"
-  add_foreign_key "asistencias", "asignacion_ficha_instructors", column: "asignacionid"
+  add_foreign_key "asistencias", "asignacion_fichas", column: "asignacionid"
+  add_foreign_key "usuarios", "asignaturas"
 end

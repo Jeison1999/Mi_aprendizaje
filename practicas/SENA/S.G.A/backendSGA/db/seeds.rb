@@ -1,15 +1,28 @@
-# db/seeds.rb
-# Limpiar datos existentes (opcional, comentar en producción)
+# db/seeds.rb - Sistema de Gestión Académica (SGA)
+# Limpiar datos existentes (comentar en producción)
 puts "Limpiando base de datos..."
 Asistencia.destroy_all
-AsignacionFichaInstructor.destroy_all
+AsignacionFicha.destroy_all
 Aprendiz.destroy_all
 Ficha.destroy_all
-Asignatura.destroy_all
 Usuario.destroy_all
+Asignatura.destroy_all
 
-# Crear usuarios admin
-puts "Creando administradores..."
+puts "\n=========================================="
+puts "   CREANDO DATOS DE PRUEBA - SGA"
+puts "=========================================="
+
+# PASO 1: Admin crea asignaturas
+puts "\n1️⃣  Admin creando asignaturas..."
+asignatura1 = Asignatura.create!(nombre: "Programación Básica")
+asignatura2 = Asignatura.create!(nombre: "Bases de Datos")
+asignatura3 = Asignatura.create!(nombre: "Desarrollo Web")
+asignatura4 = Asignatura.create!(nombre: "Inglés Técnico")
+asignatura5 = Asignatura.create!(nombre: "Matemáticas Aplicadas")
+puts "   ✓ #{Asignatura.count} asignaturas creadas"
+
+# PASO 2: Crear administrador
+puts "\n2️⃣  Creando administrador..."
 admin1 = Usuario.create!(
   nombre: "Juan Pérez",
   correo: "admin@sga.com",
@@ -17,262 +30,141 @@ admin1 = Usuario.create!(
   password_confirmation: "password123",
   rol: "admin"
 )
+puts "   ✓ Admin creado: #{admin1.correo}"
 
-# Crear instructores
-puts "Creando instructores..."
+# PASO 3: Instructores se registran y escogen su asignatura
+puts "\n3️⃣  Instructores registrándose con sus asignaturas..."
 instructor1 = Usuario.create!(
   nombre: "María García",
   correo: "maria.garcia@sga.com",
   password: "password123",
   password_confirmation: "password123",
-  rol: "instructor"
+  rol: "instructor",
+  asignatura: asignatura1
 )
+puts "   ✓ #{instructor1.nombre} - #{instructor1.asignatura.nombre}"
 
 instructor2 = Usuario.create!(
   nombre: "Carlos Rodríguez",
   correo: "carlos.rodriguez@sga.com",
   password: "password123",
   password_confirmation: "password123",
-  rol: "instructor"
+  rol: "instructor",
+  asignatura: asignatura2
 )
+puts "   ✓ #{instructor2.nombre} - #{instructor2.asignatura.nombre}"
 
 instructor3 = Usuario.create!(
   nombre: "Ana Martínez",
   correo: "ana.martinez@sga.com",
   password: "password123",
   password_confirmation: "password123",
-  rol: "instructor"
+  rol: "instructor",
+  asignatura: asignatura3
 )
+puts "   ✓ #{instructor3.nombre} - #{instructor3.asignatura.nombre}"
 
-# Crear asignaturas
-puts "Creando asignaturas..."
-asignatura1 = Asignatura.create!(nombre: "Programación Básica")
-asignatura2 = Asignatura.create!(nombre: "Bases de Datos")
-asignatura3 = Asignatura.create!(nombre: "Desarrollo Web")
-asignatura4 = Asignatura.create!(nombre: "Inglés Técnico")
-
-# Crear fichas
-puts "Creando fichas..."
-ficha1 = Ficha.create!(
-  codigo: "2823345",
-  nombre: "Análisis y Desarrollo de Software"
+instructor4 = Usuario.create!(
+  nombre: "Luis Fernández",
+  correo: "luis.fernandez@sga.com",
+  password: "password123",
+  password_confirmation: "password123",
+  rol: "instructor",
+  asignatura: asignatura4
 )
+puts "   ✓ #{instructor4.nombre} - #{instructor4.asignatura.nombre}"
 
-ficha2 = Ficha.create!(
-  codigo: "2823346",
-  nombre: "Desarrollo de Aplicaciones Móviles"
-)
+# PASO 4: Admin crea fichas
+puts "\n4️⃣  Admin creando fichas..."
+ficha1 = Ficha.create!(codigo: "2823345", nombre: "Análisis y Desarrollo de Software")
+ficha2 = Ficha.create!(codigo: "2823346", nombre: "Desarrollo de Aplicaciones Móviles")
+ficha3 = Ficha.create!(codigo: "2823347", nombre: "Sistemas de Información")
+puts "   ✓ #{Ficha.count} fichas creadas"
 
-ficha3 = Ficha.create!(
-  codigo: "2823347",
-  nombre: "Sistemas de Información"
-)
+# PASO 5: Admin asigna fichas a instructores
+puts "\n5️⃣  Admin asignando fichas a instructores..."
+asignacion1 = AsignacionFicha.create!(instructor: instructor1, ficha: ficha1)
+puts "   ✓ #{instructor1.nombre} (#{instructor1.asignatura.nombre}) → #{ficha1.codigo}"
 
-# Crear aprendices para la ficha 1
-puts "Creando aprendices para la ficha 1..."
-aprendiz1 = Aprendiz.create!(
-  nombre: "Pedro Gómez",
-  tipodocumento: "CC",
-  ndocumento: 1000000001,
-  correo: "pedro.gomez@aprendiz.com",
-  ficha: ficha1
-)
+asignacion2 = AsignacionFicha.create!(instructor: instructor1, ficha: ficha2)
+puts "   ✓ #{instructor1.nombre} (#{instructor1.asignatura.nombre}) → #{ficha2.codigo}"
 
-aprendiz2 = Aprendiz.create!(
-  nombre: "Laura Fernández",
-  tipodocumento: "CC",
-  ndocumento: 1000000002,
-  correo: "laura.fernandez@aprendiz.com",
-  ficha: ficha1
-)
+asignacion3 = AsignacionFicha.create!(instructor: instructor2, ficha: ficha1)
+puts "   ✓ #{instructor2.nombre} (#{instructor2.asignatura.nombre}) → #{ficha1.codigo}"
 
-aprendiz3 = Aprendiz.create!(
-  nombre: "Diego Silva",
-  tipodocumento: "TI",
-  ndocumento: 1000000003,
-  correo: "diego.silva@aprendiz.com",
-  ficha: ficha1
-)
+asignacion4 = AsignacionFicha.create!(instructor: instructor3, ficha: ficha2)
+puts "   ✓ #{instructor3.nombre} (#{instructor3.asignatura.nombre}) → #{ficha2.codigo}"
 
-aprendiz4 = Aprendiz.create!(
-  nombre: "Camila Torres",
-  tipodocumento: "CC",
-  ndocumento: 1000000004,
-  correo: "camila.torres@aprendiz.com",
-  ficha: ficha1
-)
+asignacion5 = AsignacionFicha.create!(instructor: instructor3, ficha: ficha3)
+puts "   ✓ #{instructor3.nombre} (#{instructor3.asignatura.nombre}) → #{ficha3.codigo}"
 
-# Crear aprendices para la ficha 2
-puts "Creando aprendices para la ficha 2..."
-aprendiz5 = Aprendiz.create!(
-  nombre: "Andrés Morales",
-  tipodocumento: "CC",
-  ndocumento: 1000000005,
-  correo: "andres.morales@aprendiz.com",
-  ficha: ficha2
-)
+asignacion6 = AsignacionFicha.create!(instructor: instructor4, ficha: ficha1)
+puts "   ✓ #{instructor4.nombre} (#{instructor4.asignatura.nombre}) → #{ficha1.codigo}"
 
-aprendiz6 = Aprendiz.create!(
-  nombre: "Valentina Ruiz",
-  tipodocumento: "CC",
-  ndocumento: 1000000006,
-  correo: "valentina.ruiz@aprendiz.com",
-  ficha: ficha2
-)
+asignacion7 = AsignacionFicha.create!(instructor: instructor4, ficha: ficha2)
+puts "   ✓ #{instructor4.nombre} (#{instructor4.asignatura.nombre}) → #{ficha2.codigo}"
 
-# Crear asignaciones instructor-asignatura-ficha
-puts "Creando asignaciones instructor-asignatura-ficha..."
+asignacion8 = AsignacionFicha.create!(instructor: instructor4, ficha: ficha3)
+puts "   ✓ #{instructor4.nombre} (#{instructor4.asignatura.nombre}) → #{ficha3.codigo}"
 
-# María García enseña Programación Básica en ficha 1
-asignacion1 = AsignacionFichaInstructor.create!(
-  instructor: instructor1,
-  asignatura: asignatura1,
-  ficha: ficha1
-)
+# PASO 6: Agregar aprendices
+puts "\n6️⃣  Agregando aprendices a las fichas..."
+aprendiz1 = ficha1.agregar_aprendiz(nombre: "Pedro Gómez", tipodocumento: "CC", ndocumento: 1000000001, correo: "pedro.gomez@aprendiz.com")
+aprendiz2 = ficha1.agregar_aprendiz(nombre: "Laura Fernández", tipodocumento: "CC", ndocumento: 1000000002, correo: "laura.fernandez@aprendiz.com")
+aprendiz3 = ficha1.agregar_aprendiz(nombre: "Diego Silva", tipodocumento: "TI", ndocumento: 1000000003, correo: "diego.silva@aprendiz.com")
+aprendiz4 = ficha1.agregar_aprendiz(nombre: "Camila Torres", tipodocumento: "CC", ndocumento: 1000000004, correo: "camila.torres@aprendiz.com")
+puts "   ✓ Ficha #{ficha1.codigo}: #{ficha1.aprendizs.count} aprendices"
 
-# María García enseña Bases de Datos en ficha 1
-asignacion2 = AsignacionFichaInstructor.create!(
-  instructor: instructor1,
-  asignatura: asignatura2,
-  ficha: ficha1
-)
+aprendiz5 = ficha2.agregar_aprendiz(nombre: "Andrés Morales", tipodocumento: "CC", ndocumento: 1000000005, correo: "andres.morales@aprendiz.com")
+aprendiz6 = ficha2.agregar_aprendiz(nombre: "Valentina Ruiz", tipodocumento: "CC", ndocumento: 1000000006, correo: "valentina.ruiz@aprendiz.com")
+aprendiz7 = ficha2.agregar_aprendiz(nombre: "Sebastián López", tipodocumento: "CC", ndocumento: 1000000007, correo: "sebastian.lopez@aprendiz.com")
+puts "   ✓ Ficha #{ficha2.codigo}: #{ficha2.aprendizs.count} aprendices"
 
-# Carlos Rodríguez enseña Desarrollo Web en ficha 1
-asignacion3 = AsignacionFichaInstructor.create!(
-  instructor: instructor2,
-  asignatura: asignatura3,
-  ficha: ficha1
-)
+aprendiz8 = ficha3.agregar_aprendiz(nombre: "Sofía Ramírez", tipodocumento: "CC", ndocumento: 1000000008, correo: "sofia.ramirez@aprendiz.com")
+aprendiz9 = ficha3.agregar_aprendiz(nombre: "Daniel Castro", tipodocumento: "CC", ndocumento: 1000000009, correo: "daniel.castro@aprendiz.com")
+puts "   ✓ Ficha #{ficha3.codigo}: #{ficha3.aprendizs.count} aprendices"
 
-# Ana Martínez enseña Programación Básica en ficha 2
-asignacion4 = AsignacionFichaInstructor.create!(
-  instructor: instructor3,
-  asignatura: asignatura1,
-  ficha: ficha2
-)
-
-# Crear asistencias de ejemplo
-puts "Creando asistencias de ejemplo..."
-
-# Asistencias para Programación Básica - Ficha 1
+# PASO 7: Instructores toman asistencia
+puts "\n7️⃣  Registrando asistencias..."
 fecha_hoy = Date.today
 fecha_ayer = Date.yesterday
 fecha_antier = Date.today - 2
 
-# Día 1
-Asistencia.create!(
-  fecha: fecha_antier,
-  estado: "presente",
-  aprendiz: aprendiz1,
-  asignacion_ficha_instructor: asignacion1
-)
+asignacion1.tomar_asistencia(fecha_antier, aprendiz1.id, "presente")
+asignacion1.tomar_asistencia(fecha_antier, aprendiz2.id, "presente")
+asignacion1.tomar_asistencia(fecha_antier, aprendiz3.id, "ausente")
+asignacion1.tomar_asistencia(fecha_antier, aprendiz4.id, "presente")
 
-Asistencia.create!(
-  fecha: fecha_antier,
-  estado: "presente",
-  aprendiz: aprendiz2,
-  asignacion_ficha_instructor: asignacion1
-)
+asignacion1.tomar_asistencia(fecha_ayer, aprendiz1.id, "presente")
+asignacion1.tomar_asistencia(fecha_ayer, aprendiz2.id, "ausente")
+asignacion1.tomar_asistencia(fecha_ayer, aprendiz3.id, "justificado")
+asignacion1.tomar_asistencia(fecha_ayer, aprendiz4.id, "presente")
 
-Asistencia.create!(
-  fecha: fecha_antier,
-  estado: "ausente",
-  aprendiz: aprendiz3,
-  asignacion_ficha_instructor: asignacion1
-)
+asignacion3.tomar_asistencia(fecha_hoy, aprendiz1.id, "presente")
+asignacion3.tomar_asistencia(fecha_hoy, aprendiz2.id, "presente")
+asignacion3.tomar_asistencia(fecha_hoy, aprendiz3.id, "presente")
+asignacion3.tomar_asistencia(fecha_hoy, aprendiz4.id, "ausente")
 
-Asistencia.create!(
-  fecha: fecha_antier,
-  estado: "presente",
-  aprendiz: aprendiz4,
-  asignacion_ficha_instructor: asignacion1
-)
+asignacion2.tomar_asistencia(fecha_hoy, aprendiz5.id, "presente")
+asignacion2.tomar_asistencia(fecha_hoy, aprendiz6.id, "presente")
+asignacion2.tomar_asistencia(fecha_hoy, aprendiz7.id, "ausente")
 
-# Día 2
-Asistencia.create!(
-  fecha: fecha_ayer,
-  estado: "presente",
-  aprendiz: aprendiz1,
-  asignacion_ficha_instructor: asignacion1
-)
+asignacion5.tomar_asistencia(fecha_hoy, aprendiz8.id, "presente")
+asignacion5.tomar_asistencia(fecha_hoy, aprendiz9.id, "justificado")
 
-Asistencia.create!(
-  fecha: fecha_ayer,
-  estado: "ausente",
-  aprendiz: aprendiz2,
-  asignacion_ficha_instructor: asignacion1
-)
-
-Asistencia.create!(
-  fecha: fecha_ayer,
-  estado: "justificado",
-  aprendiz: aprendiz3,
-  asignacion_ficha_instructor: asignacion1
-)
-
-Asistencia.create!(
-  fecha: fecha_ayer,
-  estado: "presente",
-  aprendiz: aprendiz4,
-  asignacion_ficha_instructor: asignacion1
-)
-
-# Asistencias para Bases de Datos - Ficha 1
-Asistencia.create!(
-  fecha: fecha_hoy,
-  estado: "presente",
-  aprendiz: aprendiz1,
-  asignacion_ficha_instructor: asignacion2
-)
-
-Asistencia.create!(
-  fecha: fecha_hoy,
-  estado: "presente",
-  aprendiz: aprendiz2,
-  asignacion_ficha_instructor: asignacion2
-)
-
-Asistencia.create!(
-  fecha: fecha_hoy,
-  estado: "presente",
-  aprendiz: aprendiz3,
-  asignacion_ficha_instructor: asignacion2
-)
-
-Asistencia.create!(
-  fecha: fecha_hoy,
-  estado: "ausente",
-  aprendiz: aprendiz4,
-  asignacion_ficha_instructor: asignacion2
-)
-
-# Asistencias para Programación Básica - Ficha 2
-Asistencia.create!(
-  fecha: fecha_hoy,
-  estado: "presente",
-  aprendiz: aprendiz5,
-  asignacion_ficha_instructor: asignacion4
-)
-
-Asistencia.create!(
-  fecha: fecha_hoy,
-  estado: "presente",
-  aprendiz: aprendiz6,
-  asignacion_ficha_instructor: asignacion4
-)
+puts "   ✓ #{Asistencia.count} asistencias registradas"
 
 puts "\n=========================================="
-puts "Base de datos poblada exitosamente!"
+puts "   ✅ BASE DE DATOS POBLADA"
 puts "=========================================="
-puts "\nDatos creados:"
-puts "- #{Usuario.count} usuarios (#{Usuario.admins.count} admins, #{Usuario.instructores.count} instructores)"
-puts "- #{Asignatura.count} asignaturas"
-puts "- #{Ficha.count} fichas"
-puts "- #{Aprendiz.count} aprendices"
-puts "- #{AsignacionFichaInstructor.count} asignaciones instructor-asignatura-ficha"
-puts "- #{Asistencia.count} asistencias registradas"
-puts "\n=========================================="
-puts "Credenciales de prueba:"
-puts "Admin: admin@sga.com / password123"
-puts "Instructor: maria.garcia@sga.com / password123"
+puts "\n📊 RESUMEN:"
+puts "   - Usuarios: #{Usuario.count} (#{Usuario.admins.count} admin, #{Usuario.instructores.count} instructores)"
+puts "   - Asignaturas: #{Asignatura.count}"
+puts "   - Fichas: #{Ficha.count}"
+puts "   - Aprendices: #{Aprendiz.count}"
+puts "   - Asignaciones: #{AsignacionFicha.count}"
+puts "   - Asistencias: #{Asistencia.count}"
+puts "\n🔐 CREDENCIALES:"
+puts "   Admin: admin@sga.com / password123"
+puts "   Instructor: maria.garcia@sga.com / password123"
 puts "=========================================="

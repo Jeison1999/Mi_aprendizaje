@@ -7,24 +7,24 @@
 Se han creado **6 tablas principales**:
 
 1. **usuarios** - Administradores e Instructores con autenticación segura
-2. **asignaturas** - Materias/Cursos del programa
-3. **fichas** - Grupos/Cohortes de aprendices
+2. **asignaturas** - Materias/Cursos del programa (creadas por admin)
+3. **fichas** - Grupos/Cohortes de aprendices (creadas por admin)
 4. **aprendizs** - Estudiantes del programa
-5. **asignacion_ficha_instructors** - Tabla intermedia que relaciona Instructor + Asignatura + Ficha
+5. **asignacion_fichas** - Tabla que relaciona Instructor + Ficha (asignación hecha por admin)
 6. **asistencias** - Registro de asistencia de aprendices
 
-### 🔗 Relaciones Implementadas
+### 🔗 Nueva Lógica de Relaciones
 
 ```
 Usuario (Instructor)
-    ├── AsignacionFichaInstructor
-    │       ├── Asignatura
+    ├── Asignatura (escoge al registrarse)
+    ├── AsignacionFicha (asignada por admin)
     │       ├── Ficha
     │       └── Asistencias
     │
-Ficha
+Ficha (creada por admin)
     ├── Aprendizs
-    └── AsignacionFichaInstructor
+    └── AsignacionFicha (instructores asignados por admin)
     
 Aprendiz
     ├── Ficha
@@ -32,8 +32,16 @@ Aprendiz
 
 Asistencia
     ├── Aprendiz
-    └── AsignacionFichaInstructor
+    └── AsignacionFicha
 ```
+
+### 🎯 Flujo de Trabajo
+
+1. **Admin crea asignaturas** → Ej: "Programación Básica", "Bases de Datos"
+2. **Instructor se registra** → Escoge su asignatura de la lista
+3. **Admin crea fichas** → Ej: Ficha "2823345"
+4. **Admin asigna fichas a instructores** → María (Programación) → Ficha 2823345
+5. **Instructor toma asistencia** → En su(s) ficha(s) asignada(s)
 
 ### 📝 Modelos con Validaciones
 

@@ -3,10 +3,10 @@ class Asistencia < ApplicationRecord
   
   # Relaciones
   belongs_to :aprendiz, foreign_key: 'aprendizid'
-  belongs_to :asignacion_ficha_instructor, foreign_key: 'asignacionid'
+  belongs_to :asignacion_ficha, foreign_key: 'asignacionid'
   
   # Delegaciones para facilitar acceso
-  delegate :ficha, :asignatura, :instructor, to: :asignacion_ficha_instructor
+  delegate :ficha, :instructor, :asignatura, to: :asignacion_ficha
   
   # Validaciones
   validates :fecha, presence: true

@@ -3,18 +3,20 @@ class Usuario < ApplicationRecord
   has_secure_password
   
   # Relaciones
-  has_many :asignacion_ficha_instructors, foreign_key: 'instructorid'
-  has_many :fichas, through: :asignacion_ficha_instructors
-  has_many :asignaturas, through: :asignacion_ficha_instructors
+  belongs_to :asignatura, optional: true  # Solo para instructores
+  has_many :asignacion_fichas, foreign_key: 'instructorid', dependent: :destroy
+  has_many :fichas, through: :asignacion_fichas
   
   # Validaciones
   validates :nombre, presence: true
   validates :correo, presence: true, uniqueness: true, format: { with: URI::MailTo::EMAIL_REGEXP }
   validates :rol, presence: true, inclusion: { in: %w[admin instructor] }
+  validates :asignatura_id, presence: true, if: :instructor?
   
   # Scopes
   scope :admins, -> { where(rol: 'admin') }
   scope :instructores, -> { where(rol: 'instructor') }
+  scope :por_asignatura, ->(asignatura_id) { where(asignatura_id: asignatura_id) }
   
   # Métodos
   def admin?
@@ -23,5 +25,17 @@ class Usuario < ApplicationRecord
   
   def instructor?
     rol == 'instructor'
+  end
+  
+  # Método para que admin asigne fichas
+  def asignar_ficha(ficha)
+    return false unless instructor?
+    asignacion_fichas.find_or_create_by(ficha: ficha)
+  end
+  
+  # Ver fichas asignadas con detalles
+  def ver_fichas
+    return [] unless instructor?
+    fichas.includes(:aprendizs)
   end
 end
