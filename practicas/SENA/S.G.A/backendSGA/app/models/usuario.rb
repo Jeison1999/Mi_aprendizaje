@@ -1,15 +1,21 @@
 class Usuario < ApplicationRecord
   self.table_name = 'usuarios'
+  
+  # Autenticación simple con bcrypt
   has_secure_password
+  
+  # Método para autenticación
+  def authenticate(password)
+    BCrypt::Password.new(encrypted_password) == password
+  end
   
   # Relaciones
   belongs_to :asignatura, optional: true  # Solo para instructores
   has_many :asignacion_fichas, foreign_key: 'instructorid', dependent: :destroy
   has_many :fichas, through: :asignacion_fichas
   
-  # Validaciones
+  # Validaciones personalizadas (Devise maneja las validaciones de email y password)
   validates :nombre, presence: true
-  validates :correo, presence: true, uniqueness: true, format: { with: URI::MailTo::EMAIL_REGEXP }
   validates :rol, presence: true, inclusion: { in: %w[admin instructor] }
   validates :asignatura_id, presence: true, if: :instructor?
   

@@ -25,18 +25,18 @@ puts "   ✓ #{Asignatura.count} asignaturas creadas"
 puts "\n2️⃣  Creando administrador..."
 admin1 = Usuario.create!(
   nombre: "Juan Pérez",
-  correo: "admin@sga.com",
+  email: "admin@sga.com",
   password: "password123",
   password_confirmation: "password123",
   rol: "admin"
 )
-puts "   ✓ Admin creado: #{admin1.correo}"
+puts "   ✓ Admin creado: #{admin1.email}"
 
 # PASO 3: Instructores se registran y escogen su asignatura
 puts "\n3️⃣  Instructores registrándose con sus asignaturas..."
 instructor1 = Usuario.create!(
   nombre: "María García",
-  correo: "maria.garcia@sga.com",
+  email: "maria.garcia@sga.com",
   password: "password123",
   password_confirmation: "password123",
   rol: "instructor",
@@ -46,7 +46,7 @@ puts "   ✓ #{instructor1.nombre} - #{instructor1.asignatura.nombre}"
 
 instructor2 = Usuario.create!(
   nombre: "Carlos Rodríguez",
-  correo: "carlos.rodriguez@sga.com",
+  email: "carlos.rodriguez@sga.com",
   password: "password123",
   password_confirmation: "password123",
   rol: "instructor",
@@ -56,7 +56,7 @@ puts "   ✓ #{instructor2.nombre} - #{instructor2.asignatura.nombre}"
 
 instructor3 = Usuario.create!(
   nombre: "Ana Martínez",
-  correo: "ana.martinez@sga.com",
+  email: "ana.martinez@sga.com",
   password: "password123",
   password_confirmation: "password123",
   rol: "instructor",
@@ -66,7 +66,7 @@ puts "   ✓ #{instructor3.nombre} - #{instructor3.asignatura.nombre}"
 
 instructor4 = Usuario.create!(
   nombre: "Luis Fernández",
-  correo: "luis.fernandez@sga.com",
+  email: "luis.fernandez@sga.com",
   password: "password123",
   password_confirmation: "password123",
   rol: "instructor",
