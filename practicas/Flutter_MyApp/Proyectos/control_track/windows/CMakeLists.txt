@@ -2,6 +2,10 @@
 cmake_minimum_required(VERSION 3.14)
 project(control_track LANGUAGES CXX)
 
+# Set C++ standard to 17 (required for Firebase plugins compatibility)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 # The name of the executable created for the application. Change this to change
 # the on-disk name of your application.
 set(BINARY_NAME "control_track")
