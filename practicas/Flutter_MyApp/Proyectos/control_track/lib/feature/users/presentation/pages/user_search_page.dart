@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../data/models/user_model.dart';
+import '../../domain/models/user_model.dart';
 import 'user_detail_page.dart';
 
 // Animaciones reutilizables (copiadas de register_user_page.dart para independencia visual)

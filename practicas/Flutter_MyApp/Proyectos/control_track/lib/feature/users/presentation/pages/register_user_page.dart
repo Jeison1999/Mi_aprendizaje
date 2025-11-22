@@ -1,96 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../data/models/user_model.dart';
-
-// Animaciones reutilizables (copiadas de home_page.dart para independencia visual)
-
-class AnimatedGradientBackground extends StatefulWidget {
-  const AnimatedGradientBackground({Key? key}) : super(key: key);
-  @override
-  State<AnimatedGradientBackground> createState() =>
-      _AnimatedGradientBackgroundState();
-}
-
-class _AnimatedGradientBackgroundState extends State<AnimatedGradientBackground>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _animation;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 8),
-    )..repeat(reverse: true);
-    _animation = CurvedAnimation(parent: _controller, curve: Curves.easeInOut);
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _animation,
-      builder: (context, child) {
-        return Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                Color.lerp(
-                  const Color(0xFF0A8754),
-                  const Color(0xFF00C897),
-                  _animation.value,
-                )!,
-                Color.lerp(
-                  const Color(0xFF00C897),
-                  const Color(0xFF0A8754),
-                  _animation.value,
-                )!,
-              ],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-          ),
-        );
-      },
-    );
-  }
-}
-
-class AnimatedEntrance extends StatelessWidget {
-  final Widget child;
-  final int delay;
-  const AnimatedEntrance({required this.child, this.delay = 0, Key? key})
-    : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: Future.delayed(Duration(milliseconds: delay)),
-      builder: (context, snapshot) {
-        final show = snapshot.connectionState == ConnectionState.done;
-        return TweenAnimationBuilder<double>(
-          tween: Tween(begin: 0, end: show ? 1 : 0),
-          duration: const Duration(milliseconds: 700),
-          curve: Curves.easeOutBack,
-          builder: (context, value, child) => Opacity(
-            opacity: value.clamp(0.0, 1.0),
-            child: Transform.translate(
-              offset: Offset(0, (1 - value) * 30),
-              child: child,
-            ),
-          ),
-          child: child,
-        );
-      },
-    );
-  }
-}
+import '../../domain/models/user_model.dart';
+import '../../../../shared/widgets/animated_gradient_background.dart';
+import '../../../../shared/widgets/animated_entrance.dart';
 
 class RegisterUserPage extends StatefulWidget {
   const RegisterUserPage({super.key});
@@ -101,22 +13,39 @@ class RegisterUserPage extends StatefulWidget {
 
 class _RegisterUserPageState extends State<RegisterUserPage> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _nombreController = TextEditingController();
-  final TextEditingController _cedulaController = TextEditingController();
-  final TextEditingController _celularController = TextEditingController();
-  final TextEditingController _correoController = TextEditingController();
-  final TextEditingController _otroTipoController = TextEditingController();
+  final _nombreController = TextEditingController();
+  final _cedulaController = TextEditingController();
+  final _celularController = TextEditingController();
+  final _correoController = TextEditingController();
+  final _otroTipoController = TextEditingController();
+
   UserRole? _rol;
   String _error = '';
   bool _loading = false;
-  bool _showPassword = false;
+
+  @override
+  void dispose() {
+    _nombreController.dispose();
+    _cedulaController.dispose();
+    _celularController.dispose();
+    _correoController.dispose();
+    _otroTipoController.dispose();
+    super.dispose();
+  }
 
   Future<void> _registrarUsuario() async {
-    if (!_formKey.currentState!.validate() || _rol == null) return;
+    if (!_formKey.currentState!.validate() || _rol == null) {
+      if (_rol == null) {
+        setState(() => _error = 'Por favor selecciona un tipo de usuario');
+      }
+      return;
+    }
+
     setState(() {
       _loading = true;
       _error = '';
     });
+
     try {
       final user = AppUser(
         id: '',
@@ -129,21 +58,27 @@ class _RegisterUserPageState extends State<RegisterUserPage> {
             ? _otroTipoController.text.trim()
             : null,
       );
+
       await FirebaseFirestore.instance.collection('usuarios').add(user.toMap());
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Usuario registrado correctamente.')),
+          const SnackBar(
+            content: Text('✓ Usuario registrado exitosamente'),
+            backgroundColor: Color(0xFF0A8754),
+            duration: Duration(seconds: 2),
+          ),
         );
-        Navigator.of(context).pop();
+        Navigator.of(context).pop(true);
       }
     } catch (e) {
-      setState(() {
-        _error = 'Error al registrar: $e';
-      });
+      if (mounted) {
+        setState(() => _error = 'Error al registrar: ${e.toString()}');
+      }
     } finally {
-      setState(() {
-        _loading = false;
-      });
+      if (mounted) {
+        setState(() => _loading = false);
+      }
     }
   }
 
@@ -286,10 +221,19 @@ class _RegisterUserPageState extends State<RegisterUserPage> {
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(14),
                                   ),
+                                  hintText: 'Ej: 1234567890',
                                 ),
-                                validator: (v) => v == null || v.isEmpty
-                                    ? 'Campo requerido'
-                                    : null,
+                                validator: (v) {
+                                  if (v == null || v.isEmpty)
+                                    return 'Campo requerido';
+                                  if (v.length < 6 || v.length > 12) {
+                                    return 'Cédula debe tener entre 6 y 12 dígitos';
+                                  }
+                                  if (!RegExp(r'^[0-9]+$').hasMatch(v)) {
+                                    return 'Solo se permiten números';
+                                  }
+                                  return null;
+                                },
                                 keyboardType: TextInputType.number,
                               ),
                               const SizedBox(height: 14),
@@ -304,10 +248,19 @@ class _RegisterUserPageState extends State<RegisterUserPage> {
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(14),
                                   ),
+                                  hintText: 'Ej: 3001234567',
                                 ),
-                                validator: (v) => v == null || v.isEmpty
-                                    ? 'Campo requerido'
-                                    : null,
+                                validator: (v) {
+                                  if (v == null || v.isEmpty)
+                                    return 'Campo requerido';
+                                  if (v.length != 10) {
+                                    return 'El celular debe tener 10 dígitos';
+                                  }
+                                  if (!RegExp(r'^3[0-9]{9}$').hasMatch(v)) {
+                                    return 'Número de celular inválido';
+                                  }
+                                  return null;
+                                },
                                 keyboardType: TextInputType.phone,
                               ),
                               const SizedBox(height: 14),
@@ -327,10 +280,11 @@ class _RegisterUserPageState extends State<RegisterUserPage> {
                                   if (v == null || v.isEmpty)
                                     return 'Campo requerido';
                                   final emailRegex = RegExp(
-                                    r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}",
+                                    r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$",
                                   );
-                                  if (!emailRegex.hasMatch(v))
-                                    return 'Correo inválido';
+                                  if (!emailRegex.hasMatch(v)) {
+                                    return 'Ingresa un correo electrónico válido';
+                                  }
                                   return null;
                                 },
                                 keyboardType: TextInputType.emailAddress,
@@ -407,11 +361,35 @@ class _RegisterUserPageState extends State<RegisterUserPage> {
                                 ),
                               const SizedBox(height: 22),
                               if (_error.isNotEmpty)
-                                Padding(
-                                  padding: const EdgeInsets.only(bottom: 10.0),
-                                  child: Text(
-                                    _error,
-                                    style: const TextStyle(color: Colors.red),
+                                Container(
+                                  margin: const EdgeInsets.only(bottom: 12.0),
+                                  padding: const EdgeInsets.all(12.0),
+                                  decoration: BoxDecoration(
+                                    color: Colors.red.shade50,
+                                    borderRadius: BorderRadius.circular(10),
+                                    border: Border.all(
+                                      color: Colors.red.shade200,
+                                    ),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        Icons.error_outline,
+                                        color: Colors.red.shade700,
+                                        size: 20,
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Expanded(
+                                        child: Text(
+                                          _error,
+                                          style: TextStyle(
+                                            color: Colors.red.shade700,
+                                            fontSize: 13,
+                                            fontFamily: 'Montserrat',
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               if (_loading)

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../data/models/pertenencia_model.dart';
-import 'scan_serial_page.dart';
+import '../../domain/models/pertenencia_model.dart';
+import '../../../movimientos/presentation/pages/scan_serial_page.dart';
 
 class RegisterPertenenciaPage extends StatefulWidget {
   final String usuarioId;

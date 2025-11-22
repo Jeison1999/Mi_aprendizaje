@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'register_user_page.dart';
-import 'user_search_page.dart';
+import '../../../users/presentation/pages/register_user_page.dart';
+import '../../../users/presentation/pages/user_search_page.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});

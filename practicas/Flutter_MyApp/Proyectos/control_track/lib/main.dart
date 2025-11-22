@@ -3,8 +3,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'firebase_options.dart';
-import 'presentation/login_page.dart';
-import 'presentation/home_page.dart';
+import 'feature/auth/presentation/pages/login_page.dart';
+import 'feature/home/presentation/pages/home_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

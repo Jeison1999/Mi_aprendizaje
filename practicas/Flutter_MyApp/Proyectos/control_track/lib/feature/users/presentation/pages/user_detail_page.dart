@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../data/models/user_model.dart';
+import '../../domain/models/user_model.dart';
 
-import 'register_pertenencia_page.dart';
+import '../../../pertenencias/presentation/pages/register_pertenencia_page.dart';
 import 'edit_user_page.dart';
-import '_pertenencia_filter_section.dart';
+import '../../../pertenencias/presentation/widgets/_pertenencia_filter_section.dart';
 
 // Animaciones reutilizables (copiadas de register_user_page.dart para independencia visual)
 class AnimatedGradientBackground extends StatefulWidget {

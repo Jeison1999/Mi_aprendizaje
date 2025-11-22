@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../data/models/movimiento_model.dart';
-import '../data/models/pertenencia_model.dart';
+import '../../domain/models/movimiento_model.dart';
+import '../../../pertenencias/domain/models/pertenencia_model.dart';
 import 'scan_serial_page.dart';
 
 class RegistrarMovimientoPage extends StatefulWidget {

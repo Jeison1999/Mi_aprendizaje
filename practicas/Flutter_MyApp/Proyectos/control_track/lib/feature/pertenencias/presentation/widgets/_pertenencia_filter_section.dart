@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../data/models/pertenencia_model.dart';
-import 'edit_pertenencia_page.dart';
-import 'registrar_movimiento_page.dart';
+import '../../domain/models/pertenencia_model.dart';
+import '../pages/edit_pertenencia_page.dart';
+import '../../../movimientos/presentation/pages/registrar_movimiento_page.dart';
 
 class PertenenciaFilterSection extends StatefulWidget {
   final String userId;
