@@ -8,6 +8,9 @@ class Movimiento {
   final DateTime fecha;
   final String? observacion;
 
+  // Campo de auditoría
+  final String? registradoPor;
+
   Movimiento({
     required this.id,
     required this.pertenenciaId,
@@ -15,6 +18,7 @@ class Movimiento {
     required this.tipo,
     required this.fecha,
     this.observacion,
+    this.registradoPor,
   });
 
   Map<String, dynamic> toMap() {
@@ -25,6 +29,7 @@ class Movimiento {
       'tipo': tipo.name,
       'fecha': fecha.toIso8601String(),
       'observacion': observacion,
+      'registradoPor': registradoPor,
     };
   }
 
@@ -39,6 +44,7 @@ class Movimiento {
       ),
       fecha: DateTime.parse(map['fecha']),
       observacion: map['observacion'],
+      registradoPor: map['registradoPor'],
     );
   }
 }

@@ -62,6 +62,10 @@ dependencies:
   google_fonts: ^6.2.1
   flutter_svg: ^2.0.10
 
+  # Autenticación y seguridad
+  local_auth: ^2.2.0
+  flutter_secure_storage: ^9.0.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

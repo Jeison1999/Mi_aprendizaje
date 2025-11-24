@@ -2,95 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../domain/models/user_model.dart';
 import 'user_detail_page.dart';
-
-// Animaciones reutilizables (copiadas de register_user_page.dart para independencia visual)
-class AnimatedGradientBackground extends StatefulWidget {
-  const AnimatedGradientBackground({Key? key}) : super(key: key);
-  @override
-  State<AnimatedGradientBackground> createState() =>
-      _AnimatedGradientBackgroundState();
-}
-
-class _AnimatedGradientBackgroundState extends State<AnimatedGradientBackground>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _animation;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 8),
-    )..repeat(reverse: true);
-    _animation = CurvedAnimation(parent: _controller, curve: Curves.easeInOut);
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _animation,
-      builder: (context, child) {
-        return Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                Color.lerp(
-                  const Color(0xFF0A8754),
-                  const Color(0xFF00C897),
-                  _animation.value,
-                )!,
-                Color.lerp(
-                  const Color(0xFF00C897),
-                  const Color(0xFF0A8754),
-                  _animation.value,
-                )!,
-              ],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-          ),
-        );
-      },
-    );
-  }
-}
-
-class AnimatedEntrance extends StatelessWidget {
-  final Widget child;
-  final int delay;
-  const AnimatedEntrance({required this.child, this.delay = 0, Key? key})
-    : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: Future.delayed(Duration(milliseconds: delay)),
-      builder: (context, snapshot) {
-        final show = snapshot.connectionState == ConnectionState.done;
-        return TweenAnimationBuilder<double>(
-          tween: Tween(begin: 0, end: show ? 1 : 0),
-          duration: const Duration(milliseconds: 700),
-          curve: Curves.easeOutBack,
-          builder: (context, value, child) => Opacity(
-            opacity: value.clamp(0.0, 1.0),
-            child: Transform.translate(
-              offset: Offset(0, (1 - value) * 30),
-              child: child,
-            ),
-          ),
-          child: child,
-        );
-      },
-    );
-  }
-}
+import '../../../../shared/widgets/animated_gradient_background.dart' hide AnimatedGradientBackground;
 
 class UserSearchPage extends StatefulWidget {
   const UserSearchPage({super.key});
@@ -101,17 +13,102 @@ class UserSearchPage extends StatefulWidget {
 
 class _UserSearchPageState extends State<UserSearchPage> {
   final TextEditingController _searchController = TextEditingController();
-  String _searchBy = 'cedula';
+  String _searchBy = 'nombre';
+  UserRole? _filterByRole;
+  TipoDocumento? _filterByDocType;
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  String _getRoleLabel(UserRole role, String? otroTipo) {
+    switch (role) {
+      case UserRole.instructorPlanta:
+        return 'Instructor de planta';
+      case UserRole.instructorContratista:
+        return 'Instructor contratista';
+      case UserRole.aprendiz:
+        return 'Aprendiz';
+      case UserRole.administrativo:
+        return 'Administrativo';
+      case UserRole.teo:
+        return 'TEO';
+      case UserRole.visitante:
+        return 'Visitante';
+      case UserRole.otro:
+        return otroTipo != null ? 'Otro ($otroTipo)' : 'Otro';
+    }
+  }
+
+  String _getDocTypeLabel(TipoDocumento tipo) {
+    switch (tipo) {
+      case TipoDocumento.ti:
+        return 'TI';
+      case TipoDocumento.cc:
+        return 'CC';
+      case TipoDocumento.pasaporte:
+        return 'Pasaporte';
+      case TipoDocumento.cedulaExtranjera:
+        return 'CE';
+    }
+  }
+
+  List<AppUser> _filterUsers(List<AppUser> users, String query) {
+    var filtered = users;
+
+    // Filtrar por texto de búsqueda
+    if (query.isNotEmpty) {
+      final lowerQuery = query.toLowerCase();
+      filtered = filtered.where((user) {
+        switch (_searchBy) {
+          case 'nombre':
+            return user.nombre.toLowerCase().contains(lowerQuery);
+          case 'cedula':
+            return user.cedula.toLowerCase().contains(lowerQuery);
+          case 'correo':
+            return user.correo.toLowerCase().contains(lowerQuery);
+          default:
+            return false;
+        }
+      }).toList();
+    }
+
+    // Filtrar por rol
+    if (_filterByRole != null) {
+      filtered = filtered.where((user) => user.rol == _filterByRole).toList();
+    }
+
+    // Filtrar por tipo de documento
+    if (_filterByDocType != null) {
+      filtered = filtered
+          .where((user) => user.tipoDocumento == _filterByDocType)
+          .toList();
+    }
+
+    return filtered;
+  }
+
+  void _clearFilters() {
+    setState(() {
+      _filterByRole = null;
+      _filterByDocType = null;
+      _searchController.clear();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+    final isDesktop = size.width > 800;
+
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: Text(
+        title: const Text(
           'Buscar usuario',
           style: TextStyle(
             fontFamily: 'Montserrat',
@@ -126,15 +123,14 @@ class _UserSearchPageState extends State<UserSearchPage> {
       ),
       body: Stack(
         children: [
-          // Fondo degradado institucional animado
           const AnimatedGradientBackground(),
           SafeArea(
             child: Center(
               child: SingleChildScrollView(
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const SizedBox(height: 24),
+                    // Logo
                     Hero(
                       tag: 'logo_sena',
                       child: CircleAvatar(
@@ -156,7 +152,7 @@ class _UserSearchPageState extends State<UserSearchPage> {
                       ),
                     ),
                     const SizedBox(height: 18),
-                    Text(
+                    const Text(
                       'Buscar usuario',
                       style: TextStyle(
                         fontFamily: 'Montserrat',
@@ -166,16 +162,16 @@ class _UserSearchPageState extends State<UserSearchPage> {
                         letterSpacing: 1.1,
                         shadows: [
                           Shadow(
-                            color: Colors.black.withOpacity(0.18),
+                            color: Colors.black26,
                             blurRadius: 8,
-                            offset: const Offset(0, 2),
+                            offset: Offset(0, 2),
                           ),
                         ],
                       ),
                     ),
                     const SizedBox(height: 8),
-                    Text(
-                      'Busca usuarios por cédula o nombre',
+                    const Text(
+                      'Busca y filtra usuarios del sistema',
                       style: TextStyle(
                         fontFamily: 'Montserrat',
                         color: Colors.white70,
@@ -184,334 +180,323 @@ class _UserSearchPageState extends State<UserSearchPage> {
                       ),
                     ),
                     const SizedBox(height: 28),
-                    AnimatedEntrance(
-                      delay: 200,
-                      child: Container(
-                        margin: EdgeInsets.symmetric(
-                          horizontal: size.width * 0.06,
-                        ),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 24,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(24),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.08),
-                              blurRadius: 18,
-                              offset: const Offset(0, 6),
-                            ),
-                          ],
-                          border: Border.all(
-                            color: const Color(0xFF0A8754).withOpacity(0.10),
-                            width: 1.5,
+
+                    // Contenedor de búsqueda y filtros
+                    Container(
+                      margin: EdgeInsets.symmetric(
+                        horizontal: isDesktop
+                            ? size.width * 0.15
+                            : size.width * 0.06,
+                      ),
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(24),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.08),
+                            blurRadius: 18,
+                            offset: const Offset(0, 6),
                           ),
-                        ),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: TextField(
-                                controller: _searchController,
-                                style: const TextStyle(
-                                  fontFamily: 'Montserrat',
-                                ),
-                                decoration: InputDecoration(
-                                  labelText: 'Buscar por cédula o nombre',
-                                  prefixIcon: const Icon(Icons.search),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(14),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            Container(
-                              decoration: BoxDecoration(
-                                color: const Color(0xFF0A8754),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: DropdownButtonHideUnderline(
-                                child: DropdownButton<String>(
-                                  value: _searchBy,
-                                  dropdownColor: Colors.white,
-                                  icon: const Icon(
-                                    Icons.arrow_drop_down,
-                                    color: Colors.white,
-                                  ),
-                                  style: const TextStyle(
-                                    fontFamily: 'Montserrat',
-                                    color: Color(0xFF0A8754),
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                  items: const [
-                                    DropdownMenuItem(
-                                      value: 'cedula',
-                                      child: Text('Cédula'),
-                                    ),
-                                    DropdownMenuItem(
-                                      value: 'nombre',
-                                      child: Text('Nombre'),
-                                    ),
-                                  ],
-                                  onChanged: (v) =>
-                                      setState(() => _searchBy = v ?? 'cedula'),
-                                ),
-                              ),
-                            ),
-                          ],
+                        ],
+                        border: Border.all(
+                          color: const Color(0xFF0A8754).withOpacity(0.10),
+                          width: 1.5,
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 24),
-                    AnimatedEntrance(
-                      delay: 400,
-                      child: Container(
-                        margin: EdgeInsets.symmetric(
-                          horizontal: size.width * 0.04,
-                        ),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 8,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.85),
-                          borderRadius: BorderRadius.circular(18),
-                        ),
-                        height: size.height * 0.45,
-                        child: ValueListenableBuilder<TextEditingValue>(
-                          valueListenable: _searchController,
-                          builder: (context, value, _) {
-                            if (value.text.isEmpty) {
-                              return Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: const [
-                                  Icon(
-                                    Icons.search,
-                                    size: 48,
-                                    color: Color(0xFF0A8754),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Barra de búsqueda
+                          Row(
+                            children: [
+                              Expanded(
+                                child: TextField(
+                                  controller: _searchController,
+                                  style: const TextStyle(
+                                    fontFamily: 'Montserrat',
                                   ),
-                                  SizedBox(height: 10),
-                                  Text(
-                                    'Escribe para buscar usuarios...',
-                                    style: TextStyle(
+                                  decoration: InputDecoration(
+                                    labelText: 'Buscar usuario',
+                                    prefixIcon: const Icon(Icons.search),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(14),
+                                    ),
+                                  ),
+                                  onChanged: (_) => setState(() {}),
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              // Dropdown de criterio de búsqueda
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFF0A8754),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: DropdownButtonHideUnderline(
+                                  child: DropdownButton<String>(
+                                    value: _searchBy,
+                                    dropdownColor: Colors.white,
+                                    icon: const Icon(
+                                      Icons.arrow_drop_down,
+                                      color: Colors.white,
+                                    ),
+                                    style: const TextStyle(
                                       fontFamily: 'Montserrat',
-                                      color: Colors.black54,
-                                      fontSize: 16,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    items: const [
+                                      DropdownMenuItem(
+                                        value: 'nombre',
+                                        child: Text(
+                                          'Nombre',
+                                          style: TextStyle(
+                                            color: Color(0xFF0A8754),
+                                          ),
+                                        ),
+                                      ),
+                                      DropdownMenuItem(
+                                        value: 'cedula',
+                                        child: Text(
+                                          'Documento',
+                                          style: TextStyle(
+                                            color: Color(0xFF0A8754),
+                                          ),
+                                        ),
+                                      ),
+                                      DropdownMenuItem(
+                                        value: 'correo',
+                                        child: Text(
+                                          'Correo',
+                                          style: TextStyle(
+                                            color: Color(0xFF0A8754),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                    onChanged: (v) => setState(
+                                      () => _searchBy = v ?? 'nombre',
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+
+                          // Filtros avanzados
+                          Wrap(
+                            spacing: 8,
+                            runSpacing: 8,
+                            children: [
+                              // Filtro por rol
+                              DropdownButton<UserRole?>(
+                                value: _filterByRole,
+                                hint: const Text(
+                                  'Filtrar por rol',
+                                  style: TextStyle(
+                                    fontFamily: 'Montserrat',
+                                    fontSize: 13,
+                                  ),
+                                ),
+                                dropdownColor: Colors.white,
+                                style: const TextStyle(
+                                  fontFamily: 'Montserrat',
+                                  color: Colors.black87,
+                                  fontSize: 13,
+                                ),
+                                underline: Container(
+                                  height: 1,
+                                  color: Colors.grey.shade300,
+                                ),
+                                items: [
+                                  const DropdownMenuItem(
+                                    value: null,
+                                    child: Text('Todos los roles'),
+                                  ),
+                                  ...UserRole.values.map(
+                                    (role) => DropdownMenuItem(
+                                      value: role,
+                                      child: Text(_getRoleLabel(role, null)),
                                     ),
                                   ),
                                 ],
-                              );
-                            }
-                            return StreamBuilder<QuerySnapshot>(
-                              stream: FirebaseFirestore.instance
-                                  .collection('usuarios')
-                                  .snapshots(),
-                              builder: (context, snapshot) {
-                                if (snapshot.connectionState ==
-                                    ConnectionState.waiting) {
-                                  return const Center(
-                                    child: CircularProgressIndicator(),
-                                  );
-                                }
-                                if (!snapshot.hasData ||
-                                    snapshot.data!.docs.isEmpty) {
-                                  return Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: const [
-                                      Icon(
-                                        Icons.person_off_rounded,
-                                        size: 48,
-                                        color: Colors.grey,
+                                onChanged: (v) =>
+                                    setState(() => _filterByRole = v),
+                              ),
+                              const SizedBox(width: 8),
+                              // Filtro por tipo de documento
+                              DropdownButton<TipoDocumento?>(
+                                value: _filterByDocType,
+                                hint: const Text(
+                                  'Filtrar por doc.',
+                                  style: TextStyle(
+                                    fontFamily: 'Montserrat',
+                                    fontSize: 13,
+                                  ),
+                                ),
+                                dropdownColor: Colors.white,
+                                style: const TextStyle(
+                                  fontFamily: 'Montserrat',
+                                  color: Colors.black87,
+                                  fontSize: 13,
+                                ),
+                                underline: Container(
+                                  height: 1,
+                                  color: Colors.grey.shade300,
+                                ),
+                                items: [
+                                  const DropdownMenuItem(
+                                    value: null,
+                                    child: Text('Todos los tipos'),
+                                  ),
+                                  ...TipoDocumento.values.map(
+                                    (tipo) => DropdownMenuItem(
+                                      value: tipo,
+                                      child: Text(_getDocTypeLabel(tipo)),
+                                    ),
+                                  ),
+                                ],
+                                onChanged: (v) =>
+                                    setState(() => _filterByDocType = v),
+                              ),
+                              // Botón limpiar filtros
+                              if (_filterByRole != null ||
+                                  _filterByDocType != null ||
+                                  _searchController.text.isNotEmpty)
+                                TextButton.icon(
+                                  onPressed: _clearFilters,
+                                  icon: const Icon(Icons.clear, size: 16),
+                                  label: const Text(
+                                    'Limpiar',
+                                    style: TextStyle(fontSize: 13),
+                                  ),
+                                  style: TextButton.styleFrom(
+                                    foregroundColor: Colors.red.shade700,
+                                  ),
+                                ),
+                            ],
+                          ),
+
+                          // Chips de filtros activos
+                          if (_filterByRole != null || _filterByDocType != null)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 12),
+                              child: Wrap(
+                                spacing: 8,
+                                children: [
+                                  if (_filterByRole != null)
+                                    Chip(
+                                      label: Text(
+                                        _getRoleLabel(_filterByRole!, null),
+                                        style: const TextStyle(fontSize: 12),
                                       ),
-                                      SizedBox(height: 10),
-                                      Text(
-                                        'No hay usuarios registrados.',
-                                        style: TextStyle(
-                                          fontFamily: 'Montserrat',
-                                          color: Colors.black54,
-                                          fontSize: 16,
-                                        ),
+                                      deleteIcon: const Icon(
+                                        Icons.close,
+                                        size: 16,
                                       ),
-                                    ],
-                                  );
-                                }
-                                var users = snapshot.data!.docs
-                                    .map(
-                                      (doc) => AppUser.fromMap(
-                                        doc.data() as Map<String, dynamic>,
-                                        doc.id,
+                                      onDeleted: () =>
+                                          setState(() => _filterByRole = null),
+                                      backgroundColor: const Color(
+                                        0xFF0A8754,
+                                      ).withOpacity(0.1),
+                                    ),
+                                  if (_filterByDocType != null)
+                                    Chip(
+                                      label: Text(
+                                        _getDocTypeLabel(_filterByDocType!),
+                                        style: const TextStyle(fontSize: 12),
                                       ),
-                                    )
-                                    .toList();
-                                final query = value.text.trim().toLowerCase();
-                                if (_searchBy == 'nombre') {
-                                  users = users
-                                      .where(
-                                        (u) => u.nombre.toLowerCase().contains(
-                                          query,
-                                        ),
-                                      )
-                                      .toList();
-                                } else if (_searchBy == 'cedula') {
-                                  users = users
-                                      .where(
-                                        (u) => u.cedula.toLowerCase().contains(
-                                          query,
-                                        ),
-                                      )
-                                      .toList();
-                                }
-                                if (users.isEmpty) {
-                                  return Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: const [
-                                      Icon(
-                                        Icons.person_search_rounded,
-                                        size: 48,
-                                        color: Colors.grey,
+                                      deleteIcon: const Icon(
+                                        Icons.close,
+                                        size: 16,
                                       ),
-                                      SizedBox(height: 10),
-                                      Text(
-                                        'No se encontraron usuarios con ese criterio.',
-                                        style: TextStyle(
-                                          fontFamily: 'Montserrat',
-                                          color: Colors.black54,
-                                          fontSize: 16,
-                                        ),
+                                      onDeleted: () => setState(
+                                        () => _filterByDocType = null,
                                       ),
-                                    ],
-                                  );
-                                }
-                                return ListView.separated(
-                                  itemCount: users.length,
-                                  separatorBuilder: (_, __) =>
-                                      const SizedBox(height: 10),
-                                  itemBuilder: (context, index) {
-                                    final user = users[index];
-                                    return Material(
-                                      color: Colors.transparent,
-                                      child: InkWell(
-                                        borderRadius: BorderRadius.circular(16),
-                                        onTap: () {
-                                          Navigator.of(context).push(
-                                            MaterialPageRoute(
-                                              builder: (_) =>
-                                                  UserDetailPage(user: user),
-                                            ),
-                                          );
-                                        },
-                                        child: Container(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 14,
-                                            vertical: 14,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            color: Colors.white,
-                                            borderRadius: BorderRadius.circular(
-                                              16,
-                                            ),
-                                            boxShadow: [
-                                              BoxShadow(
-                                                color: Colors.black.withOpacity(
-                                                  0.06,
-                                                ),
-                                                blurRadius: 8,
-                                                offset: const Offset(0, 2),
-                                              ),
-                                            ],
-                                            border: Border.all(
-                                              color: const Color(
-                                                0xFF0A8754,
-                                              ).withOpacity(0.10),
-                                              width: 1.2,
-                                            ),
-                                          ),
-                                          child: Row(
-                                            children: [
-                                              CircleAvatar(
-                                                backgroundColor: const Color(
-                                                  0xFF0A8754,
-                                                ).withOpacity(0.13),
-                                                child: const Icon(
-                                                  Icons.person,
-                                                  color: Color(0xFF0A8754),
-                                                ),
-                                              ),
-                                              const SizedBox(width: 14),
-                                              Expanded(
-                                                child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    Text(
-                                                      user.nombre,
-                                                      style: const TextStyle(
-                                                        fontFamily:
-                                                            'Montserrat',
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        fontSize: 17,
-                                                        color: Color(
-                                                          0xFF0A8754,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    const SizedBox(height: 2),
-                                                    Text(
-                                                      'Cédula: ${user.cedula}',
-                                                      style: const TextStyle(
-                                                        fontFamily:
-                                                            'Montserrat',
-                                                        color: Colors.black87,
-                                                        fontSize: 14,
-                                                      ),
-                                                    ),
-                                                    const SizedBox(height: 2),
-                                                    Text(
-                                                      'Tipo: '
-                                                      '${user.rol == UserRole.instructorPlanta
-                                                          ? 'Instructor de planta'
-                                                          : user.rol == UserRole.instructorContratista
-                                                          ? 'Instructor contratista'
-                                                          : user.rol == UserRole.aprendiz
-                                                          ? 'Aprendiz'
-                                                          : user.rol == UserRole.administrativo
-                                                          ? 'Administrativo'
-                                                          : user.rol == UserRole.teo
-                                                          ? 'TEO'
-                                                          : user.rol == UserRole.visitante
-                                                          ? 'Visitante'
-                                                          : user.rol == UserRole.otro && user.otroTipo != null
-                                                          ? 'Otro (${user.otroTipo})'
-                                                          : 'Otro'}',
-                                                      style: const TextStyle(
-                                                        fontFamily:
-                                                            'Montserrat',
-                                                        color: Colors.black54,
-                                                        fontSize: 13,
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                              const Icon(
-                                                Icons.arrow_forward_ios_rounded,
-                                                color: Color(0xFF0A8754),
-                                                size: 20,
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                );
-                              },
+                                      backgroundColor: const Color(
+                                        0xFF0A8754,
+                                      ).withOpacity(0.1),
+                                    ),
+                                ],
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+
+                    const SizedBox(height: 24),
+
+                    // Resultados
+                    Container(
+                      margin: EdgeInsets.symmetric(
+                        horizontal: isDesktop
+                            ? size.width * 0.15
+                            : size.width * 0.04,
+                      ),
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.9),
+                        borderRadius: BorderRadius.circular(18),
+                      ),
+                      height: isDesktop
+                          ? size.height * 0.5
+                          : size.height * 0.45,
+                      child: StreamBuilder<QuerySnapshot>(
+                        stream: FirebaseFirestore.instance
+                            .collection('usuarios')
+                            .snapshots(),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const Center(
+                              child: CircularProgressIndicator(),
                             );
-                          },
-                        ),
+                          }
+
+                          if (!snapshot.hasData ||
+                              snapshot.data!.docs.isEmpty) {
+                            return _buildEmptyState(
+                              Icons.person_off_rounded,
+                              'No hay usuarios registrados',
+                            );
+                          }
+
+                          var users = snapshot.data!.docs
+                              .map(
+                                (doc) => AppUser.fromMap(
+                                  doc.data() as Map<String, dynamic>,
+                                  doc.id,
+                                ),
+                              )
+                              .toList();
+
+                          final filteredUsers = _filterUsers(
+                            users,
+                            _searchController.text.trim(),
+                          );
+
+                          if (filteredUsers.isEmpty) {
+                            return _buildEmptyState(
+                              Icons.person_search_rounded,
+                              'No se encontraron usuarios',
+                            );
+                          }
+
+                          return ListView.separated(
+                            itemCount: filteredUsers.length,
+                            separatorBuilder: (_, __) =>
+                                const SizedBox(height: 10),
+                            itemBuilder: (context, index) {
+                              final user = filteredUsers[index];
+                              return _buildUserCard(user, isDesktop);
+                            },
+                          );
+                        },
                       ),
                     ),
                     const SizedBox(height: 32),
@@ -521,6 +506,132 @@ class _UserSearchPageState extends State<UserSearchPage> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildEmptyState(IconData icon, String message) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(icon, size: 48, color: Colors.grey),
+          const SizedBox(height: 10),
+          Text(
+            message,
+            style: const TextStyle(
+              fontFamily: 'Montserrat',
+              color: Colors.black54,
+              fontSize: 16,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildUserCard(AppUser user, bool isDesktop) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: () {
+          Navigator.of(
+            context,
+          ).push(MaterialPageRoute(builder: (_) => UserDetailPage(user: user)));
+        },
+        child: Container(
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.06),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+            ],
+            border: Border.all(
+              color: const Color(0xFF0A8754).withOpacity(0.10),
+              width: 1.2,
+            ),
+          ),
+          child: Row(
+            children: [
+              CircleAvatar(
+                backgroundColor: const Color(0xFF0A8754).withOpacity(0.13),
+                child: const Icon(Icons.person, color: Color(0xFF0A8754)),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      user.nombre,
+                      style: const TextStyle(
+                        fontFamily: 'Montserrat',
+                        fontWeight: FontWeight.bold,
+                        fontSize: 17,
+                        color: Color(0xFF0A8754),
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.blue.shade50,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text(
+                            _getDocTypeLabel(user.tipoDocumento),
+                            style: TextStyle(
+                              fontFamily: 'Montserrat',
+                              color: Colors.blue.shade700,
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        Expanded(
+                          child: Text(
+                            user.cedula,
+                            style: const TextStyle(
+                              fontFamily: 'Montserrat',
+                              color: Colors.black87,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      _getRoleLabel(user.rol, user.otroTipo),
+                      style: const TextStyle(
+                        fontFamily: 'Montserrat',
+                        color: Colors.black54,
+                        fontSize: 13,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(
+                Icons.arrow_forward_ios_rounded,
+                color: Color(0xFF0A8754),
+                size: 20,
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

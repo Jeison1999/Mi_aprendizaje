@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../users/presentation/pages/register_user_page.dart';
 import '../../../users/presentation/pages/user_search_page.dart';
+import '../../../auth/domain/services/auth_service.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -10,27 +11,56 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+    final currentUser = FirebaseAuth.instance.currentUser;
+    final userEmail = currentUser?.email ?? 'Usuario';
+
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: Text(
-          'Panel principal',
-          style: GoogleFonts.montserrat(
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-            fontSize: 22,
-            letterSpacing: 1.1,
-          ),
+        title: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'Panel principal',
+              style: GoogleFonts.montserrat(
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+                fontSize: 22,
+                letterSpacing: 1.1,
+              ),
+            ),
+            const SizedBox(height: 2),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.person, color: Colors.white70, size: 14),
+                const SizedBox(width: 4),
+                Text(
+                  userEmail,
+                  style: GoogleFonts.montserrat(
+                    color: Colors.white70,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          ],
         ),
         centerTitle: true,
         actions: [
           IconButton(
             icon: const Icon(Icons.logout, color: Colors.white),
             onPressed: () async {
+              // Limpiar credenciales biométricas al cerrar sesión
+              final authService = AuthService();
+              await authService.clearCredentials();
               await FirebaseAuth.instance.signOut();
-              Navigator.of(context).pushReplacementNamed('/login');
+              if (context.mounted) {
+                Navigator.of(context).pushReplacementNamed('/login');
+              }
             },
             tooltip: 'Cerrar sesión',
           ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../domain/models/pertenencia_model.dart';
+import '../../../auth/domain/services/auth_service.dart';
 
 class EditPertenenciaPage extends StatefulWidget {
   final Pertenencia pertenencia;
@@ -53,6 +54,10 @@ class _EditPertenenciaPageState extends State<EditPertenenciaPage> {
       _error = '';
     });
     try {
+      // Obtener el email del usuario actual para auditoría
+      final authService = AuthService();
+      final currentUserEmail = authService.getCurrentUserEmail();
+
       await FirebaseFirestore.instance
           .collection('pertenencias')
           .doc(widget.pertenencia.id)
@@ -81,6 +86,8 @@ class _EditPertenenciaPageState extends State<EditPertenenciaPage> {
             'tipoVehiculo': _tipo == PertenenciaTipo.vehiculo
                 ? _tipoVehiculoController.text.trim()
                 : null,
+            'modificadoPor': currentUserEmail,
+            'fechaModificacion': DateTime.now().toIso8601String(),
           });
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

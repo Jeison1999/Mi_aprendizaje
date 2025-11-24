@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../domain/models/movimiento_model.dart';
 import '../../../pertenencias/domain/models/pertenencia_model.dart';
 import 'scan_serial_page.dart';
+import '../../../auth/domain/services/auth_service.dart';
 
 class RegistrarMovimientoPage extends StatefulWidget {
   final Pertenencia pertenencia;
@@ -86,6 +87,10 @@ class _RegistrarMovimientoPageState extends State<RegistrarMovimientoPage> {
       _error = '';
     });
     try {
+      // Obtener el email del usuario actual para auditoría
+      final authService = AuthService();
+      final currentUserEmail = authService.getCurrentUserEmail();
+
       final movimiento = Movimiento(
         id: '',
         pertenenciaId: widget.pertenencia.id,
@@ -95,6 +100,7 @@ class _RegistrarMovimientoPageState extends State<RegistrarMovimientoPage> {
         observacion: _observacionController.text.trim().isEmpty
             ? null
             : _observacionController.text.trim(),
+        registradoPor: currentUserEmail,
       );
       await FirebaseFirestore.instance
           .collection('movimientos')

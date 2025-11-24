@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../domain/services/auth_service.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -12,19 +13,125 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final AuthService _authService = AuthService();
+
   String _error = '';
   bool _loading = false;
+  bool _rememberWithBiometric = false;
+  bool _canUseBiometric = false;
+  String? _lastUserEmail;
 
-  Future<void> _login() async {
+  @override
+  void initState() {
+    super.initState();
+    _checkBiometricAvailability();
+    _loadLastUser();
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _checkBiometricAvailability() async {
+    final canUse = await _authService.canAuthenticateWithBiometrics();
+    final isEnabled = await _authService.isBiometricEnabled();
+    setState(() {
+      _canUseBiometric = canUse;
+      _rememberWithBiometric = isEnabled;
+    });
+  }
+
+  Future<void> _loadLastUser() async {
+    final email = await _authService.getLastUserEmail();
+    if (email != null && mounted) {
+      setState(() {
+        _lastUserEmail = email;
+        _emailController.text = email;
+      });
+    }
+  }
+
+  Future<void> _loginWithBiometric() async {
     setState(() {
       _loading = true;
       _error = '';
     });
+
+    try {
+      final authenticated = await _authService.authenticateWithBiometrics();
+      if (!authenticated) {
+        setState(() {
+          _error = 'Autenticación biométrica cancelada';
+          _loading = false;
+        });
+        return;
+      }
+
+      final credentials = await _authService.getStoredCredentials();
+      if (credentials == null) {
+        setState(() {
+          _error = 'No hay credenciales guardadas';
+          _loading = false;
+        });
+        return;
+      }
+
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: credentials['email']!,
+        password: credentials['password']!,
+      );
+
+      if (mounted) {
+        Navigator.of(context).pushReplacementNamed('/home');
+      }
+    } on FirebaseAuthException catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _error = e.message ?? 'Error desconocido';
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _error = 'Error en autenticación biométrica';
+      });
+    } finally {
+      if (!mounted) return;
+      setState(() {
+        _loading = false;
+      });
+    }
+  }
+
+  Future<void> _login() async {
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
+
+    if (email.isEmpty || password.isEmpty) {
+      setState(() {
+        _error = 'Por favor ingresa email y contraseña';
+      });
+      return;
+    }
+
+    setState(() {
+      _loading = true;
+      _error = '';
+    });
+
     try {
       await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: _emailController.text.trim(),
-        password: _passwordController.text.trim(),
+        email: email,
+        password: password,
       );
+
+      // Guardar credenciales si el usuario lo solicitó
+      if (_rememberWithBiometric && _canUseBiometric) {
+        await _authService.saveCredentials(email, password, true);
+      }
+
       if (mounted) {
         Navigator.of(context).pushReplacementNamed('/home');
       }
@@ -151,6 +258,39 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                             ),
                           ),
+                          if (_lastUserEmail != null)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 12.0),
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 8,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withOpacity(0.2),
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const Icon(
+                                      Icons.person_outline,
+                                      color: Colors.white,
+                                      size: 18,
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      'Último usuario: $_lastUserEmail',
+                                      style: GoogleFonts.montserrat(
+                                        color: Colors.white,
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
                           const SizedBox(height: 32),
                           Expanded(
                             child: Center(
@@ -170,6 +310,70 @@ class _LoginPageState extends State<LoginPage> {
                                   child: Column(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
+                                      // Botón de login biométrico
+                                      if (_canUseBiometric &&
+                                          _rememberWithBiometric)
+                                        Column(
+                                          children: [
+                                            Container(
+                                              decoration: BoxDecoration(
+                                                color: const Color(
+                                                  0xFF0A8754,
+                                                ).withOpacity(0.1),
+                                                shape: BoxShape.circle,
+                                              ),
+                                              child: IconButton(
+                                                icon: const Icon(
+                                                  Icons.fingerprint,
+                                                  size: 48,
+                                                  color: Color(0xFF0A8754),
+                                                ),
+                                                onPressed: _loading
+                                                    ? null
+                                                    : _loginWithBiometric,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 8),
+                                            Text(
+                                              'Toca para iniciar con huella',
+                                              style: GoogleFonts.montserrat(
+                                                fontSize: 13,
+                                                color: Colors.grey[600],
+                                              ),
+                                            ),
+                                            const SizedBox(height: 16),
+                                            Row(
+                                              children: [
+                                                Expanded(
+                                                  child: Divider(
+                                                    color: Colors.grey[300],
+                                                  ),
+                                                ),
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.symmetric(
+                                                        horizontal: 12,
+                                                      ),
+                                                  child: Text(
+                                                    'o ingresa con email',
+                                                    style:
+                                                        GoogleFonts.montserrat(
+                                                          fontSize: 12,
+                                                          color:
+                                                              Colors.grey[500],
+                                                        ),
+                                                  ),
+                                                ),
+                                                Expanded(
+                                                  child: Divider(
+                                                    color: Colors.grey[300],
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            const SizedBox(height: 16),
+                                          ],
+                                        ),
                                       TextField(
                                         controller: _emailController,
                                         decoration: const InputDecoration(
@@ -191,12 +395,60 @@ class _LoginPageState extends State<LoginPage> {
                                         obscureText: true,
                                         onSubmitted: (_) => _login(),
                                       ),
+                                      if (_canUseBiometric)
+                                        CheckboxListTile(
+                                          title: Text(
+                                            'Recordar con huella digital',
+                                            style: GoogleFonts.montserrat(
+                                              fontSize: 14,
+                                            ),
+                                          ),
+                                          value: _rememberWithBiometric,
+                                          onChanged: (value) {
+                                            setState(() {
+                                              _rememberWithBiometric =
+                                                  value ?? false;
+                                            });
+                                          },
+                                          controlAffinity:
+                                              ListTileControlAffinity.leading,
+                                          contentPadding: EdgeInsets.zero,
+                                        ),
                                       const SizedBox(height: 24),
                                       if (_error.isNotEmpty)
-                                        Text(
-                                          _error,
-                                          style: const TextStyle(
-                                            color: Colors.red,
+                                        Container(
+                                          margin: const EdgeInsets.only(
+                                            bottom: 16,
+                                          ),
+                                          padding: const EdgeInsets.all(12),
+                                          decoration: BoxDecoration(
+                                            color: Colors.red.shade50,
+                                            borderRadius: BorderRadius.circular(
+                                              10,
+                                            ),
+                                            border: Border.all(
+                                              color: Colors.red.shade200,
+                                            ),
+                                          ),
+                                          child: Row(
+                                            children: [
+                                              Icon(
+                                                Icons.error_outline,
+                                                color: Colors.red.shade700,
+                                                size: 20,
+                                              ),
+                                              const SizedBox(width: 8),
+                                              Expanded(
+                                                child: Text(
+                                                  _error,
+                                                  style: TextStyle(
+                                                    color: Colors.red.shade700,
+                                                    fontSize: 13,
+                                                    fontFamily: 'Montserrat',
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
                                           ),
                                         ),
                                       if (_loading)
@@ -209,6 +461,9 @@ class _LoginPageState extends State<LoginPage> {
                                             label: const Text('Ingresar'),
                                             onPressed: _login,
                                             style: ElevatedButton.styleFrom(
+                                              backgroundColor: const Color(
+                                                0xFF0A8754,
+                                              ),
                                               padding:
                                                   const EdgeInsets.symmetric(
                                                     vertical: 14,

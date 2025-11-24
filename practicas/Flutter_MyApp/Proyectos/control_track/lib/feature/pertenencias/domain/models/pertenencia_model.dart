@@ -12,6 +12,11 @@ class Pertenencia {
   final String? tipoVehiculo;
   final DateTime fechaRegistro;
 
+  // Campos de auditoría
+  final String? creadoPor;
+  final String? modificadoPor;
+  final DateTime? fechaModificacion;
+
   Pertenencia({
     required this.id,
     required this.usuarioId,
@@ -23,6 +28,9 @@ class Pertenencia {
     this.placa,
     this.tipoVehiculo,
     required this.fechaRegistro,
+    this.creadoPor,
+    this.modificadoPor,
+    this.fechaModificacion,
   });
 
   Map<String, dynamic> toMap() {
@@ -37,6 +45,9 @@ class Pertenencia {
       'placa': placa,
       'tipoVehiculo': tipoVehiculo,
       'fechaRegistro': fechaRegistro.toIso8601String(),
+      'creadoPor': creadoPor,
+      'modificadoPor': modificadoPor,
+      'fechaModificacion': fechaModificacion?.toIso8601String(),
     };
   }
 
@@ -56,6 +67,11 @@ class Pertenencia {
       tipoVehiculo: map['tipoVehiculo'],
       fechaRegistro:
           DateTime.tryParse(map['fechaRegistro'] ?? '') ?? DateTime.now(),
+      creadoPor: map['creadoPor'],
+      modificadoPor: map['modificadoPor'],
+      fechaModificacion: map['fechaModificacion'] != null
+          ? DateTime.tryParse(map['fechaModificacion'])
+          : null,
     );
   }
 }
