@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../domain/models/pertenencia_model.dart';
 import '../pages/edit_pertenencia_page.dart';
 import '../../../movimientos/presentation/pages/registrar_movimiento_page.dart';
 
 class PertenenciaFilterSection extends StatefulWidget {
   final String userId;
-  const PertenenciaFilterSection({required this.userId});
+  const PertenenciaFilterSection({super.key, required this.userId});
 
   @override
   State<PertenenciaFilterSection> createState() =>
@@ -18,170 +19,458 @@ class _PertenenciaFilterSectionState extends State<PertenenciaFilterSection> {
   final TextEditingController _busquedaController = TextEditingController();
 
   @override
+  void dispose() {
+    _busquedaController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 2),
-          child: Card(
-            elevation: 4,
-            color: const Color(0xFFF5F7FA),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(18),
-              side: BorderSide(
-                color: const Color(0xFF0A8754).withOpacity(0.10),
-                width: 1.2,
-              ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isDesktop = constraints.maxWidth > 900;
+        final isTablet =
+            constraints.maxWidth > 600 && constraints.maxWidth <= 900;
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _FilterHeader(
+              isDesktop: isDesktop,
+              filtroTipo: _filtroTipo,
+              busquedaController: _busquedaController,
+              onTipoChanged: (v) => setState(() => _filtroTipo = v),
+              onBusquedaChanged: () => setState(() {}),
             ),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+            const SizedBox(height: 16),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Row(
                 children: [
-                  Row(
-                    children: [
-                      const Icon(
-                        Icons.filter_alt_rounded,
-                        color: Color(0xFF0A8754),
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        'Filtrar pertenencias',
-                        style: TextStyle(
-                          fontFamily: 'Montserrat',
-                          fontWeight: FontWeight.bold,
-                          color: const Color(0xFF0A8754),
-                          fontSize: 16.5,
-                          letterSpacing: 0.2,
-                        ),
-                      ),
-                    ],
+                  const Icon(
+                    Icons.inventory_2_rounded,
+                    color: Color(0xFF0A8754),
+                    size: 24,
                   ),
-                  const SizedBox(height: 10),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: DecoratedBox(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(
-                              color: const Color(0xFF0A8754).withOpacity(0.13),
-                            ),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 10),
-                            child: DropdownButtonHideUnderline(
-                              child: DropdownButton<PertenenciaTipo?>(
-                                value: _filtroTipo,
-                                isExpanded: true,
-                                hint: const Text('Tipo'),
-                                items: [
-                                  const DropdownMenuItem(
-                                    value: null,
-                                    child: Text('Todos'),
-                                  ),
-                                  ...PertenenciaTipo.values.map(
-                                    (tipo) => DropdownMenuItem(
-                                      value: tipo,
-                                      child: Text(tipo.name),
-                                    ),
-                                  ),
-                                ],
-                                onChanged: (v) =>
-                                    setState(() => _filtroTipo = v),
-                                icon: const Icon(
-                                  Icons.arrow_drop_down,
-                                  color: Color(0xFF0A8754),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        flex: 2,
-                        child: TextField(
-                          controller: _busquedaController,
-                          decoration: InputDecoration(
-                            labelText: 'Buscar',
-                            labelStyle: const TextStyle(
-                              color: Color(0xFF0A8754),
-                            ),
-                            filled: true,
-                            fillColor: Colors.white,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(
-                                color: const Color(
-                                  0xFF0A8754,
-                                ).withOpacity(0.13),
-                              ),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(
-                                color: const Color(
-                                  0xFF0A8754,
-                                ).withOpacity(0.13),
-                              ),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: const BorderSide(
-                                color: Color(0xFF0A8754),
-                                width: 1.5,
-                              ),
-                            ),
-                            isDense: true,
-                            prefixIcon: const Icon(
-                              Icons.search,
-                              color: Color(0xFF0A8754),
-                            ),
-                            contentPadding: const EdgeInsets.symmetric(
-                              vertical: 12,
-                              horizontal: 12,
-                            ),
-                          ),
-                          style: const TextStyle(
-                            fontFamily: 'Montserrat',
-                            fontSize: 14.5,
-                          ),
-                          onChanged: (_) => setState(() {}),
-                        ),
-                      ),
-                    ],
+                  const SizedBox(width: 8),
+                  Text(
+                    'Pertenencias Registradas',
+                    style: GoogleFonts.montserrat(
+                      fontWeight: FontWeight.bold,
+                      color: const Color(0xFF2D3748),
+                      fontSize: 18,
+                    ),
                   ),
                 ],
               ),
             ),
-          ),
-        ),
-        const SizedBox(height: 8),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 2),
-          child: Row(
-            children: [
-              const Icon(
-                Icons.inventory_2_rounded,
-                color: Color(0xFF0A8754),
-                size: 22,
+            const SizedBox(height: 12),
+            Expanded(
+              child: StreamBuilder<QuerySnapshot>(
+                stream: FirebaseFirestore.instance
+                    .collection('pertenencias')
+                    .where('usuarioId', isEqualTo: widget.userId)
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                    return _buildEmptyState('Sin pertenencias registradas.');
+                  }
+
+                  var pertenencias = snapshot.data!.docs
+                      .map(
+                        (doc) => Pertenencia.fromMap(
+                          doc.data() as Map<String, dynamic>,
+                          doc.id,
+                        ),
+                      )
+                      .toList();
+
+                  // Filtros en memoria
+                  if (_filtroTipo != null) {
+                    pertenencias = pertenencias
+                        .where((p) => p.tipo == _filtroTipo)
+                        .toList();
+                  }
+                  if (_busquedaController.text.isNotEmpty) {
+                    final query = _busquedaController.text.toLowerCase();
+                    pertenencias = pertenencias.where((p) {
+                      return (p.descripcion.toLowerCase().contains(query) ||
+                          (p.marca ?? '').toLowerCase().contains(query) ||
+                          (p.serial ?? '').toLowerCase().contains(query) ||
+                          (p.placa ?? '').toLowerCase().contains(query));
+                    }).toList();
+                  }
+
+                  if (pertenencias.isEmpty) {
+                    return _buildEmptyState(
+                      'No se encontraron resultados con los filtros actuales.',
+                    );
+                  }
+
+                  // Grid Responsive
+                  int crossAxisCount = 1;
+                  double childAspectRatio = 2.2; // Mobile default
+
+                  if (isDesktop) {
+                    crossAxisCount = 3;
+                    childAspectRatio = 1.8;
+                  } else if (isTablet) {
+                    crossAxisCount = 2;
+                    childAspectRatio = 1.6;
+                  }
+
+                  return GridView.builder(
+                    padding: const EdgeInsets.all(16),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: crossAxisCount,
+                      crossAxisSpacing: 16,
+                      mainAxisSpacing: 16,
+                      childAspectRatio: childAspectRatio,
+                      mainAxisExtent: 180, // Altura fija para consistencia
+                    ),
+                    itemCount: pertenencias.length,
+                    itemBuilder: (context, index) {
+                      final p = pertenencias[index];
+                      return _PertenenciaCard(
+                        pertenencia: p,
+                        userId: widget.userId,
+                        index: index,
+                      );
+                    },
+                  );
+                },
               ),
-              const SizedBox(width: 8),
-              Text(
-                'Pertenencias registradas',
-                style: TextStyle(
-                  fontFamily: 'Montserrat',
-                  fontWeight: FontWeight.bold,
-                  color: const Color.fromARGB(255, 231, 234, 233),
-                  fontSize: 17.5,
-                  letterSpacing: 0.2,
-                  shadows: [
-                    Shadow(
-                      color: Color.fromARGB(32, 251, 251, 251),
-                      blurRadius: 4,
-                      offset: Offset(0, 1),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildEmptyState(String message) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.search_off, size: 48, color: Colors.grey[400]),
+          const SizedBox(height: 16),
+          Text(
+            message,
+            style: GoogleFonts.montserrat(
+              color: Colors.grey[600],
+              fontSize: 16,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _FilterHeader extends StatelessWidget {
+  final bool isDesktop;
+  final PertenenciaTipo? filtroTipo;
+  final TextEditingController busquedaController;
+  final ValueChanged<PertenenciaTipo?> onTipoChanged;
+  final VoidCallback onBusquedaChanged;
+
+  const _FilterHeader({
+    required this.isDesktop,
+    required this.filtroTipo,
+    required this.busquedaController,
+    required this.onTipoChanged,
+    required this.onBusquedaChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+          border: Border.all(color: Colors.grey.shade100),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Icon(Icons.filter_list, color: Color(0xFF0A8754)),
+                const SizedBox(width: 8),
+                Text(
+                  'Filtros de búsqueda',
+                  style: GoogleFonts.montserrat(
+                    fontWeight: FontWeight.bold,
+                    color: const Color(0xFF0A8754),
+                    fontSize: 16,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Flex(
+              direction: isDesktop ? Axis.horizontal : Axis.vertical,
+              children: [
+                Expanded(
+                  flex: isDesktop ? 1 : 0,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[50],
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Colors.grey.shade200),
+                    ),
+                    child: DropdownButtonHideUnderline(
+                      child: DropdownButton<PertenenciaTipo?>(
+                        value: filtroTipo,
+                        isExpanded: true,
+                        hint: Text(
+                          'Tipo de Pertenencia',
+                          style: GoogleFonts.montserrat(
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                        items: [
+                          DropdownMenuItem(
+                            value: null,
+                            child: Text(
+                              'Todos',
+                              style: GoogleFonts.montserrat(),
+                            ),
+                          ),
+                          ...PertenenciaTipo.values.map(
+                            (tipo) => DropdownMenuItem(
+                              value: tipo,
+                              child: Text(
+                                tipo.name.toUpperCase(),
+                                style: GoogleFonts.montserrat(),
+                              ),
+                            ),
+                          ),
+                        ],
+                        onChanged: onTipoChanged,
+                        icon: const Icon(
+                          Icons.arrow_drop_down,
+                          color: Color(0xFF0A8754),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(width: isDesktop ? 16 : 0, height: isDesktop ? 0 : 12),
+                Expanded(
+                  flex: isDesktop ? 2 : 0,
+                  child: TextField(
+                    controller: busquedaController,
+                    decoration: InputDecoration(
+                      hintText: 'Buscar por nombre, marca, serial...',
+                      hintStyle: GoogleFonts.montserrat(
+                        color: Colors.grey[400],
+                      ),
+                      filled: true,
+                      fillColor: Colors.grey[50],
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: Colors.grey.shade200),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: Colors.grey.shade200),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: const BorderSide(color: Color(0xFF0A8754)),
+                      ),
+                      prefixIcon: const Icon(
+                        Icons.search,
+                        color: Color(0xFF0A8754),
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(
+                        vertical: 14,
+                        horizontal: 16,
+                      ),
+                    ),
+                    style: GoogleFonts.montserrat(),
+                    onChanged: (_) => onBusquedaChanged(),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _PertenenciaCard extends StatelessWidget {
+  final Pertenencia pertenencia;
+  final String userId;
+  final int index;
+
+  const _PertenenciaCard({
+    required this.pertenencia,
+    required this.userId,
+    required this.index,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final color = _getColorForType(pertenencia.tipo);
+
+    return TweenAnimationBuilder<double>(
+      tween: Tween(begin: 0, end: 1),
+      duration: Duration(milliseconds: 400 + index * 50),
+      curve: Curves.easeOutBack,
+      builder: (context, value, child) => Opacity(
+        opacity: value.clamp(0.0, 1.0),
+        child: Transform.translate(
+          offset: Offset(0, (1 - value.clamp(0.0, 1.0)) * 20),
+          child: child,
+        ),
+      ),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: color.withOpacity(0.08),
+              blurRadius: 12,
+              offset: const Offset(0, 4),
+            ),
+          ],
+          border: Border.all(color: color.withOpacity(0.1)),
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(20),
+          child: Stack(
+            children: [
+              // Indicador de tipo (barra lateral)
+              Positioned(
+                left: 0,
+                top: 0,
+                bottom: 0,
+                width: 6,
+                child: Container(color: color),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 16, 16, 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: color.withOpacity(0.1),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            _getIconForType(pertenencia.tipo),
+                            color: color,
+                            size: 20,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                pertenencia.tipo.name.toUpperCase(),
+                                style: GoogleFonts.montserrat(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                  color: color,
+                                  letterSpacing: 1.2,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                pertenencia.marca ?? 'Sin marca',
+                                style: GoogleFonts.montserrat(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: const Color(0xFF2D3748),
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          if (pertenencia.descripcion.isNotEmpty)
+                            Text(
+                              pertenencia.descripcion,
+                              style: GoogleFonts.montserrat(
+                                fontSize: 13,
+                                color: Colors.grey[600],
+                              ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          const Spacer(),
+                          if (pertenencia.serial != null &&
+                              pertenencia.serial!.isNotEmpty)
+                            _InfoBadge(
+                              label: 'Serial',
+                              value: pertenencia.serial!,
+                              color: color,
+                            ),
+                          if (pertenencia.placa != null &&
+                              pertenencia.placa!.isNotEmpty)
+                            _InfoBadge(
+                              label: 'Placa',
+                              value: pertenencia.placa!,
+                              color: color,
+                            ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        _ActionButton(
+                          icon: Icons.qr_code,
+                          color: const Color(0xFF0A8754),
+                          onTap: () => _navigateToMovement(context),
+                        ),
+                        const SizedBox(width: 8),
+                        _ActionButton(
+                          icon: Icons.edit_outlined,
+                          color: Colors.orange,
+                          onTap: () => _navigateToEdit(context),
+                        ),
+                        const SizedBox(width: 8),
+                        _ActionButton(
+                          icon: Icons.delete_outline,
+                          color: Colors.red,
+                          onTap: () => _confirmDelete(context),
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -189,395 +478,176 @@ class _PertenenciaFilterSectionState extends State<PertenenciaFilterSection> {
             ],
           ),
         ),
-        Expanded(
-          child: StreamBuilder<QuerySnapshot>(
-            stream: FirebaseFirestore.instance
-                .collection('pertenencias')
-                .where('usuarioId', isEqualTo: widget.userId)
-                .snapshots(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
-              }
-              if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                return const Center(
-                  child: Text('Sin pertenencias registradas.'),
-                );
-              }
-              var pertenencias = snapshot.data!.docs
-                  .map(
-                    (doc) => Pertenencia.fromMap(
-                      doc.data() as Map<String, dynamic>,
-                      doc.id,
-                    ),
-                  )
-                  .toList();
-              if (_filtroTipo != null) {
-                pertenencias = pertenencias
-                    .where((p) => p.tipo == _filtroTipo)
-                    .toList();
-              }
-              if (_busquedaController.text.isNotEmpty) {
-                final query = _busquedaController.text.toLowerCase();
-                pertenencias = pertenencias.where((p) {
-                  return (p.descripcion.toLowerCase().contains(query) ||
-                      (p.marca ?? '').toLowerCase().contains(query) ||
-                      (p.serial ?? '').toLowerCase().contains(query) ||
-                      (p.placa ?? '').toLowerCase().contains(query));
-                }).toList();
-              }
-              if (pertenencias.isEmpty) {
-                return const Center(
-                  child: Text(
-                    'Sin pertenencias con los filtros seleccionados.',
-                  ),
-                );
-              }
-              return ListView.separated(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 2,
-                ),
-                itemCount: pertenencias.length,
-                separatorBuilder: (_, __) => const SizedBox(height: 14),
-                itemBuilder: (context, index) {
-                  final p = pertenencias[index];
-                  return TweenAnimationBuilder<double>(
-                    tween: Tween(begin: 0, end: 1),
-                    duration: Duration(milliseconds: 400 + index * 60),
-                    curve: Curves.easeOutBack,
-                    builder: (context, value, child) => Opacity(
-                      opacity: value.clamp(0.0, 1.0),
-                      child: Transform.translate(
-                        offset: Offset(0, (1 - value.clamp(0.0, 1.0)) * 30),
-                        child: child,
-                      ),
-                    ),
-                    child: Card(
-                      elevation: 6,
-                      margin: EdgeInsets.zero,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(18),
-                        side: BorderSide(
-                          color: p.tipo == PertenenciaTipo.equipo
-                              ? const Color(0xFF0A8754).withOpacity(0.18)
-                              : p.tipo == PertenenciaTipo.vehiculo
-                              ? const Color(0xFF1976D2).withOpacity(0.18)
-                              : const Color(0xFF757575).withOpacity(0.13),
-                          width: 1.3,
-                        ),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 14,
-                        ),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            CircleAvatar(
-                              backgroundColor: p.tipo == PertenenciaTipo.equipo
-                                  ? const Color(0xFF0A8754).withOpacity(0.13)
-                                  : p.tipo == PertenenciaTipo.vehiculo
-                                  ? const Color(0xFF1976D2).withOpacity(0.13)
-                                  : const Color(0xFF757575).withOpacity(0.13),
-                              child: Icon(
-                                p.tipo == PertenenciaTipo.equipo
-                                    ? Icons.devices_other
-                                    : p.tipo == PertenenciaTipo.vehiculo
-                                    ? Icons.directions_car
-                                    : Icons.handyman,
-                                color: p.tipo == PertenenciaTipo.equipo
-                                    ? const Color(0xFF0A8754)
-                                    : p.tipo == PertenenciaTipo.vehiculo
-                                    ? const Color(0xFF1976D2)
-                                    : const Color(0xFF757575),
-                              ),
-                            ),
-                            const SizedBox(width: 14),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Text(
-                                        p.tipo.name.toUpperCase(),
-                                        style: TextStyle(
-                                          fontFamily: 'Montserrat',
-                                          fontWeight: FontWeight.bold,
-                                          color:
-                                              p.tipo == PertenenciaTipo.equipo
-                                              ? const Color(0xFF0A8754)
-                                              : p.tipo ==
-                                                    PertenenciaTipo.vehiculo
-                                              ? const Color(0xFF1976D2)
-                                              : const Color(0xFF757575),
-                                          fontSize: 15.5,
-                                          letterSpacing: 0.7,
-                                        ),
-                                      ),
-                                      if ((p.marca ?? '').isNotEmpty) ...[
-                                        const SizedBox(width: 8),
-                                        Flexible(
-                                          child: Text(
-                                            p.marca!,
-                                            style: const TextStyle(
-                                              fontFamily: 'Montserrat',
-                                              fontWeight: FontWeight.w600,
-                                              color: Colors.black87,
-                                              fontSize: 14.5,
-                                            ),
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                        ),
-                                      ],
-                                    ],
-                                  ),
-                                  if (p.descripcion.isNotEmpty)
-                                    Padding(
-                                      padding: const EdgeInsets.only(top: 2.5),
-                                      child: Row(
-                                        children: [
-                                          const Icon(
-                                            Icons.description,
-                                            size: 16,
-                                            color: Colors.black45,
-                                          ),
-                                          const SizedBox(width: 4),
-                                          Flexible(
-                                            child: Text(
-                                              p.descripcion,
-                                              style: const TextStyle(
-                                                fontFamily: 'Montserrat',
-                                                color: Colors.black87,
-                                                fontSize: 13.5,
-                                              ),
-                                              overflow: TextOverflow.ellipsis,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  if (p.tipo == PertenenciaTipo.equipo &&
-                                      p.serial != null &&
-                                      p.serial!.isNotEmpty)
-                                    Padding(
-                                      padding: const EdgeInsets.only(top: 2.5),
-                                      child: Row(
-                                        children: [
-                                          const Icon(
-                                            Icons.confirmation_number,
-                                            size: 16,
-                                            color: Color(0xFF0A8754),
-                                          ),
-                                          const SizedBox(width: 4),
-                                          Text(
-                                            'Serial: ',
-                                            style: const TextStyle(
-                                              fontWeight: FontWeight.w600,
-                                              fontSize: 13.2,
-                                              color: Color(0xFF0A8754),
-                                            ),
-                                          ),
-                                          Flexible(
-                                            child: Text(
-                                              p.serial!,
-                                              style: const TextStyle(
-                                                fontSize: 13.2,
-                                                color: Colors.black87,
-                                              ),
-                                              overflow: TextOverflow.ellipsis,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  if (p.tipo == PertenenciaTipo.vehiculo &&
-                                      p.placa != null &&
-                                      p.placa!.isNotEmpty)
-                                    Padding(
-                                      padding: const EdgeInsets.only(top: 2.5),
-                                      child: Row(
-                                        children: [
-                                          const Icon(
-                                            Icons.directions_car,
-                                            size: 16,
-                                            color: Color(0xFF1976D2),
-                                          ),
-                                          const SizedBox(width: 4),
-                                          Text(
-                                            'Placa: ',
-                                            style: const TextStyle(
-                                              fontWeight: FontWeight.w600,
-                                              fontSize: 13.2,
-                                              color: Color(0xFF1976D2),
-                                            ),
-                                          ),
-                                          Flexible(
-                                            child: Text(
-                                              p.placa!,
-                                              style: const TextStyle(
-                                                fontSize: 13.2,
-                                                color: Colors.black87,
-                                              ),
-                                              overflow: TextOverflow.ellipsis,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                _CircleActionButton(
-                                  icon: Icons.qr_code,
-                                  color: const Color(0xFF0A8754),
-                                  tooltip: 'Registrar entrada/salida',
-                                  onTap: () async {
-                                    final result = await Navigator.of(context)
-                                        .push(
-                                          MaterialPageRoute(
-                                            builder: (_) =>
-                                                RegistrarMovimientoPage(
-                                                  pertenencia: p,
-                                                  usuarioId: widget.userId,
-                                                ),
-                                          ),
-                                        );
-                                    if (result == true && context.mounted) {
-                                      ScaffoldMessenger.of(
-                                        context,
-                                      ).showSnackBar(
-                                        const SnackBar(
-                                          content: Text(
-                                            'Movimiento registrado.',
-                                          ),
-                                        ),
-                                      );
-                                    }
-                                  },
-                                ),
-                                const SizedBox(height: 7),
-                                _CircleActionButton(
-                                  icon: Icons.edit,
-                                  color: Colors.orange,
-                                  tooltip: 'Editar pertenencia',
-                                  onTap: () {
-                                    Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                        builder: (_) =>
-                                            EditPertenenciaPage(pertenencia: p),
-                                      ),
-                                    );
-                                  },
-                                ),
-                                const SizedBox(height: 7),
-                                _CircleActionButton(
-                                  icon: Icons.delete,
-                                  color: Colors.red[700]!,
-                                  tooltip: 'Eliminar pertenencia',
-                                  onTap: () async {
-                                    final confirm = await showDialog<bool>(
-                                      context: context,
-                                      builder: (ctx) => AlertDialog(
-                                        title: const Text(
-                                          'Eliminar pertenencia',
-                                        ),
-                                        content: const Text(
-                                          '¿Estás seguro de eliminar esta pertenencia?',
-                                        ),
-                                        actions: [
-                                          TextButton(
-                                            onPressed: () =>
-                                                Navigator.pop(ctx, false),
-                                            child: const Text('Cancelar'),
-                                          ),
-                                          TextButton(
-                                            onPressed: () =>
-                                                Navigator.pop(ctx, true),
-                                            child: const Text(
-                                              'Eliminar',
-                                              style: TextStyle(
-                                                color: Colors.red,
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    );
-                                    if (confirm == true) {
-                                      await FirebaseFirestore.instance
-                                          .collection('pertenencias')
-                                          .doc(p.id)
-                                          .delete();
-                                    }
-                                  },
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  );
-                },
-              );
-            },
-          ),
+      ),
+    );
+  }
+
+  Color _getColorForType(PertenenciaTipo tipo) {
+    switch (tipo) {
+      case PertenenciaTipo.equipo:
+        return const Color(0xFF0A8754);
+      case PertenenciaTipo.vehiculo:
+        return const Color(0xFF1976D2);
+      default:
+        return const Color(0xFF757575);
+    }
+  }
+
+  IconData _getIconForType(PertenenciaTipo tipo) {
+    switch (tipo) {
+      case PertenenciaTipo.equipo:
+        return Icons.computer;
+      case PertenenciaTipo.vehiculo:
+        return Icons.directions_car;
+      default:
+        return Icons.build;
+    }
+  }
+
+  Future<void> _navigateToMovement(BuildContext context) async {
+    final result = await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => RegistrarMovimientoPage(
+          pertenencia: pertenencia,
+          usuarioId: userId,
         ),
-      ],
+      ),
+    );
+    if (result == true && context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Movimiento registrado exitosamente'),
+          backgroundColor: Color(0xFF0A8754),
+        ),
+      );
+    }
+  }
+
+  void _navigateToEdit(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => EditPertenenciaPage(pertenencia: pertenencia),
+      ),
+    );
+  }
+
+  Future<void> _confirmDelete(BuildContext context) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text(
+          'Eliminar Pertenencia',
+          style: GoogleFonts.montserrat(fontWeight: FontWeight.bold),
+        ),
+        content: Text(
+          '¿Estás seguro de que deseas eliminar "${pertenencia.descripcion}"? Esta acción no se puede deshacer.',
+          style: GoogleFonts.montserrat(),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(
+              'Cancelar',
+              style: GoogleFonts.montserrat(color: Colors.grey),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+            child: Text(
+              'Eliminar',
+              style: GoogleFonts.montserrat(color: Colors.white),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true) {
+      await FirebaseFirestore.instance
+          .collection('pertenencias')
+          .doc(pertenencia.id)
+          .delete();
+    }
+  }
+}
+
+class _InfoBadge extends StatelessWidget {
+  final String label;
+  final String value;
+  final Color color;
+
+  const _InfoBadge({
+    required this.label,
+    required this.value,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.08),
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(color: color.withOpacity(0.2)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            '$label: ',
+            style: GoogleFonts.montserrat(
+              fontSize: 11,
+              fontWeight: FontWeight.bold,
+              color: color,
+            ),
+          ),
+          Text(
+            value,
+            style: GoogleFonts.montserrat(
+              fontSize: 11,
+              fontWeight: FontWeight.w500,
+              color: Colors.black87,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
 
-// Botón de acción circular para acciones de pertenencia
-class _CircleActionButton extends StatelessWidget {
+class _ActionButton extends StatelessWidget {
   final IconData icon;
   final Color color;
-  final String tooltip;
   final VoidCallback onTap;
-  const _CircleActionButton({
+
+  const _ActionButton({
     required this.icon,
     required this.color,
-    required this.tooltip,
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Tooltip(
-      message: tooltip,
-      child: Material(
-        color: Colors.transparent,
-        shape: const CircleBorder(),
-        child: InkWell(
-          onTap: onTap,
-          customBorder: const CircleBorder(),
-          child: Ink(
-            width: 38,
-            height: 38,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: LinearGradient(
-                colors: [color, color.withOpacity(0.85)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: color.withOpacity(0.18),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: Center(child: Icon(icon, color: Colors.white, size: 20)),
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(8),
+        child: Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(8),
           ),
+          child: Icon(icon, size: 18, color: color),
         ),
       ),
     );

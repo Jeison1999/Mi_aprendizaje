@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../domain/models/user_model.dart';
 
 import '../../../pertenencias/presentation/pages/register_pertenencia_page.dart';
 import 'edit_user_page.dart';
 import '../../../pertenencias/presentation/widgets/_pertenencia_filter_section.dart';
 
-// Animaciones reutilizables (copiadas de register_user_page.dart para independencia visual)
 class AnimatedGradientBackground extends StatefulWidget {
   const AnimatedGradientBackground({super.key});
   @override
@@ -65,42 +65,12 @@ class _AnimatedGradientBackgroundState extends State<AnimatedGradientBackground>
   }
 }
 
-class AnimatedEntrance extends StatelessWidget {
-  final Widget child;
-  final int delay;
-  const AnimatedEntrance({required this.child, this.delay = 0, super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: Future.delayed(Duration(milliseconds: delay)),
-      builder: (context, snapshot) {
-        final show = snapshot.connectionState == ConnectionState.done;
-        return TweenAnimationBuilder<double>(
-          tween: Tween(begin: 0, end: show ? 1 : 0),
-          duration: const Duration(milliseconds: 700),
-          curve: Curves.easeOutBack,
-          builder: (context, value, child) => Opacity(
-            opacity: value.clamp(0.0, 1.0),
-            child: Transform.translate(
-              offset: Offset(0, (1 - value) * 30),
-              child: child,
-            ),
-          ),
-          child: child,
-        );
-      },
-    );
-  }
-}
-
 class UserDetailPage extends StatelessWidget {
   final AppUser user;
   const UserDetailPage({super.key, required this.user});
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
     return StreamBuilder<DocumentSnapshot>(
       stream: FirebaseFirestore.instance
           .collection('usuarios')
@@ -126,12 +96,10 @@ class UserDetailPage extends StatelessWidget {
             elevation: 0,
             title: Text(
               'Detalle usuario',
-              style: TextStyle(
-                fontFamily: 'Montserrat',
+              style: GoogleFonts.montserrat(
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
-                fontSize: 22,
-                letterSpacing: 1.1,
+                fontSize: 20,
               ),
             ),
             centerTitle: true,
@@ -139,355 +107,27 @@ class UserDetailPage extends StatelessWidget {
           ),
           body: Stack(
             children: [
-              // Fondo degradado institucional animado
               const AnimatedGradientBackground(),
               SafeArea(
-                child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      const SizedBox(height: 24),
-                      Hero(
-                        tag: 'logo_sena',
-                        child: CircleAvatar(
-                          radius: 44,
-                          backgroundColor: Colors.white,
-                          child: Icon(
-                            Icons.person,
-                            size: 54,
-                            color: Color(0xFF0A8754),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 18),
-                      AnimatedEntrance(
-                        delay: 100,
-                        child: Container(
-                          margin: EdgeInsets.symmetric(
-                            horizontal: size.width * 0.06,
-                          ),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 24,
-                            vertical: 30,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(28),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.10),
-                                blurRadius: 22,
-                                offset: const Offset(0, 8),
-                              ),
-                            ],
-                            border: Border.all(
-                              color: const Color(0xFF0A8754).withOpacity(0.13),
-                              width: 1.7,
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    return SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          // Header Compacto
+                          _CompactUserHeader(user: updatedUser),
+                          const SizedBox(height: 12),
+                          // Pertenencias (altura fija calculada)
+                          SizedBox(
+                            height: constraints.maxHeight - 200,
+                            child: PertenenciaFilterSection(
+                              userId: updatedUser.id,
                             ),
                           ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Text(
-                                updatedUser.nombre,
-                                style: const TextStyle(
-                                  fontFamily: 'Montserrat',
-                                  color: Color(0xFF0A8754),
-                                  fontSize: 25,
-                                  fontWeight: FontWeight.bold,
-                                  letterSpacing: 1.1,
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
-                              const SizedBox(height: 6),
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 4,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: const Color(
-                                    0xFF0A8754,
-                                  ).withOpacity(0.09),
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                child: Text(
-                                  updatedUser.rol == UserRole.instructorPlanta
-                                      ? 'Instructor de planta'
-                                      : updatedUser.rol == UserRole.instructorContratista
-                                      ? 'Instructor contratista'
-                                      : updatedUser.rol == UserRole.aprendiz
-                                      ? 'Aprendiz'
-                                      : updatedUser.rol == UserRole.administrativo
-                                      ? 'Administrativo'
-                                      : updatedUser.rol == UserRole.teo
-                                      ? 'TEO'
-                                      : updatedUser.rol == UserRole.visitante
-                                      ? 'Visitante'
-                                      : updatedUser.rol == UserRole.otro && updatedUser.otroTipo != null
-                                      ? 'Otro (${updatedUser.otroTipo})'
-                                      : 'Otro',
-                                  style: const TextStyle(
-                                    fontFamily: 'Montserrat',
-                                    color: Color(0xFF0A8754),
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 15,
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: 16),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  _InfoTile(
-                                    icon: Icons.badge_outlined,
-                                    label: 'Cédula',
-                                    value: updatedUser.cedula,
-                                  ),
-                                  _InfoTile(
-                                    icon: Icons.phone_outlined,
-                                    label: 'Celular',
-                                    value: updatedUser.celular,
-                                  ),
-                                  _InfoTile(
-                                    icon: Icons.email_outlined,
-                                    label: 'Correo',
-                                    value: updatedUser.correo,
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 22),
-                              LayoutBuilder(
-                                builder: (context, constraints) {
-                                  final isWide = constraints.maxWidth > 500;
-                                  return isWide
-                                      ? Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            _FancyActionButton(
-                                              icon: Icons.add_box_rounded,
-                                              label: 'Registrar pertenencia',
-                                              color: const Color(0xFF0A8754),
-                                              onTap: () {
-                                                Navigator.of(context).push(
-                                                  MaterialPageRoute(
-                                                    builder: (_) =>
-                                                        RegisterPertenenciaPage(
-                                                          usuarioId:
-                                                              updatedUser.id,
-                                                        ),
-                                                  ),
-                                                );
-                                              },
-                                            ),
-                                            const SizedBox(width: 18),
-                                            _FancyActionButton(
-                                              icon: Icons.edit_rounded,
-                                              label: 'Editar',
-                                              color: Colors.orange,
-                                              onTap: () {
-                                                Navigator.of(context).push(
-                                                  MaterialPageRoute(
-                                                    builder: (_) =>
-                                                        EditUserPage(
-                                                          user: updatedUser,
-                                                        ),
-                                                  ),
-                                                );
-                                              },
-                                            ),
-                                            const SizedBox(width: 12),
-                                            _FancyActionButton(
-                                              icon:
-                                                  Icons.delete_forever_rounded,
-                                              label: 'Eliminar',
-                                              color: Colors.red[700]!,
-                                              onTap: () async {
-                                                final confirm = await showDialog<bool>(
-                                                  context: context,
-                                                  builder: (ctx) => AlertDialog(
-                                                    title: const Text(
-                                                      'Eliminar usuario',
-                                                    ),
-                                                    content: const Text(
-                                                      '¿Estás seguro de eliminar este usuario? Esta acción no se puede deshacer.',
-                                                    ),
-                                                    actions: [
-                                                      TextButton(
-                                                        onPressed: () =>
-                                                            Navigator.pop(
-                                                              ctx,
-                                                              false,
-                                                            ),
-                                                        child: const Text(
-                                                          'Cancelar',
-                                                        ),
-                                                      ),
-                                                      TextButton(
-                                                        onPressed: () =>
-                                                            Navigator.pop(
-                                                              ctx,
-                                                              true,
-                                                            ),
-                                                        child: const Text(
-                                                          'Eliminar',
-                                                          style: TextStyle(
-                                                            color: Colors.red,
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                );
-                                                if (confirm == true) {
-                                                  await FirebaseFirestore
-                                                      .instance
-                                                      .collection('usuarios')
-                                                      .doc(updatedUser.id)
-                                                      .delete();
-                                                  if (context.mounted) {
-                                                    Navigator.of(context).pop();
-                                                  }
-                                                }
-                                              },
-                                            ),
-                                          ],
-                                        )
-                                      : Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.stretch,
-                                          children: [
-                                            _FancyActionButton(
-                                              icon: Icons.add_box_rounded,
-                                              label: 'Registrar pertenencia',
-                                              color: const Color(0xFF0A8754),
-                                              onTap: () {
-                                                Navigator.of(context).push(
-                                                  MaterialPageRoute(
-                                                    builder: (_) =>
-                                                        RegisterPertenenciaPage(
-                                                          usuarioId:
-                                                              updatedUser.id,
-                                                        ),
-                                                  ),
-                                                );
-                                              },
-                                            ),
-                                            const SizedBox(height: 10),
-                                            Row(
-                                              children: [
-                                                Expanded(
-                                                  child: _FancyActionButton(
-                                                    icon: Icons.edit_rounded,
-                                                    label: 'Editar',
-                                                    color: Colors.orange,
-                                                    onTap: () {
-                                                      Navigator.of(
-                                                        context,
-                                                      ).push(
-                                                        MaterialPageRoute(
-                                                          builder: (_) =>
-                                                              EditUserPage(
-                                                                user:
-                                                                    updatedUser,
-                                                              ),
-                                                        ),
-                                                      );
-                                                    },
-                                                  ),
-                                                ),
-                                                const SizedBox(width: 12),
-                                                Expanded(
-                                                  child: _FancyActionButton(
-                                                    icon: Icons
-                                                        .delete_forever_rounded,
-                                                    label: 'Eliminar',
-                                                    color: Colors.red[700]!,
-                                                    onTap: () async {
-                                                      final confirm = await showDialog<bool>(
-                                                        context: context,
-                                                        builder: (ctx) => AlertDialog(
-                                                          title: const Text(
-                                                            'Eliminar usuario',
-                                                          ),
-                                                          content: const Text(
-                                                            '¿Estás seguro de eliminar este usuario? Esta acción no se puede deshacer.',
-                                                          ),
-                                                          actions: [
-                                                            TextButton(
-                                                              onPressed: () =>
-                                                                  Navigator.pop(
-                                                                    ctx,
-                                                                    false,
-                                                                  ),
-                                                              child: const Text(
-                                                                'Cancelar',
-                                                              ),
-                                                            ),
-                                                            TextButton(
-                                                              onPressed: () =>
-                                                                  Navigator.pop(
-                                                                    ctx,
-                                                                    true,
-                                                                  ),
-                                                              child: const Text(
-                                                                'Eliminar',
-                                                                style: TextStyle(
-                                                                  color: Colors
-                                                                      .red,
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      );
-                                                      if (confirm == true) {
-                                                        await FirebaseFirestore
-                                                            .instance
-                                                            .collection(
-                                                              'usuarios',
-                                                            )
-                                                            .doc(updatedUser.id)
-                                                            .delete();
-                                                        if (context.mounted) {
-                                                          Navigator.of(
-                                                            context,
-                                                          ).pop();
-                                                        }
-                                                      }
-                                                    },
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ],
-                                        );
-                                },
-                              ),
-                            ],
-                          ),
-                        ),
+                        ],
                       ),
-                      const SizedBox(height: 28),
-                      AnimatedEntrance(
-                        delay: 300,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            SizedBox(
-                              height: size.height * 0.38,
-                              child: PertenenciaFilterSection(
-                                userId: updatedUser.id,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 36),
-                    ],
-                  ),
+                    );
+                  },
                 ),
               ),
             ],
@@ -498,12 +138,322 @@ class UserDetailPage extends StatelessWidget {
   }
 }
 
-// Widget para mostrar info de usuario con icono
-class _InfoTile extends StatelessWidget {
+class _CompactUserHeader extends StatelessWidget {
+  final AppUser user;
+
+  const _CompactUserHeader({required this.user});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      user.nombre,
+                      style: GoogleFonts.montserrat(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: const Color(0xFF0A8754),
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF0A8754).withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        _getRoleLabel(user.rol, user.otroTipo),
+                        style: GoogleFonts.montserrat(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: const Color(0xFF0A8754),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 8),
+              IconButton(
+                icon: const Icon(Icons.info_outline, color: Color(0xFF0A8754)),
+                onPressed: () => _showUserInfoModal(context, user),
+                tooltip: 'Ver información completa',
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final isNarrow = constraints.maxWidth < 500;
+              if (isNarrow) {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    _ActionButton(
+                      icon: Icons.add_box_rounded,
+                      label: 'Registrar pertenencia',
+                      color: const Color(0xFF0A8754),
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) =>
+                                RegisterPertenenciaPage(usuarioId: user.id),
+                          ),
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _ActionButton(
+                            icon: Icons.edit_rounded,
+                            label: 'Editar',
+                            color: Colors.orange,
+                            onTap: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => EditUserPage(user: user),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: _ActionButton(
+                            icon: Icons.delete_forever_rounded,
+                            label: 'Eliminar',
+                            color: Colors.red,
+                            onTap: () => _confirmDelete(context, user),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                );
+              } else {
+                return Row(
+                  children: [
+                    Expanded(
+                      child: _ActionButton(
+                        icon: Icons.add_box_rounded,
+                        label: 'Registrar pertenencia',
+                        color: const Color(0xFF0A8754),
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) =>
+                                  RegisterPertenenciaPage(usuarioId: user.id),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: _ActionButton(
+                        icon: Icons.edit_rounded,
+                        label: 'Editar',
+                        color: Colors.orange,
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => EditUserPage(user: user),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: _ActionButton(
+                        icon: Icons.delete_forever_rounded,
+                        label: 'Eliminar',
+                        color: Colors.red,
+                        onTap: () => _confirmDelete(context, user),
+                      ),
+                    ),
+                  ],
+                );
+              }
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _getRoleLabel(UserRole rol, String? otroTipo) {
+    switch (rol) {
+      case UserRole.instructorPlanta:
+        return 'Instructor de planta';
+      case UserRole.instructorContratista:
+        return 'Instructor contratista';
+      case UserRole.aprendiz:
+        return 'Aprendiz';
+      case UserRole.administrativo:
+        return 'Administrativo';
+      case UserRole.teo:
+        return 'TEO';
+      case UserRole.visitante:
+        return 'Visitante';
+      case UserRole.otro:
+        return otroTipo != null ? 'Otro ($otroTipo)' : 'Otro';
+    }
+  }
+
+  void _showUserInfoModal(BuildContext context, AppUser user) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Icon(Icons.person, color: Color(0xFF0A8754)),
+                const SizedBox(width: 8),
+                Text(
+                  'Información del Usuario',
+                  style: GoogleFonts.montserrat(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: const Color(0xFF0A8754),
+                  ),
+                ),
+              ],
+            ),
+            const Divider(height: 24),
+            _InfoRow(
+              icon: Icons.badge_outlined,
+              label: 'Cédula',
+              value: user.cedula,
+            ),
+            const SizedBox(height: 12),
+            _InfoRow(
+              icon: Icons.phone_outlined,
+              label: 'Celular',
+              value: user.celular,
+            ),
+            const SizedBox(height: 12),
+            _InfoRow(
+              icon: Icons.email_outlined,
+              label: 'Correo',
+              value: user.correo,
+            ),
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () => Navigator.pop(context),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF0A8754),
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: Text(
+                  'Cerrar',
+                  style: GoogleFonts.montserrat(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _confirmDelete(BuildContext context, AppUser user) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text(
+          'Eliminar usuario',
+          style: GoogleFonts.montserrat(fontWeight: FontWeight.bold),
+        ),
+        content: Text(
+          '¿Estás seguro de que deseas eliminar a "${user.nombre}"? Esta acción no se puede deshacer.',
+          style: GoogleFonts.montserrat(),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(
+              'Cancelar',
+              style: GoogleFonts.montserrat(color: Colors.grey),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+            child: Text(
+              'Eliminar',
+              style: GoogleFonts.montserrat(color: Colors.white),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true) {
+      await FirebaseFirestore.instance
+          .collection('usuarios')
+          .doc(user.id)
+          .delete();
+      if (context.mounted) {
+        Navigator.of(context).pop();
+      }
+    }
+  }
+}
+
+class _InfoRow extends StatelessWidget {
   final IconData icon;
   final String label;
   final String value;
-  const _InfoTile({
+
+  const _InfoRow({
     required this.icon,
     required this.label,
     required this.value,
@@ -511,47 +461,52 @@ class _InfoTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Column(
-        children: [
-          CircleAvatar(
-            backgroundColor: const Color(0xFF0A8754).withOpacity(0.13),
-            child: Icon(icon, color: const Color(0xFF0A8754)),
+    return Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: const Color(0xFF0A8754).withOpacity(0.1),
+            shape: BoxShape.circle,
           ),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            style: const TextStyle(
-              fontFamily: 'Montserrat',
-              fontWeight: FontWeight.w600,
-              fontSize: 13,
-              color: Colors.black54,
-            ),
+          child: Icon(icon, color: const Color(0xFF0A8754), size: 20),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label,
+                style: GoogleFonts.montserrat(
+                  fontSize: 12,
+                  color: Colors.grey[600],
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              Text(
+                value.isEmpty ? '-' : value,
+                style: GoogleFonts.montserrat(
+                  fontSize: 15,
+                  color: Colors.black87,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 2),
-          Text(
-            value.isEmpty ? '-' : value,
-            style: const TextStyle(
-              fontFamily: 'Montserrat',
-              fontWeight: FontWeight.w500,
-              fontSize: 14,
-              color: Colors.black87,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
 
-// Botón de acción mejorado y visualmente atractivo
-class _FancyActionButton extends StatelessWidget {
+class _ActionButton extends StatelessWidget {
   final IconData icon;
   final String label;
   final Color color;
   final VoidCallback onTap;
-  const _FancyActionButton({
+
+  const _ActionButton({
     required this.icon,
     required this.label,
     required this.color,
@@ -560,79 +515,24 @@ class _FancyActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Gradientes institucionales para cada acción
-    LinearGradient gradient;
-    if (icon == Icons.add_box_rounded) {
-      gradient = const LinearGradient(
-        colors: [Color(0xFF0A8754), Color(0xFF00C897)],
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-      );
-    } else if (icon == Icons.edit_rounded) {
-      gradient = const LinearGradient(
-        colors: [Color(0xFFFFA726), Color(0xFFFF7043)],
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-      );
-    } else if (icon == Icons.delete_forever_rounded) {
-      gradient = const LinearGradient(
-        colors: [Color(0xFFD32F2F), Color(0xFFFF5252)],
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-      );
-    } else {
-      gradient = LinearGradient(
-        colors: [color, color.withOpacity(0.95)],
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-      );
-    }
-
-    return Material(
-      color: Colors.transparent,
-      elevation: 6,
-      borderRadius: BorderRadius.circular(18),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(18),
-        onTap: onTap,
-        child: Ink(
-          decoration: BoxDecoration(
-            gradient: gradient,
-            borderRadius: BorderRadius.circular(18),
-            border: Border.all(color: Colors.white, width: 2.5),
-            boxShadow: [
-              BoxShadow(
-                color: color.withOpacity(0.25),
-                blurRadius: 16,
-                offset: const Offset(0, 6),
-              ),
-            ],
-          ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 15),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(icon, color: Colors.white, size: 24),
-                const SizedBox(width: 8),
-                Text(
-                  label,
-                  style: const TextStyle(
-                    fontFamily: 'Montserrat',
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                    fontSize: 15.5,
-                    letterSpacing: 0.1,
-                  ),
-                  textAlign: TextAlign.center,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
-            ),
-          ),
+    return ElevatedButton.icon(
+      onPressed: onTap,
+      icon: Icon(icon, size: 18),
+      label: Text(
+        label,
+        style: GoogleFonts.montserrat(
+          fontWeight: FontWeight.bold,
+          fontSize: 13,
         ),
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      ),
+      style: ElevatedButton.styleFrom(
+        backgroundColor: color,
+        foregroundColor: Colors.white,
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        elevation: 2,
       ),
     );
   }
