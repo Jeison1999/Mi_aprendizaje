@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../domain/models/user_model.dart';
 import 'user_detail_page.dart';
-import '../../../../shared/widgets/animated_gradient_background.dart' hide AnimatedGradientBackground;
 
 class UserSearchPage extends StatefulWidget {
   const UserSearchPage({super.key});

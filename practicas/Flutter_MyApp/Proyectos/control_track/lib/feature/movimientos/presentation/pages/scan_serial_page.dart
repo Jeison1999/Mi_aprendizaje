@@ -9,7 +9,6 @@ class ScanSerialPage extends StatefulWidget {
 }
 
 class _ScanSerialPageState extends State<ScanSerialPage> {
-  String? _code;
   bool _scanned = false;
 
   void _onDetect(BarcodeCapture capture) {

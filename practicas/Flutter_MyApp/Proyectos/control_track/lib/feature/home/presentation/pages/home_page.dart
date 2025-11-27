@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../users/presentation/pages/register_user_page.dart';
 import '../../../users/presentation/pages/user_search_page.dart';
-import '../../../auth/domain/services/auth_service.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
