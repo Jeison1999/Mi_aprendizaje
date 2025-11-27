@@ -381,7 +381,7 @@ class _RegistrarMovimientoPageState extends State<RegistrarMovimientoPage> {
                                     : 'Salida',
                               ),
                               subtitle: Text(
-                                'Fecha: ${_formatearFecha(m.fecha)}\nObs: ${m.observacion ?? '-'}',
+                                'Fecha: ${_formatearFecha(m.fecha)}\nUsuario: ${m.registradoPor ?? 'Desconocido'}\nObs: ${m.observacion ?? '-'}',
                               ),
                             );
                           },
