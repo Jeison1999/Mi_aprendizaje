@@ -37,7 +37,13 @@ class _LoginPageState extends State<LoginPage> {
 
   Future<void> _checkBiometricAvailability() async {
     final canUse = await _authService.canAuthenticateWithBiometrics();
+    if (!mounted) return;
+
     final isEnabled = await _authService.isBiometricEnabled();
+    if (!mounted) return;
+
+    print('🔐 Biometric check: canUse=$canUse, isEnabled=$isEnabled');
+
     setState(() {
       _canUseBiometric = canUse;
       _rememberWithBiometric = isEnabled;
@@ -55,6 +61,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> _loginWithBiometric() async {
+    if (!mounted) return;
     setState(() {
       _loading = true;
       _error = '';
@@ -62,6 +69,8 @@ class _LoginPageState extends State<LoginPage> {
 
     try {
       final authenticated = await _authService.authenticateWithBiometrics();
+      if (!mounted) return;
+
       if (!authenticated) {
         setState(() {
           _error = 'Autenticación biométrica cancelada';
@@ -71,6 +80,8 @@ class _LoginPageState extends State<LoginPage> {
       }
 
       final credentials = await _authService.getStoredCredentials();
+      if (!mounted) return;
+
       if (credentials == null) {
         setState(() {
           _error = 'No hay credenciales guardadas';
@@ -109,6 +120,8 @@ class _LoginPageState extends State<LoginPage> {
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
 
+    print('🔑 Login: email=$email, remember=$_rememberWithBiometric');
+
     if (email.isEmpty || password.isEmpty) {
       setState(() {
         _error = 'Por favor ingresa email y contraseña';
@@ -122,14 +135,49 @@ class _LoginPageState extends State<LoginPage> {
     });
 
     try {
+      // Si el usuario quiere recordar con huella, PRIMERO pedimos la huella
+      // Esto evita que el AuthGate redirija antes de tiempo y asegura la autorización
+      if (_rememberWithBiometric) {
+        final authenticated = await _authService.authenticateWithBiometrics();
+        if (!mounted) return;
+
+        if (!authenticated) {
+          setState(() {
+            _error =
+                'Autenticación biométrica cancelada. No se puede activar el ingreso con huella.';
+            _loading = false;
+          });
+          return;
+        }
+      }
+
+      // Si pasó la huella (o no la pidió), intentamos el login
       await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
 
-      // Guardar credenciales si el usuario lo solicitó
-      if (_rememberWithBiometric && _canUseBiometric) {
+      print('✅ Login exitoso');
+
+      // Si llegamos aquí y _rememberWithBiometric es true, es seguro guardar
+      // porque ya pasó la verificación biométrica arriba
+      if (_rememberWithBiometric) {
+        print('💾 Guardando credenciales...');
         await _authService.saveCredentials(email, password, true);
+        print('✅ Credenciales guardadas');
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Huella registrada exitosamente'),
+              backgroundColor: Color(0xFF0A8754),
+              duration: Duration(seconds: 2),
+            ),
+          );
+        }
+      } else {
+        await _authService.clearCredentials();
+        print('🗑️ Credenciales limpiadas');
       }
 
       if (mounted) {

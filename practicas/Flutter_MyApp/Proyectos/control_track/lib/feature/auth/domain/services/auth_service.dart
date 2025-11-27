@@ -34,6 +34,20 @@ class AuthService {
   /// Autentica al usuario usando biometría
   Future<bool> authenticateWithBiometrics() async {
     try {
+      // Verificar si el dispositivo soporta biometría
+      final canAuthenticate = await canAuthenticateWithBiometrics();
+      if (!canAuthenticate) {
+        print('El dispositivo no soporta autenticación biométrica');
+        return false;
+      }
+
+      // Verificar si hay biométricos disponibles
+      final availableBiometrics = await getAvailableBiometrics();
+      if (availableBiometrics.isEmpty) {
+        print('No hay biométricos configurados en el dispositivo');
+        return false;
+      }
+
       return await _localAuth.authenticate(
         localizedReason: 'Autentícate para acceder a Control Track',
         options: const AuthenticationOptions(
@@ -42,6 +56,7 @@ class AuthService {
         ),
       );
     } catch (e) {
+      print('Error en autenticación biométrica: $e');
       return false;
     }
   }

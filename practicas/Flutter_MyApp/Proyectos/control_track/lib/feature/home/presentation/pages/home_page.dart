@@ -54,9 +54,8 @@ class HomePage extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.logout, color: Colors.white),
             onPressed: () async {
-              // Limpiar credenciales biométricas al cerrar sesión
-              final authService = AuthService();
-              await authService.clearCredentials();
+              // Solo cerramos sesión en Firebase, mantenemos las credenciales biométricas
+              // si el usuario las guardó previamente.
               await FirebaseAuth.instance.signOut();
               if (context.mounted) {
                 Navigator.of(context).pushReplacementNamed('/login');
