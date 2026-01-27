@@ -2,7 +2,7 @@
 // import {  } from "./bases/02-objects";
 // import { Jeison } from "./bases/03-classes";
 // import { charmander } from "./bases/04-injections";
-import { Pokemon } from "./bases/05-decorators";
+import { Pokemon } from "./bases/06-decorators2";
 
 
 const app = document.querySelector<HTMLDivElement>('#app')!;
