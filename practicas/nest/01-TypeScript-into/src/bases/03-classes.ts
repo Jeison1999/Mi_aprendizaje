@@ -21,7 +21,8 @@ export class Person {
     //peticion del pokemon
     
     async getPokemon(){
-        const { data} = await axios.get<PokeAPIResponse>('https://pokeapi.co/api/v2/pokemon/4');
+        //Se informacion se puede guardar en una variable "respuesta" o extraccion "{data}""
+        const { data } = await axios.get<PokeAPIResponse>('https://pokeapi.co/api/v2/pokemon/4');
         console.log( data.moves[0].move.name );
         return data.name;
     }

@@ -14,4 +14,4 @@ Se puede meter number ${age},
 Se puede meter boolean ${ inValid},
 `;
 
-console.log(templateString)
+// console.log(templateString);
