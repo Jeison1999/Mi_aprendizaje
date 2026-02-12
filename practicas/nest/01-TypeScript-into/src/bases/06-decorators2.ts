@@ -1,6 +1,6 @@
 const Deprecated = (deprecationReason: string) => {
     return (target: any, memberName: string, propertyDescriptor: PropertyDescriptor) => {
-      console.log({target})
+    //   console.log({target})
       return {
         get() {
           const wrapperFn = (...args: any[]) => {

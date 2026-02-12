@@ -9,7 +9,7 @@ export class PokeApiFechAdapter implements HttpAdapter {
     async get<T>(url:string): Promise<T> {
         const resp = await fetch(url);
         const data: T = await resp.json();
-        console.log('Aqui utilizamos axios')
+        console.log('Aqui utilizamos axios!')
         return data;
     }
 }
@@ -19,7 +19,7 @@ export class PokeApiAdapter implements HttpAdapter {
 
     async get<T> ( url: string ): Promise<T> {
         const { data } = await this.axios.get<T>(url);
-        console.log('aqui utilizamos adapter');
+        console.log('aqui utilizamos adapter!');
         return data;
     }
 
