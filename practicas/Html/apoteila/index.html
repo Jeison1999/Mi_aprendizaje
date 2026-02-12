@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Apoteila 💛 </title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="pantallaCandado">
+        <h1></h1>
+        <h2>Solo alguien especial puede abrir esto</h2>
+        <p> ingresa nuestra fecha fecha especial</p>
+        <input type="date" id="fecha">
+        <br><br>
+        <button type="button" onclick="verificarFecha()">Desbloquear</button>
+        <p id="error" style="color:red;"></p>
+    </div>
+
+    <div id="pantallaDesbloqueada" style="display:none;">
+        <h2>✨ Mensaje para ti ✨</h2>
+        <p id="frase">Cargando...</p>
+        <p style="color:pink; font-size:20px;">
+        Eres capaz de todo apotellita,<br>
+        eres la mejor,<br>
+        Te amo ❤️
+    </p>
+    </div>
+    
+</body>
+    <script src="script.js"></script>
+</html>

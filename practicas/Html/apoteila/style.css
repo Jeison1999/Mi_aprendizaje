@@ -1,0 +1,27 @@
+body {
+    background: black;
+    color: white;
+    text-align: center;
+    font-family: poppins;
+    margin-top: 100px;
+}
+
+input {
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 10px;
+    border: none;
+    margin-right: 10px;
+    font-family: poppins;
+    text-align: center;
+}
+
+button {
+    padding: 10px 20px;
+    background: hotpink;
+    border-radius: 10px;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    font-family: poppins;
+}
