@@ -1,11 +1,33 @@
 const aniversario = "2023-12-07"
 
+const fechaInput = document.getElementById("fecha");
+if (fechaInput) {
+    fechaInput.addEventListener("input", () => {
+        fechaInput.value = formatearFecha(fechaInput.value);
+    });
+}
+
 function verificarFecha() {
-    const fechaUsuario = document.getElementById("fecha").value;
+    const fechaUsuario = normalizarFecha(document.getElementById("fecha").value.trim());
+
+    if (!fechaUsuario) {
+        document.getElementById("error").innerText = "Ingresa la fecha en formato DD/MM/AAAA";
+        return;
+    }
 
     if (fechaUsuario === aniversario) {
-        document.getElementById("pantallaCandado").style.display = "none";
-        document.getElementById("pantallaDesbloqueada").style.display = "block";
+        const cartaPrincipal = document.querySelector("#pantallaCandado .carta");
+        cartaPrincipal.classList.add("abierta");
+        
+        // Ocultar input, botón y error
+        document.getElementById("fecha").style.display = "none";
+        document.querySelector(".button").style.display = "none";
+        document.getElementById("error").style.display = "none";
+        
+        // Mostrar contenido desbloqueado
+        const contenidoDesbloqueado = document.getElementById("contenidoDesbloqueado");
+        contenidoDesbloqueado.style.display = "block";
+        
         obtenerFrase();
         iniciarCorazones();
     } else {
@@ -13,9 +35,22 @@ function verificarFecha() {
     }
 }
 
-// ⚠️ ESTA FUNCIÓN DEBE ESTAR FUERA, NO DENTRO DE verificarFecha()
+function normalizarFecha(valor) {
+    if (!valor) {
+        return "";
+    }
+
+    const match = valor.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+    if (!match) {
+        return "";
+    }
+
+    const [, day, month, year] = match;
+    return `${year}-${month}-${day}`;
+}
+
 function obtenerFrase() {
-    fetch("https://www.positive-api.online/api/phrase/esp")
+    fetch("https://www.positive-api.online/phrase/esp")
         .then(response => {
             if (!response.ok) {
                 throw new Error('Error en la respuesta');
@@ -23,8 +58,6 @@ function obtenerFrase() {
             return response.json();
         })
         .then(data => {
-            console.log('Data recibida:', data);
-            // Prueba diferentes estructuras posibles
             const frase = data.phrase || data.text || data.content || data.message || JSON.stringify(data);
             document.getElementById("frase").innerText = frase;
         })
@@ -52,4 +85,27 @@ function iniciarCorazones() {
         corazon.style.fontSize = `${14 + Math.random() * 14}px`;
         contenedor.appendChild(corazon);
     }
+}
+
+function formatearFecha(valor) {
+    const soloNumeros = valor.replace(/\D/g, "").slice(0, 8);
+    const partes = [];
+
+    if (soloNumeros.length >= 2) {
+        partes.push(soloNumeros.slice(0, 2));
+    } else {
+        partes.push(soloNumeros);
+    }
+
+    if (soloNumeros.length >= 4) {
+        partes.push(soloNumeros.slice(2, 4));
+    } else if (soloNumeros.length > 2) {
+        partes.push(soloNumeros.slice(2));
+    }
+
+    if (soloNumeros.length > 4) {
+        partes.push(soloNumeros.slice(4));
+    }
+
+    return partes.join("/");
 }
